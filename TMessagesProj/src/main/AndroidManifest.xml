@@ -82,7 +82,7 @@
     <uses-permission android:name="com.android.vending.BILLING"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="replace" />
 
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+<!--    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />-->
 
     <uses-sdk tools:overrideLibrary="com.google.mlkit.vision.segmentation.subject"/>
 
@@ -659,8 +659,8 @@ e            <intent-filter>
 
         <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true" />
 
-        <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" android:resource="@drawable/ic_player" />
-        <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
+<!--        <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" android:resource="@drawable/ic_player" />-->
+<!--        <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />-->
 
         <meta-data android:name="com.google.android.gms.vision.DEPENDENCIES" android:value="face,barcode" />
 
