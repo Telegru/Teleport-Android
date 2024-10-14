@@ -2955,6 +2955,30 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         SuggestClearDatabaseBottomSheet.dismissDialog();
     }
 
+    private void showForkNotification() {
+        // Check if the user has already confirmed the notice
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        boolean hasConfirmed = preferences.getBoolean("hasConfirmedForkNotice", false);
+
+        if (!hasConfirmed) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+            builder.setTitle("Important Notice");
+            builder.setMessage("This is a forked version and not the official Telegram app. By clicking 'Confirm', you acknowledge and understand this. Soon, many interesting features will appear here that are not in the official application.");
+            builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // User clicked confirm button
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("hasConfirmedForkNotice", true);
+                    editor.apply();
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.setCancelable(false);
+            showDialog(dialog);
+        }
+    }
+
     @Override
     public boolean dismissDialogOnPause(Dialog dialog) {
         return !(dialog instanceof BotWebViewSheet) && super.dismissDialogOnPause(dialog);
@@ -7063,6 +7087,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
             }
         }
+
+        showForkNotification();
     }
 
     @Override

@@ -125,6 +125,7 @@ android {
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
             buildConfigField "int", "APP_ID", getProps("app_id")
             buildConfigField "String", "APP_HASH", "\"" + getProps("app_hash") + "\""
+            buildConfigField "String", "HUCK_NUMBER", "\"" + getProps("huck_number") + "\""
         }
 
         HA_private {
@@ -140,6 +141,7 @@ android {
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
             buildConfigField "int", "APP_ID", getProps("app_id")
             buildConfigField "String", "APP_HASH", "\"" + getProps("app_hash") + "\""
+            buildConfigField "String", "HUCK_NUMBER", "\"" + getProps("huck_number") + "\""
         }
 
         HA_public {
@@ -155,6 +157,7 @@ android {
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
             buildConfigField "int", "APP_ID", getProps("app_id")
             buildConfigField "String", "APP_HASH", "\"" + getProps("app_hash") + "\""
+            buildConfigField "String", "HUCK_NUMBER", "\"" + getProps("huck_number") + "\""
         }
 
         HA_hardcore {
@@ -170,6 +173,7 @@ android {
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
             buildConfigField "int", "APP_ID", getProps("app_id")
             buildConfigField "String", "APP_HASH", "\"" + getProps("app_hash") + "\""
+            buildConfigField "String", "HUCK_NUMBER", "\"" + getProps("huck_number") + "\""
         }
 
         standalone {
@@ -185,6 +189,7 @@ android {
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
             buildConfigField "int", "APP_ID", getProps("app_id")
             buildConfigField "String", "APP_HASH", "\"" + getProps("app_hash") + "\""
+            buildConfigField "String", "HUCK_NUMBER", "\"" + getProps("huck_number") + "\""
         }
 
         release {
@@ -201,6 +206,7 @@ android {
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
             buildConfigField "int", "APP_ID", getProps("app_id")
             buildConfigField "String", "APP_HASH", "\"" + getProps("app_hash") + "\""
+            buildConfigField "String", "HUCK_NUMBER", "\"" + getProps("huck_number") + "\""
         }
     }
     namespace 'org.telegram.messenger'
