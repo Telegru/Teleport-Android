@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "911191645346",
-    "project_id": "telegrf-89a5a",
-    "storage_bucket": "telegrf-89a5a.appspot.com"
+    "project_number": "504335149376",
+    "project_id": "dahl-4d255",
+    "storage_bucket": "dahl-4d255.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:911191645346:android:07191af7478498c5670bfb",
+        "mobilesdk_app_id": "1:504335149376:android:689ad9b0fcceb482eaf2a5",
         "android_client_info": {
           "package_name": "ru.tusco.messenger"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCkV-h5T-iw2tlINO9RpT6n5xdg8ZjsHcM"
+          "current_key": "AIzaSyCzzsWOebOWRgsmqkPD_lFRcG_T0kwie7Y"
         }
       ],
       "services": {
@@ -26,26 +26,7 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:911191645346:web:00bfd0710ac50516670bf",
-        "android_client_info": {
-          "package_name": "ru.tusco.messenger.web"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBkzWvczdk02AyKJRRSICMsaq_mXa-dtXY"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:911191645346:android:fa62bb4ceff6f127670bfb",
+        "mobilesdk_app_id": "1:504335149376:android:ddca2dbb3c3e014deaf2a5",
         "android_client_info": {
           "package_name": "ru.tusco.messenger.beta"
         }
@@ -53,7 +34,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCkV-h5T-iw2tlINO9RpT6n5xdg8ZjsHcM"
+          "current_key": "AIzaSyCzzsWOebOWRgsmqkPD_lFRcG_T0kwie7Y"
         }
       ],
       "services": {
