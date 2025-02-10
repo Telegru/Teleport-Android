@@ -210,6 +210,8 @@ import java.util.Locale;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate, ImageReceiver.ImageReceiverDelegate, DownloadController.FileDownloadProgressListener, TextSelectionHelper.SelectableView, NotificationCenter.NotificationCenterDelegate {
     private final static int TIME_APPEAR_MS = 200;
     private final static int UPLOADING_ALLOWABLE_ERROR = 1024 * 1024;
@@ -1600,7 +1602,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         backgroundDrawable = new MessageBackgroundDrawable(this);
         avatarImage = new ImageReceiver();
         avatarImage.setAllowLoadingOnAttachedOnly(true);
-        avatarImage.setRoundRadius(AndroidUtilities.dp(21));
+        avatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
         avatarDrawable = new AvatarDrawable();
         replyImageReceiver = new ImageReceiver(this);
         replyImageReceiver.setAllowLoadingOnAttachedOnly(true);
@@ -5784,7 +5786,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             drawCommentButton = false;
             photoImage.setSideClip(0);
             photoImage.setAspectFit(false);
-            photoImage.setRoundRadiusEnabled(true);
+            photoImage.setRoundRadiusEnabled(false);
             fitPhotoImage = false;
             gradientShader = null;
             motionBackgroundDrawable = null;

@@ -2983,12 +2983,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 needHideProgress(false);
                 return;
             } else if (countryState == COUNTRY_STATE_INVALID && !BuildVars.DEBUG_VERSION) {
-                if (phoneNumber.replace(" ", "").trim().equals(BuildVars.HUCK_NUMBER)) {
-                    BuildVars.DEBUG_VERSION = true;
-                    BuildVars.DEBUG_PRIVATE_VERSION = true;
-                    getParentActivity().recreate();
-                    return;
-                }
                 needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("WrongCountry", R.string.WrongCountry));
                 needHideProgress(false);
                 return;

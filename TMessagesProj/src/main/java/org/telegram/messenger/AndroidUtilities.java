@@ -232,6 +232,7 @@ public class AndroidUtilities {
     public final static String TYPEFACE_COURIER_NEW_BOLD = "fonts/courier_new_bold.ttf";
 
     public final static String TYPEFACE_PLAYFAIR_DISPLAY = "fonts/pfdisplay_700.ttf";
+    public final static String TYPEFACE_NIZHEGORODSKY = "fonts/nizhegorodsky.ttf";
 
     private static Typeface mediumTypeface;
     public static ThreadLocal<byte[]> readBufferLocal = new ThreadLocal<>();

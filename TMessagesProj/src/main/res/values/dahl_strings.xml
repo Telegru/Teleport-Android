@@ -20,4 +20,7 @@
     <string name="Slide8Message">**Читайте** в Даль. **Пишите** в Даль.  **Смотрите** в Даль.</string>
 
     <string name="ThemeDahl">Даль</string>
+    <string name="SettingsDahl">Настройки Даль</string>
+    <string name="IconsVkUI">Иконки VK UI</string>
+    <string name="RestartToast">Чтобы изменения вступили в силу перезапустите приложение</string>
 </resources>

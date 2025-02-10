@@ -21,4 +21,7 @@
 **Stay connected** with Dahl.</string>
 
     <string name="ThemeDahl">Dahl</string>
+    <string name="SettingsDahl">Settings Dahl</string>
+    <string name="IconsVkUI">Icons VK UI</string>
+    <string name="RestartToast">Restart app to apply changes</string>
 </resources>

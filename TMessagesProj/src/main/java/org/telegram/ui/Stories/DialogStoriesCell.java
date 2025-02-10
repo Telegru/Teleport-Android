@@ -76,6 +76,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class DialogStoriesCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     public final static int TYPE_DIALOGS = 0;
@@ -1152,8 +1154,8 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             }
             createTextView();
             addView(textViewContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-            avatarImage.setRoundRadius(AndroidUtilities.dp(48) / 2);
-            crossfageToAvatarImage.setRoundRadius(AndroidUtilities.dp(48) / 2);
+            avatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
+            crossfageToAvatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
         }
 
         private void createTextView() {
@@ -1166,8 +1168,8 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             textView.setMaxLines(1);
 
             textViewContainer.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 1, 0, 1, 0));
-            avatarImage.setRoundRadius(AndroidUtilities.dp(48) / 2);
-            crossfageToAvatarImage.setRoundRadius(AndroidUtilities.dp(48) / 2);
+            avatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
+            crossfageToAvatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
         }
 
         public void setDialogId(long dialogId) {
@@ -1330,7 +1332,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             }
             params.originalAvatarRect.set(x, y, x + finalSize, y + finalSize);
             avatarImage.setAlpha(1f);
-            avatarImage.setRoundRadius((int) radius);
+            avatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
 
             cx = x + radius;
             cy = y + radius;

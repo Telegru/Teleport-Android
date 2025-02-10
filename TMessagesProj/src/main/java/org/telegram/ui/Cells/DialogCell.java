@@ -125,6 +125,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class DialogCell extends BaseCell implements StoriesListPlaceProvider.AvatarOverlaysView {
 
     public boolean drawingForBlur;
@@ -581,7 +583,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         this.resourcesProvider = resourcesProvider;
         parentFragment = fragment;
         Theme.createDialogsResources(context);
-        avatarImage.setRoundRadius(dp(28));
+        avatarImage.setRoundRadius(dp(6));
         for (int i = 0; i < thumbImage.length; ++i) {
             thumbImage[i] = new ImageReceiver(this);
             thumbImage[i].ignoreNotifications = true;
@@ -2770,7 +2772,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             for (int i = 0; i < thumbImage.length; ++i) {
                 thumbImage[i].setImageBitmap((BitmapDrawable) null);
             }
-            avatarImage.setRoundRadius(dp(28));
+            avatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
             drawUnmute = false;
         } else {
             int oldUnreadCount = unreadCount;
@@ -3148,7 +3150,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 reactionsMentionsAnimator.start();
             }
 
-            avatarImage.setRoundRadius(chat != null && chat.forum && currentDialogFolderId == 0 && !useFromUserAsAvatar || !isSavedDialog && user != null && user.self && MessagesController.getInstance(currentAccount).savedViewAsChats ? dp(16) : dp(28));
+            avatarImage.setRoundRadius(chat != null && chat.forum && currentDialogFolderId == 0 && !useFromUserAsAvatar || !isSavedDialog && MessagesController.getInstance(currentAccount).savedViewAsChats ? dp(16) : DahlSettings.INSTANCE.getAvatarCornerRadius());
         }
         if (!isTopic && (getMeasuredWidth() != 0 || getMeasuredHeight() != 0)) {
             rebuildLayout = true;

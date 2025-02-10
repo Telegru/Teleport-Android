@@ -373,7 +373,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         fragmentView = scrollView;
         DrawerProfileCell.switchingTheme = true;
 
-        String nightThemeName = "Dahl";
+        String nightThemeName = "Night";
 
         Theme.ThemeInfo themeInfo;
         boolean toDark = true;

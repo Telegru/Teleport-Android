@@ -2710,7 +2710,7 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
             super(context);
             this.resourcesProvider = resourcesProvider;
 
-            avatarDrawable.setRoundRadius(AndroidUtilities.dp(40));
+            avatarDrawable.setRoundRadius(AndroidUtilities.dp(8));
 
             imageView = new BackupImageView(context);
             imageView.setRoundRadius(AndroidUtilities.dp(20));

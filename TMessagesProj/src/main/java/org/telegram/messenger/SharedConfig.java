@@ -1452,6 +1452,9 @@ public class SharedConfig {
             ProxyInfo info = currentProxy = new ProxyInfo(proxyAddress, proxyPort, proxyUsername, proxyPassword, proxySecret);
             proxyList.add(0, info);
         }
+
+//        ProxyInfo info = new ProxyInfo();
+//        proxyList.add(0, info);
     }
 
     public static void saveProxyList() {

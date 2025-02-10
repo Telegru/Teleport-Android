@@ -242,9 +242,9 @@ public class BackupImageView extends View {
     }
 
     public void setRoundRadius(int value) {
-        imageReceiver.setRoundRadius(value);
+        imageReceiver.setRoundRadius(16);
         if (blurAllowed) {
-            blurImageReceiver.setRoundRadius(value);
+            blurImageReceiver.setRoundRadius(16);
         }
         invalidate();
     }

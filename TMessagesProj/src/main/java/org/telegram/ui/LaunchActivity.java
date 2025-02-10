@@ -25,7 +25,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -222,6 +224,10 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import ru.tusco.messenger.DefaultWallpapersHelper;
+import ru.tusco.messenger.icons.DrawableResourceManager;
+import ru.tusco.messenger.settings.DahlSettingsActivity;
+
 public class LaunchActivity extends BasePermissionsActivity implements INavigationLayout.INavigationLayoutDelegate, NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate {
     public final static String EXTRA_FORCE_NOT_INTERNAL_APPS = "force_not_internal_apps";
     public final static Pattern PREFIX_T_ME_PATTERN = Pattern.compile("^(?:http(?:s|)://|)([A-z0-9-]+?)\\.t\\.me");
@@ -346,6 +352,22 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
     public static LaunchActivity instance;
     private View customNavigationBar;
+
+    private DrawableResourceManager res = null;
+    private AssetManager assetManager = null;
+
+    @Override
+    public Resources getResources() {
+        if (assetManager != super.getResources().getAssets()) {
+            res = new DrawableResourceManager(super.getResources());
+            assetManager = super.getResources().getAssets();
+        }
+        return res;
+    }
+
+    public void reloadResources() {
+        res.reloadReplacements();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -661,6 +683,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     args.putLong("dialog_id", UserConfig.getInstance(currentAccount).getClientUserId());
                     args.putInt("type", MediaActivity.TYPE_STORIES);
                     presentFragment(new MediaActivity(args, null));
+                } else if (id == 99) {
+                    drawerLayoutContainer.closeDrawer(true);
+                    presentFragment(new DahlSettingsActivity());
                 }
             }
         });
@@ -975,6 +1000,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         BackupAgent.requestBackup(this);
 
         RestrictedLanguagesSelectActivity.checkRestrictedLanguages(false);
+        DefaultWallpapersHelper.INSTANCE.createWallpaperFiles();
     }
 
     private void showAttachMenuBot(TLRPC.TL_attachMenuBot attachMenuBot, String startApp, boolean sidemenu) {

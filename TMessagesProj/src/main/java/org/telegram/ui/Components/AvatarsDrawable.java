@@ -31,6 +31,8 @@ import org.telegram.ui.Stories.StoriesGradientTools;
 
 import java.util.Random;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class AvatarsDrawable {
 
     public final static int STYLE_GROUP_CALL_TOOLTIP = 10;
@@ -266,14 +268,14 @@ public class AvatarsDrawable {
             currentStates[a] = new DrawingState();
             currentStates[a].imageReceiver = new ImageReceiver(parent);
             currentStates[a].imageReceiver.setInvalidateAll(true);
-            currentStates[a].imageReceiver.setRoundRadius(AndroidUtilities.dp(12));
+            currentStates[a].imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
             currentStates[a].avatarDrawable = new AvatarDrawable();
             currentStates[a].avatarDrawable.setTextSize(AndroidUtilities.dp(12));
 
             animatingStates[a] = new DrawingState();
             animatingStates[a].imageReceiver = new ImageReceiver(parent);
             animatingStates[a].imageReceiver.setInvalidateAll(true);
-            animatingStates[a].imageReceiver.setRoundRadius(AndroidUtilities.dp(12));
+            animatingStates[a].imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
             animatingStates[a].avatarDrawable = new AvatarDrawable();
             animatingStates[a].avatarDrawable.setTextSize(AndroidUtilities.dp(12));
         }
@@ -358,7 +360,7 @@ public class AvatarsDrawable {
             animatingStates[index].imageReceiver.setForUserOrChat(currentChat, animatingStates[index].avatarDrawable);
         }
         int size = getSize();
-        animatingStates[index].imageReceiver.setRoundRadius(size / 2);
+        animatingStates[index].imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
         animatingStates[index].imageReceiver.setImageCoords(0, 0, size, size);
         invalidate();
     }

@@ -612,7 +612,7 @@ public class QrActivity extends BaseFragment {
             });
         } else {
             Utilities.themeQueue.postRunnable(() -> {
-                final Bitmap bitmap = SvgHelper.getBitmap(R.raw.default_pattern, backgroundView.getWidth(), backgroundView.getHeight(), Color.BLACK);
+                final Bitmap bitmap = SvgHelper.getBitmap(R.raw.dahl_wallpaper, backgroundView.getWidth(), backgroundView.getHeight(), Color.BLACK);
                 AndroidUtilities.runOnUIThread(() -> {
                     onPatternLoaded(bitmap, 34, true);
                 });

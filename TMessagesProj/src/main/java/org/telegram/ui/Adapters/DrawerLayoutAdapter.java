@@ -255,6 +255,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         int contactsIcon;
         int callsIcon;
         int savedIcon;
+        int dahlSettingsIcon;
         int settingsIcon;
         int inviteIcon;
         int helpIcon;
@@ -299,6 +300,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             inviteIcon = R.drawable.msg_invite;
             helpIcon = R.drawable.msg_help;
         }
+        dahlSettingsIcon = R.drawable.settings_dahl;
         UserConfig me = UserConfig.getInstance(UserConfig.selectedAccount);
         boolean showDivider = false;
         items.add(new Item(16, LocaleController.getString(R.string.MyProfile), R.drawable.left_status_profile));
@@ -339,6 +341,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         items.add(new Item(6, LocaleController.getString(R.string.Contacts), contactsIcon));
         items.add(new Item(10, LocaleController.getString(R.string.Calls), callsIcon));
         items.add(new Item(11, LocaleController.getString(R.string.SavedMessages), savedIcon));
+        items.add(new Item(99, LocaleController.getString(R.string.SettingsDahl), dahlSettingsIcon));
         items.add(new Item(8, LocaleController.getString(R.string.Settings), settingsIcon));
         items.add(null); // divider
         items.add(new Item(7, LocaleController.getString(R.string.InviteFriends), inviteIcon));
