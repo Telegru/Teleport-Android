@@ -4536,7 +4536,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                     } else {
                         patternColor = MotionBackgroundDrawable.getPatternColor(wallPaper.color, wallPaper.gradientColor1, wallPaper.gradientColor2, wallPaper.gradientColor3);
                     }
-                    backgroundImage.setImageBitmap(SvgHelper.getBitmap(R.raw.default_pattern, w, h, patternColor));
+                    backgroundImage.setImageBitmap(SvgHelper.getBitmap(R.raw.dahl_wallpaper, w, h, patternColor));
                 }
             } else if (currentWallpaper instanceof WallpapersListActivity.FileWallpaper) {
                 if (currentWallpaperBitmap != null) {

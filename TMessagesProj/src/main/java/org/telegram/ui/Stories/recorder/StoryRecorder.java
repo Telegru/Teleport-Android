@@ -164,6 +164,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class StoryRecorder implements NotificationCenter.NotificationCenterDelegate {
 
     private final Theme.ResourcesProvider resourcesProvider = new DarkThemeResourceProvider();
@@ -1109,10 +1111,10 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                     if (fromSourceView.backgroundImageReceiver != null) {
                         fromSourceView.backgroundImageReceiver.setImageCoords(rectF);
                         int prevRoundRadius = fromSourceView.backgroundImageReceiver.getRoundRadius()[0];
-                        fromSourceView.backgroundImageReceiver.setRoundRadius((int) r);
+                        fromSourceView.backgroundImageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
                         fromSourceView.backgroundImageReceiver.setAlpha(alpha);
                         fromSourceView.backgroundImageReceiver.draw(canvas);
-                        fromSourceView.backgroundImageReceiver.setRoundRadius(prevRoundRadius);
+                        fromSourceView.backgroundImageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
                     } else if (fromSourceView.backgroundDrawable != null) {
                         fromSourceView.backgroundDrawable.setBounds((int) rectF.left, (int) rectF.top, (int) rectF.right, (int) rectF.bottom);
                         fromSourceView.backgroundDrawable.setAlpha((int) (0xFF * alpha * alpha * alpha));

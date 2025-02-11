@@ -53,6 +53,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class ProfileStoriesView extends View implements NotificationCenter.NotificationCenterDelegate {
 
     private static final int CIRCLES_MAX = 3;
@@ -101,7 +103,7 @@ public class ProfileStoriesView extends View implements NotificationCenter.Notif
     private class StoryCircle {
         public StoryCircle(TL_stories.StoryItem storyItem) {
             this.storyId = storyItem.id;
-            this.imageReceiver.setRoundRadius(dp(200));
+            this.imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
             this.imageReceiver.setParentView(ProfileStoriesView.this);
             if (attached) {
                 this.imageReceiver.onAttachedToWindow();

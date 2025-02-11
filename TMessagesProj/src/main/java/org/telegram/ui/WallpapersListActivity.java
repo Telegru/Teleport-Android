@@ -85,6 +85,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import ru.tusco.messenger.DefaultWallpapersHelper;
+
 public class WallpapersListActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private int rowCount;
@@ -1199,6 +1201,10 @@ public class WallpapersListActivity extends BaseFragment implements Notification
             return;
         }
         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
+//        FileWallpaper dahl = new FileWallpaper("dahl", DefaultWallpapersHelper.INSTANCE.getRUSSIA_WALLPAPER_PATH());
+//        FileWallpaper kazan = new FileWallpaper("kazan", DefaultWallpapersHelper.INSTANCE.getKAZAN_WALLPAPER_PATH());
+//        FileWallpaper piter = new FileWallpaper("piter", DefaultWallpapersHelper.INSTANCE.getPITER_WALLPAPER_PATH());
+//        FileWallpaper moscow = new FileWallpaper("moscow", DefaultWallpapersHelper.INSTANCE.getMOSCOW_WALLPAPER_PATH());
         if (addedColorWallpaper != null) {
             wallPapers.remove(addedColorWallpaper);
             addedColorWallpaper = null;
@@ -1345,6 +1351,7 @@ public class WallpapersListActivity extends BaseFragment implements Notification
         } else {
             themeWallpaper = null;
         }
+
         Theme.ThemeInfo themeInfo = Theme.getActiveTheme();
         if (TextUtils.isEmpty(selectedBackgroundSlug) || !Theme.DEFAULT_BACKGROUND_SLUG.equals(selectedBackgroundSlug) && object == null) {
             if (!Theme.COLOR_BACKGROUND_SLUG.equals(selectedBackgroundSlug) && selectedColor != 0) {
@@ -1381,6 +1388,11 @@ public class WallpapersListActivity extends BaseFragment implements Notification
         } else {
             wallPapers.add(1, catsWallpaper);
         }
+
+//        wallPapers.add(1, dahl);
+//        wallPapers.add(2, kazan);
+//        wallPapers.add(3, piter);
+//        wallPapers.add(4, moscow);
         updateRows();
     }
 

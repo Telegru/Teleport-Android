@@ -80,6 +80,8 @@ import org.telegram.ui.LaunchActivity;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class StoryViewer implements NotificationCenter.NotificationCenterDelegate, BaseFragment.AttachedSheet {
 
     public static boolean animationInProgress;
@@ -754,7 +756,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                                     Integer cellAvatarImageRadius = transitionViewHolder != null ? transitionViewHolder.getAvatarImageRoundRadius() : null;
                                     int newRoundRadius = (int) (AndroidUtilities.lerp(rect3.width() / 2f, cellAvatarImageRadius != null ? cellAvatarImageRadius : rect3.width() / 2f, 1f - progressToOpen));
 
-                                    headerView.backupImageView.getImageReceiver().setRoundRadius(newRoundRadius);
+                                    headerView.backupImageView.getImageReceiver().setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
                                     headerView.backupImageView.getImageReceiver().setVisible(true, false);
                                     final float alpha = crossfade ? progressToOpen : 1f;
                                     float thisAlpha = alpha;
@@ -779,14 +781,14 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                                     int oldRadius = transitionViewHolder.crossfadeToAvatarImage.getRoundRadius()[0];
                                     boolean isVisible = transitionViewHolder.crossfadeToAvatarImage.getVisible();
                                     transitionViewHolder.crossfadeToAvatarImage.setImageCoords(rect3);
-                                    transitionViewHolder.crossfadeToAvatarImage.setRoundRadius((int) (rect3.width() / 2f));
+                                    transitionViewHolder.crossfadeToAvatarImage.setRoundRadius((int) (DahlSettings.INSTANCE.getAvatarCornerRadius()));
                                     transitionViewHolder.crossfadeToAvatarImage.setVisible(true, false);
                                     canvas.saveLayerAlpha(rect3, (int) (255 * (1f - progressToOpen)), Canvas.ALL_SAVE_FLAG);
                                     transitionViewHolder.crossfadeToAvatarImage.draw(canvas);
                                     canvas.restore();
                                     transitionViewHolder.crossfadeToAvatarImage.setVisible(isVisible, false);
                                     transitionViewHolder.crossfadeToAvatarImage.setImageCoords(avatarRectTmp);
-                                    transitionViewHolder.crossfadeToAvatarImage.setRoundRadius(oldRadius);
+                                    transitionViewHolder.crossfadeToAvatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
                                    // transitionViewHolder.crossfadeToAvatarImage.setVisible(false, false);
                                 }
 

@@ -20,6 +20,8 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AvatarDrawable;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class AvatarSpan extends ReplacementSpan {
 
     private final Paint shadowPaint;
@@ -48,7 +50,7 @@ public class AvatarSpan extends ReplacementSpan {
     }
 
     public void setSize(float sz) {
-        imageReceiver.setRoundRadius(dp(sz));
+        imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
         this.sz = sz;
     }
 

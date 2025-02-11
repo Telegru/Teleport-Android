@@ -10,6 +10,7 @@ package org.telegram.ui.ActionBar;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.dpf2;
+import static org.telegram.messenger.AndroidUtilities.toIntArray;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.annotation.SuppressLint;
@@ -149,6 +150,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.IntStream;
 
 public class Theme {
 
@@ -3010,6 +3012,7 @@ public class Theme {
     public static final int ACTION_BAR_WHITE_SELECTOR_COLOR = 0x40ffffff;
     public static final int ACTION_BAR_AUDIO_SELECTOR_COLOR = 0x2f000000;
     public static final int ARTICLE_VIEWER_MEDIA_PROGRESS_COLOR = 0xffffffff;
+    public static final int DAHL_ACTION_COLOR = 0xff7b86c3;
 
     public static final int AUTO_NIGHT_TYPE_NONE = 0;
     public static final int AUTO_NIGHT_TYPE_SCHEDULED = 1;
@@ -8179,6 +8182,13 @@ public class Theme {
             dividerExtraPaint.setStrokeWidth(1);
 
             avatar_backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+//            avatar_backgroundPaint.setShader(
+//                new LinearGradient(0, 0, 0,
+//                    AndroidUtilities.dp(48f),
+//                    IntStream.of().toArray(),
+//                    new float[] { 0f, 0.51f, 1f},
+//                    Shader.TileMode.MIRROR)
+//            );
 
             checkboxSquare_checkPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             checkboxSquare_checkPaint.setStyle(Paint.Style.STROKE);
@@ -8194,7 +8204,7 @@ public class Theme {
 
             Resources resources = context.getResources();
 
-            avatarDrawables[0] = resources.getDrawable(R.drawable.chats_saved);
+            avatarDrawables[0] = resources.getDrawable(R.drawable.bookmark_24);
             avatarDrawables[1] = resources.getDrawable(R.drawable.ghost);
             avatarDrawables[2] = resources.getDrawable(R.drawable.msg_folders_private);
             avatarDrawables[3] = resources.getDrawable(R.drawable.msg_folders_requests);
@@ -9965,7 +9975,8 @@ public class Theme {
                             File f = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(wallpaperDocument, true);
                             patternBitmap = SvgHelper.getBitmap(f, dp(360), dp(640), false);
                         } else {
-                            patternBitmap = SvgHelper.getBitmap(R.raw.default_pattern, dp(360), dp(640), Color.WHITE);
+                            patternBitmap = SvgHelper.getBitmap(R.raw.dahl_wallpaper, dp(360), dp(640), Color.WHITE);
+                            //patternBitmap = SvgHelper.getBitmap(R.raw.default_pattern, dp(360), dp(640), Color.WHITE);
                         }
                         if (patternBitmap != null) {
                             FileOutputStream stream = null;
@@ -10139,7 +10150,8 @@ public class Theme {
             w = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
             h = Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
         }
-        motionBackgroundDrawable.setPatternBitmap(34, SvgHelper.getBitmap(R.raw.default_pattern, w, h, Color.BLACK));
+        //motionBackgroundDrawable.setPatternBitmap(34, SvgHelper.getBitmap(R.raw.default_pattern, w, h, Color.BLACK));
+        motionBackgroundDrawable.setPatternBitmap(50, SvgHelper.getBitmap(R.raw.dahl_wallpaper, w, h, Color.WHITE));
         motionBackgroundDrawable.setPatternColorFilter(motionBackgroundDrawable.getPatternColor());
         return motionBackgroundDrawable;
     }

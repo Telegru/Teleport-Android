@@ -44,6 +44,8 @@ import org.telegram.ui.Components.StaticLayoutEx;
 
 import java.util.ArrayList;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class ChatPullingDownDrawable implements NotificationCenter.NotificationCenterDelegate {
 
     public int dialogFolderId;
@@ -284,7 +286,7 @@ public class ChatPullingDownDrawable implements NotificationCenter.NotificationC
             float cx = lastWidth / 2f;
             float cy = AndroidUtilities.dp(12) + circleRadius;
             imageReceiver.setImageCoords(cx - AndroidUtilities.dp(40) / 2f, cy - AndroidUtilities.dp(40) / 2f, AndroidUtilities.dp(40), AndroidUtilities.dp(40));
-            imageReceiver.setRoundRadius((int) (AndroidUtilities.dp(40) / 2f));
+            imageReceiver.setRoundRadius((int) (DahlSettings.INSTANCE.getAvatarCornerRadius()));
 
             counterDrawable.setSize(AndroidUtilities.dp(28), AndroidUtilities.dp(100));
             if (isTopic) {

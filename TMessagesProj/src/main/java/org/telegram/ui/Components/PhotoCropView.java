@@ -35,6 +35,8 @@ import org.telegram.ui.Components.Crop.CropRotationWheel;
 import org.telegram.ui.Components.Crop.CropTransform;
 import org.telegram.ui.Components.Crop.CropView;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class PhotoCropView extends FrameLayout {
 
     public void setSubtitle(String subtitle) {
@@ -215,7 +217,7 @@ public class PhotoCropView extends FrameLayout {
             float x = rect.left + (targetX - rect.left) * thumbAnimationProgress;
             float y = rect.top + (targetY - rect.top) * thumbAnimationProgress;
             float size = rect.width() + (targetSize - rect.width()) * thumbAnimationProgress;
-            thumbImageView.setRoundRadius((int) (size / 2));
+            thumbImageView.setRoundRadius((int) DahlSettings.INSTANCE.getAvatarCornerRadius());
             thumbImageView.setImageCoords(x, y, size, size);
             thumbImageView.setAlpha(thumbImageVisibleProgress);
             thumbImageView.draw(canvas);

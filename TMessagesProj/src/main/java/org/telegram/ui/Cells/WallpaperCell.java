@@ -182,7 +182,7 @@ public class WallpaperCell extends FrameLayout {
                     }
                     if (Theme.DEFAULT_BACKGROUND_SLUG.equals(wallPaper.slug)) {
                         if (wallPaper.defaultCache == null) {
-                            wallPaper.defaultCache = SvgHelper.getBitmap(R.raw.default_pattern, 100, 180, Color.BLACK);
+                            wallPaper.defaultCache = SvgHelper.getBitmap(R.raw.dahl_wallpaper, 100, 180, Color.BLACK);
                         }
                         imageView.setImageBitmap(wallPaper.defaultCache);
                         imageView.getImageReceiver().setAlpha(Math.abs(wallPaper.intensity));

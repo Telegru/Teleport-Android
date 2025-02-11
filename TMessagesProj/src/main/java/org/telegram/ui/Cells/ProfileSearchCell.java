@@ -58,6 +58,8 @@ import org.telegram.ui.Stories.StoriesUtilities;
 
 import java.util.Locale;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class ProfileSearchCell extends BaseCell implements NotificationCenter.NotificationCenterDelegate, Theme.Colorable {
 
     private CharSequence currentName;
@@ -130,7 +132,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
         this.resourcesProvider = resourcesProvider;
 
         avatarImage = new ImageReceiver(this);
-        avatarImage.setRoundRadius(AndroidUtilities.dp(23));
+        avatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
         avatarDrawable = new AvatarDrawable();
 
         checkBox = new CheckBox2(context, 21, resourcesProvider);
@@ -678,7 +680,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             avatarImage.setImage(null, null, avatarDrawable, null, null, 0);
         }
 
-        avatarImage.setRoundRadius(chat != null && chat.forum ? AndroidUtilities.dp(16) : AndroidUtilities.dp(23));
+        avatarImage.setRoundRadius(chat != null && chat.forum ? AndroidUtilities.dp(16) : DahlSettings.INSTANCE.getAvatarCornerRadius());
         if (mask != 0) {
             boolean continueUpdate = false;
             if ((mask & MessagesController.UPDATE_MASK_AVATAR) != 0 && user != null || (mask & MessagesController.UPDATE_MASK_CHAT_AVATAR) != 0 && chat != null) {
