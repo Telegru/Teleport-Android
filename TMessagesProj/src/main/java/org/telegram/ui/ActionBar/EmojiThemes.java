@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
+import ru.tusco.messenger.DahlWallpaper;
+
 public class EmojiThemes {
 
     public static final String REMOVED_EMOJI = "❌";
@@ -580,10 +582,11 @@ public class EmojiThemes {
             if (items.get(i).themeInfo != null && items.get(i).themeInfo.getKey().equals("Blue")) {
                 int accentId = items.get(i).accentId >= 0 ? items.get(i).accentId : items.get(i).themeInfo.currentAccentId;
                 if (accentId == 99) {
-                    items.get(i).patternBgColor = 0xffdbddbb;
-                    items.get(i).patternBgGradientColor1 = 0xff6ba587;
-                    items.get(i).patternBgGradientColor2 = 0xffd5d88d;
-                    items.get(i).patternBgGradientColor3 = 0xff88b884;
+                    int[] colors = DahlWallpaper.Russia.INSTANCE.getColors();
+                    items.get(i).patternBgColor = colors[0];
+                    items.get(i).patternBgGradientColor1 = colors[1];
+                    items.get(i).patternBgGradientColor2 = colors[2];
+                    items.get(i).patternBgGradientColor3 = colors[3];
                 }
             }
         }

@@ -152,6 +152,8 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
+import ru.tusco.messenger.DahlWallpaper;
+
 public class Theme {
 
     public static final String DEFAULT_BACKGROUND_SLUG = "d";
@@ -9975,7 +9977,7 @@ public class Theme {
                             File f = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(wallpaperDocument, true);
                             patternBitmap = SvgHelper.getBitmap(f, dp(360), dp(640), false);
                         } else {
-                            patternBitmap = SvgHelper.getBitmap(R.raw.dahl_wallpaper, dp(360), dp(640), Color.WHITE);
+                            patternBitmap = SvgHelper.getBitmap(R.raw.dahl_wallpaper_russia, dp(360), dp(640), Color.WHITE);
                             //patternBitmap = SvgHelper.getBitmap(R.raw.default_pattern, dp(360), dp(640), Color.WHITE);
                         }
                         if (patternBitmap != null) {
@@ -10145,13 +10147,15 @@ public class Theme {
     }
 
     public static Drawable createDefaultWallpaper(int w, int h) {
-        MotionBackgroundDrawable motionBackgroundDrawable = new MotionBackgroundDrawable(0xffdbddbb, 0xff6ba587, 0xffd5d88d, 0xff88b884, w != 0);
+//        MotionBackgroundDrawable motionBackgroundDrawable = new MotionBackgroundDrawable(0xffdbddbb, 0xff6ba587, 0xffd5d88d, 0xff88b884, w != 0);
+        int[] colors = DahlWallpaper.Russia.INSTANCE.getColors();
+        MotionBackgroundDrawable motionBackgroundDrawable = new MotionBackgroundDrawable(colors[0], colors[1], colors[2], colors[3], w != 0);
         if (w <= 0 || h <= 0) {
             w = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
             h = Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
         }
         //motionBackgroundDrawable.setPatternBitmap(34, SvgHelper.getBitmap(R.raw.default_pattern, w, h, Color.BLACK));
-        motionBackgroundDrawable.setPatternBitmap(50, SvgHelper.getBitmap(R.raw.dahl_wallpaper, w, h, Color.WHITE));
+        motionBackgroundDrawable.setPatternBitmap(50, SvgHelper.getBitmap(R.raw.dahl_wallpaper_russia, w, h, Color.BLACK));
         motionBackgroundDrawable.setPatternColorFilter(motionBackgroundDrawable.getPatternColor());
         return motionBackgroundDrawable;
     }
