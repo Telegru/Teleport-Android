@@ -107,16 +107,17 @@ sealed class DahlWallpaper(val slug: String, val path: String, @RawRes val svg: 
         MOSCOW_WALLPAPER_PATH,
         R.raw.dahl_wallpaper_moscow,
         intArrayOf(
-            0xFFDAEACB.toInt(),
-            0xFFECCBFF.toInt(),
-            0xFFECCBFF.toInt(),
-            0xFFB9E2FF.toInt()
+            0xFFFFDC96.toInt(),
+            0xFFE594BC.toInt(),
+            0xFFFFCC92.toInt(),
+            0xFFDE9292.toInt()
+
         ),
         intArrayOf(
-            0xFFFEC496.toInt(),
-            0xFF962FBF.toInt(),
-            0xFF4F5BD5.toInt(),
-            0xFFFEC496.toInt()
+            0xFFEAA36E.toInt(),
+            0xFFF0E486.toInt(),
+            0xFFF29EBF.toInt(),
+            0xFFE8C06E.toInt()
         )
 
     )
