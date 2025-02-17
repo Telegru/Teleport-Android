@@ -9,10 +9,13 @@ import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.R
 import org.telegram.messenger.SvgHelper
+import org.telegram.tgnet.TLRPC
+import org.telegram.tgnet.TLRPC.TL_document
 import ru.tusco.messenger.DefaultWallpapersHelper.KAZAN_WALLPAPER_PATH
 import ru.tusco.messenger.DefaultWallpapersHelper.MOSCOW_WALLPAPER_PATH
 import ru.tusco.messenger.DefaultWallpapersHelper.PITER_WALLPAPER_PATH
 import ru.tusco.messenger.DefaultWallpapersHelper.RUSSIA_WALLPAPER_PATH
+import java.io.File
 import java.io.FileOutputStream
 
 object DefaultWallpapersHelper {
@@ -48,7 +51,7 @@ object DefaultWallpapersHelper {
 sealed class DahlWallpaper(val slug: String, val path: String, @RawRes val svg: Int, val colors: IntArray, val darkColors: IntArray) {
 
     data object Russia : DahlWallpaper(
-        "dahl_russia",
+        "slugRussia",
         RUSSIA_WALLPAPER_PATH,
         R.raw.dahl_wallpaper_russia,
         intArrayOf(
@@ -66,7 +69,7 @@ sealed class DahlWallpaper(val slug: String, val path: String, @RawRes val svg: 
     )
 
     data object Kazan : DahlWallpaper(
-        "dahl_kazan",
+        "slugKazan",
         KAZAN_WALLPAPER_PATH,
         R.raw.dahl_wallpaper_kazan,
         intArrayOf(
@@ -84,7 +87,7 @@ sealed class DahlWallpaper(val slug: String, val path: String, @RawRes val svg: 
     )
 
     data object Piter : DahlWallpaper(
-        "dahl_piter",
+        "slugSaintPetersburg",
         PITER_WALLPAPER_PATH,
         R.raw.dahl_wallpaper_piter,
         intArrayOf(
@@ -103,26 +106,26 @@ sealed class DahlWallpaper(val slug: String, val path: String, @RawRes val svg: 
     )
 
     data object Moscow : DahlWallpaper(
-        "dahl_moscow",
+        "slugMoscow",
         MOSCOW_WALLPAPER_PATH,
         R.raw.dahl_wallpaper_moscow,
         intArrayOf(
-            0xFFFFDC96.toInt(),
-            0xFFE594BC.toInt(),
-            0xFFFFCC92.toInt(),
-            0xFFDE9292.toInt()
-
-        ),
-        intArrayOf(
-            0xFFEAA36E.toInt(),
-            0xFFF0E486.toInt(),
+            0xFF7FC289.toInt(),
+            0xFFECCBFF.toInt(),
             0xFFF29EBF.toInt(),
-            0xFFE8C06E.toInt()
-        )
+            0xFFF0C07A.toInt()
+        ),
 
+        intArrayOf(
+            0xFF7FA381.toInt(),
+            0xFF888DEC.toInt(),
+            0xFFE39FEA.toInt(),
+            0xFFFEC496.toInt()
+        )
     )
 
     fun getColors(isDarkTheme: Boolean): IntArray = if (isDarkTheme) darkColors else colors
+
 
     companion object {
 
@@ -131,5 +134,52 @@ sealed class DahlWallpaper(val slug: String, val path: String, @RawRes val svg: 
 
         val slugs by lazy { items.map { it.slug }.toSet() }
 
+        @JvmStatic
+        fun getPatterns(isDarkTheme: Boolean): List<TLRPC.TL_wallPaper> = items.map { dw ->
+            val wallpaper = TLRPC.TL_wallPaper()
+            wallpaper.id = fileId(dw)
+            wallpaper.access_hash = accessHash(dw)
+            wallpaper.pattern = true
+            wallpaper.isDefault = true
+            wallpaper.dark = isDarkTheme
+            wallpaper.slug = dw.slug
+            val document = TL_document()
+            document.flags = 1
+            document.id = fileId(dw)
+            document.mime_type = "image/png"
+            document.size = File(dw.path).length()
+            val imageSize = TLRPC.TL_documentAttributeImageSize().apply {
+                w = AndroidUtilities.dp(360f)
+                h = AndroidUtilities.dp(640f)
+            }
+
+            val fileName = TLRPC.TL_documentAttributeFilename().apply {
+                file_name = File(dw.path).name
+            }
+            document.attributes = arrayListOf(imageSize, fileName)
+            val thumb = TLRPC.TL_photoSize()
+            thumb.w = 155
+            thumb.h = 320
+            thumb.size = document.size.toInt()
+            document.thumbs = arrayListOf(thumb)
+            document.video_thumbs = arrayListOf()
+            document.localPath = dw.path
+            wallpaper.document = document
+            return@map wallpaper
+        }
+
+        private fun fileId(dw: DahlWallpaper): Long = when (dw) {
+            Kazan -> 231222124451
+            Russia -> 241222124562
+            Piter -> 251222124673
+            Moscow -> 223442223441
+        }
+
+        private fun accessHash(dw: DahlWallpaper): Long = when (dw) {
+            Kazan -> 123444
+            Russia -> 223555
+            Piter -> 323666
+            Moscow -> 533112
+        }
     }
 }

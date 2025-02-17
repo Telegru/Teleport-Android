@@ -1973,7 +1973,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                                 if (selectedPattern == null) {
                                     backgroundImage.setImageDrawable(null);
                                 } else {
-                                    backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                                    if (selectedPattern.document.localPath != null) {
+                                        backgroundImage.setImage(selectedPattern.document.localPath, imageFilter, null);
+                                    } else {
+                                        backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                                    }
                                 }
                                 backgroundCheckBoxView[1].setChecked(selectedPattern != null, false);
 
@@ -3101,7 +3105,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             @Override
             public void onAnimationUpdate(@NonNull ValueAnimator animation) {
                 float value = (Float) animation.getAnimatedValue();
-              //  backgroundImages[1].getImageReceiver().setAlpha(Math.abs(currentIntensity) * (1f - value));
+                //  backgroundImages[1].getImageReceiver().setAlpha(Math.abs(currentIntensity) * (1f - value));
                 backgroundImage.setAlpha(value);
             }
         });
@@ -3119,7 +3123,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
         valueAnimator.setDuration(300);
         valueAnimator.start();
         backgroundImage.getImageReceiver().setCrossfadeDuration(300);
-        backgroundImage.getImageReceiver().setImage(ImageLocation.getForDocument(wallPaper.document), imageFilter, null, null, null, wallPaper.document.size, "jpg", wallPaper, 1);
+        if (wallPaper.document.localPath != null) {
+            backgroundImage.getImageReceiver().setImage(wallPaper.document.localPath, imageFilter, null, null, wallPaper.document.size);
+        } else {
+            backgroundImage.getImageReceiver().setImage(ImageLocation.getForDocument(wallPaper.document), imageFilter, null, null, null, wallPaper.document.size, "jpg", wallPaper, 1);
+        }
         backgroundImage.onNewImageSet();
         selectedPattern = wallPaper;
         isMotion = backgroundCheckBoxView[2].isChecked();
@@ -3943,7 +3951,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 if (TextUtils.isEmpty(fileName)) {
                     return;
                 }
-                path = FileLoader.getInstance(currentAccount).getPathToAttach(wallPaper.document, true);
+                if (wallPaper.document.localPath != null) {
+                    path = new File(wallPaper.document.localPath);
+                } else {
+                    path = FileLoader.getInstance(currentAccount).getPathToAttach(wallPaper.document, true);
+                }
                 size = wallPaper.document.size;
             } else {
                 MediaController.SearchImage wallPaper = (MediaController.SearchImage) object;
@@ -4005,6 +4017,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
 
     public void setPatterns(ArrayList<Object> arrayList) {
         patterns = arrayList;
+        patterns.removeIf(o -> {
+            TLRPC.TL_wallPaper w = (TLRPC.TL_wallPaper) o;
+            return DahlWallpaper.Companion.getSlugs().contains(w.slug);
+        });
+        patterns.addAll(0, DahlWallpaper.getPatterns(Theme.isCurrentThemeDark()));
         if (screenType == SCREEN_TYPE_ACCENT_COLOR || currentWallpaper instanceof WallpapersListActivity.ColorWallpaper) {
             WallpapersListActivity.ColorWallpaper wallPaper = (WallpapersListActivity.ColorWallpaper) currentWallpaper;
             if (wallPaper.patternId != 0) {
@@ -4557,7 +4574,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 setBackgroundColor(wallPaper.gradientColor2, 2, true, false);
                 setBackgroundColor(wallPaper.gradientColor3, 3, true, false);
                 if (selectedPattern != null) {
-                    backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                    if (selectedPattern.document.localPath != null) {
+                        backgroundImage.setImage(selectedPattern.document.localPath, imageFilter, null);
+                    } else {
+                        backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                    }
                 } else if (wallPaper.isDahlWallpaper) {
                     backgroundImage.setImage(wallPaper.path.getAbsolutePath(), imageFilter, null);
                 } else if (Theme.DEFAULT_BACKGROUND_SLUG.equals(wallPaper.slug)) {
@@ -4674,7 +4695,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 }
                 backgroundImage.setBackground(backgroundDrawable);
                 if (selectedPattern != null) {
-                    backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                    if (selectedPattern.document.localPath != null) {
+                        backgroundImage.setImage(selectedPattern.document.localPath, imageFilter, null);
+                    } else {
+                        backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                    }
                 }
             } else {
                 Drawable backgroundDrawable = Theme.getCachedWallpaperNonBlocking();
