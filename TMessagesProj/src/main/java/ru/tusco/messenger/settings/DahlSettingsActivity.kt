@@ -4,8 +4,6 @@ import android.view.View
 import android.widget.Toast
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
-import org.telegram.ui.Components.RecyclerListView
-import org.telegram.ui.Components.RecyclerListView.SelectionAdapter
 import org.telegram.ui.Components.UItem
 import org.telegram.ui.Components.UniversalAdapter
 import org.telegram.ui.Components.UniversalFragment
@@ -15,6 +13,7 @@ import ru.tusco.messenger.settings.DahlSettings.NO_REPLACEMENT
 class DahlSettingsActivity: UniversalFragment() {
     companion object {
         const val SWITCH_ICONS = 1
+        const val CHATS = 2
     }
 
     override fun getTitle(): CharSequence {
@@ -25,11 +24,11 @@ class DahlSettingsActivity: UniversalFragment() {
         items?.add(UItem.asSwitch(SWITCH_ICONS, getString(R.string.IconsVkUI)).setChecked(
             DahlSettings.iconReplacement == ICON_REPLACEMENT_VKUI)
         )
-//        items?.add(UItem.asSwitch(2, getString(R.string.SettingsDahl)))
-//        items?.add(UItem.asSwitch(3, getString(R.string.SettingsDahl)))
+        items?.add(UItem.asButton(CHATS, R.drawable.msg2_discussion, getString(R.string.ChatsSettings)))
     }
 
     override fun onClick(item: UItem?, view: View?, position: Int, x: Float, y: Float) {
+        var showRestartAppMessage = false
         when (item?.id) {
             SWITCH_ICONS -> {
                 if (item.checked) {
@@ -37,10 +36,16 @@ class DahlSettingsActivity: UniversalFragment() {
                 } else {
                     DahlSettings.iconReplacement = ICON_REPLACEMENT_VKUI
                 }
+                showRestartAppMessage = true
+            }
+            CHATS -> {
+                presentFragment(ChatsSettingsActivity())
             }
             else -> {}
         }
-        Toast.makeText(context, getString(R.string.RestartToast), Toast.LENGTH_SHORT).show()
+        if(showRestartAppMessage) {
+            Toast.makeText(context, getString(R.string.RestartToast), Toast.LENGTH_SHORT).show()
+        }
         listView.adapter.update(true)
     }
 

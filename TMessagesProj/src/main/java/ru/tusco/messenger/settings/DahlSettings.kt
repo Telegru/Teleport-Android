@@ -1,13 +1,9 @@
 package ru.tusco.messenger.settings
 
 import android.app.Activity
-import android.app.Application
 import android.content.SharedPreferences
-import dalvik.system.ApplicationRuntime
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
-import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.ActionBar.INavigationLayout
 import org.telegram.ui.LaunchActivity
 import ru.tusco.messenger.icons.BaseIconReplacement
 import ru.tusco.messenger.icons.IconReplacementNone
@@ -51,4 +47,37 @@ object DahlSettings {
             else -> IconReplacementNone()
         }
     }
+
+    @JvmStatic
+    var isFoldersTabsAtBottom: Boolean
+        get() = sharedPreferences.getBoolean("folders_tabs_at_bottom", true)
+        set(value) {
+            putBoolean("folders_tabs_at_bottom", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isHiddenFoldersTabs: Boolean
+        get() = sharedPreferences.getBoolean("hidden_folders_tabs", false)
+        set(value) {
+            putBoolean("hidden_folders_tabs", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isHiddenAllChatsFolder: Boolean
+        get() = sharedPreferences.getBoolean("hidden_all_chats_folder", false)
+        set(value) {
+            putBoolean("hidden_all_chats_folder", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isFoldersTabInfiniteScroll: Boolean
+        get() = sharedPreferences.getBoolean("folders_tabs_infinite_scroll", false)
+        set(value) {
+            putBoolean("folders_tabs_infinite_scroll", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
 }

@@ -23,4 +23,11 @@
     <string name="SettingsDahl">Настройки Даль</string>
     <string name="IconsVkUI">Иконки VK UI</string>
     <string name="RestartToast">Чтобы изменения вступили в силу перезапустите приложение</string>
+
+    <string name = "ChatsSettings">Чаты</string>
+    <string name = "ChatsFolders">Папки с чатами</string>
+    <string name = "FoldersAtBottom">Папки снизу</string>
+    <string name = "HideAllChatsFolder">Скрыть папку \"Все чаты\"</string>
+    <string name = "FoldersInfiniteScrolling">Листать папки по кругу</string>
+    <string name = "HideFoldersTabs">Скрыть папки</string>
 </resources>
