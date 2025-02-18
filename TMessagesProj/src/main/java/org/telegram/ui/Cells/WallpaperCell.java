@@ -175,18 +175,22 @@ public class WallpaperCell extends FrameLayout {
                             }
                         } else {
                             imageView.getImageReceiver().setGradientBitmap(motionBackgroundDrawable.getBitmap());
+                            if(wallPaper.isDahlWallpaper){
+                                imageView.getImageReceiver().setAlpha(Math.abs(wallPaper.intensity));
+                            }
                         }
                         patternColor = MotionBackgroundDrawable.getPatternColor(wallPaper.color, wallPaper.gradientColor1, wallPaper.gradientColor2, wallPaper.gradientColor3);
                     } else {
                         patternColor = AndroidUtilities.getPatternColor(wallPaper.color);
                     }
-                    if (Theme.DEFAULT_BACKGROUND_SLUG.equals(wallPaper.slug)) {
-                        if (wallPaper.defaultCache == null) {
-                            wallPaper.defaultCache = SvgHelper.getBitmap(R.raw.dahl_wallpaper, 100, 180, Color.BLACK);
-                        }
-                        imageView.setImageBitmap(wallPaper.defaultCache);
-                        imageView.getImageReceiver().setAlpha(Math.abs(wallPaper.intensity));
-                    } else if (wallPaper.path != null) {
+//                    if (Theme.DEFAULT_BACKGROUND_SLUG.equals(wallPaper.slug)) {
+//                        if (wallPaper.defaultCache == null) {
+//                            wallPaper.defaultCache = SvgHelper.getBitmap(R.raw.dahl_wallpaper_russia, 100, 180, Color.BLACK);
+//                        }
+//                        imageView.setImageBitmap(wallPaper.defaultCache);
+//                        imageView.getImageReceiver().setAlpha(Math.abs(wallPaper.intensity));
+//                    } else
+                    if (wallPaper.path != null) {
                         imageView.setImage(wallPaper.path.getAbsolutePath(), imageFilter, null);
                     } else {
                         TLRPC.PhotoSize thumb = FileLoader.getClosestPhotoSizeWithSize(wallPaper.pattern.document.thumbs, 100);

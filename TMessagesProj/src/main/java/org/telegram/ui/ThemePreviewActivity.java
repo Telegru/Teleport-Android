@@ -157,8 +157,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+
+import ru.tusco.messenger.DahlWallpaper;
 
 public class ThemePreviewActivity extends BaseFragment implements DownloadController.FileDownloadProgressListener, NotificationCenter.NotificationCenterDelegate {
 
@@ -535,7 +539,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             WallpapersListActivity.ColorWallpaper object = (WallpapersListActivity.ColorWallpaper) currentWallpaper;
             isMotion = object.motion;
             selectedPattern = object.pattern;
-            if (selectedPattern != null) {
+            if (selectedPattern != null || object.isDahlWallpaper) {
                 currentIntensity = object.intensity;
                 if (currentIntensity < 0 && !Theme.getActiveTheme().isDark()) {
                     currentIntensity *= -1;
@@ -1581,8 +1585,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 int textsCount;
                 if (screenType == SCREEN_TYPE_ACCENT_COLOR || currentWallpaper instanceof WallpapersListActivity.ColorWallpaper) {
                     textsCount = 3;
-                    if (currentWallpaper instanceof WallpapersListActivity.ColorWallpaper && Theme.DEFAULT_BACKGROUND_SLUG.equals(((WallpapersListActivity.ColorWallpaper) currentWallpaper).slug)) {
-                        textsCount = 0;
+                    if (currentWallpaper instanceof WallpapersListActivity.ColorWallpaper) {
+                        WallpapersListActivity.ColorWallpaper colorWallpaper = (WallpapersListActivity.ColorWallpaper) currentWallpaper;
+                        if (colorWallpaper.isDahlWallpaper || Theme.DEFAULT_BACKGROUND_SLUG.equals(colorWallpaper.slug)) {
+                            textsCount = 0;
+                        }
                     }
                 } else {
                     textsCount = 2;
@@ -1598,19 +1605,26 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 int[] textSizes = new int[textsCount];
                 backgroundCheckBoxView = new WallpaperCheckBoxView[textsCount];
                 int maxTextSize = 0;
-                if (textsCount != 0) {
+                boolean isDahlWallpaper = false;
+                if (currentWallpaper instanceof WallpapersListActivity.ColorWallpaper) {
+                    isDahlWallpaper = ((WallpapersListActivity.ColorWallpaper) currentWallpaper).isDahlWallpaper;
+                }
+                if (textsCount != 0 || isDahlWallpaper) {
                     backgroundButtonsContainer = new FrameLayout(context);
-                    if (screenType == SCREEN_TYPE_ACCENT_COLOR || currentWallpaper instanceof WallpapersListActivity.ColorWallpaper) {
-                        texts[0] = LocaleController.getString(R.string.BackgroundColors);
-                        texts[1] = LocaleController.getString(R.string.BackgroundPattern);
-                        texts[2] = LocaleController.getString(R.string.BackgroundMotion);
-                    } else {
-                        texts[0] = LocaleController.getString(R.string.BackgroundBlurred);
-                        texts[1] = LocaleController.getString(R.string.BackgroundMotion);
-                    }
-                    for (int a = 0; a < texts.length; a++) {
-                        textSizes[a] = (int) Math.ceil(textPaint.measureText(texts[a]));
-                        maxTextSize = Math.max(maxTextSize, textSizes[a]);
+
+                    if (textsCount > 0) {
+                        if (screenType == SCREEN_TYPE_ACCENT_COLOR || currentWallpaper instanceof WallpapersListActivity.ColorWallpaper) {
+                            texts[0] = LocaleController.getString(R.string.BackgroundColors);
+                            texts[1] = LocaleController.getString(R.string.BackgroundPattern);
+                            texts[2] = LocaleController.getString(R.string.BackgroundMotion);
+                        } else {
+                            texts[0] = LocaleController.getString(R.string.BackgroundBlurred);
+                            texts[1] = LocaleController.getString(R.string.BackgroundMotion);
+                        }
+                        for (int a = 0; a < texts.length; a++) {
+                            textSizes[a] = (int) Math.ceil(textPaint.measureText(texts[a]));
+                            maxTextSize = Math.max(maxTextSize, textSizes[a]);
+                        }
                     }
 
                     backgroundPlayAnimationView = new FrameLayout(context) {
@@ -1959,7 +1973,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                                 if (selectedPattern == null) {
                                     backgroundImage.setImageDrawable(null);
                                 } else {
-                                    backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                                    if (selectedPattern.document.localPath != null) {
+                                        backgroundImage.setImage(selectedPattern.document.localPath, imageFilter, null);
+                                    } else {
+                                        backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                                    }
                                 }
                                 backgroundCheckBoxView[1].setChecked(selectedPattern != null, false);
 
@@ -2543,9 +2561,9 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 }
             }
         } else if (currentWallpaper instanceof WallpapersListActivity.ColorWallpaper) {
-            if (selectedPattern != null) {
+            WallpapersListActivity.ColorWallpaper wallPaper = (WallpapersListActivity.ColorWallpaper) currentWallpaper;
+            if (selectedPattern != null || wallPaper.isDahlWallpaper) {
                 try {
-                    WallpapersListActivity.ColorWallpaper wallPaper = (WallpapersListActivity.ColorWallpaper) currentWallpaper;
                     Bitmap bitmap = backgroundImage.getImageReceiver().getBitmap();
                     @SuppressLint("DrawAllocation")
                     Bitmap dst = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -2658,7 +2676,15 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             slug = tlwallPaper.slug;
         } else if (currentWallpaper instanceof WallpapersListActivity.ColorWallpaper) {
             WallpapersListActivity.ColorWallpaper wallPaper = (WallpapersListActivity.ColorWallpaper) currentWallpaper;
-            if (Theme.DEFAULT_BACKGROUND_SLUG.equals(wallPaper.slug)) {
+            if(wallPaper.isDahlWallpaper) {
+                slug = wallPaper.slug;
+                color = backgroundColor;
+                gradientColor1 = backgroundGradientColor1;
+                gradientColor2 = backgroundGradientColor2;
+                gradientColor3 = backgroundGradientColor3;
+                rotation = backgroundRotation;
+                path = wallPaper.path;
+            } else if (Theme.DEFAULT_BACKGROUND_SLUG.equals(wallPaper.slug)) {
                 slug = Theme.DEFAULT_BACKGROUND_SLUG;
                 color = 0;
             } else {
@@ -2734,7 +2760,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             }
         }
         wallpaperInfo.forBoth = forBoth;
-        MessagesController.getInstance(currentAccount).saveWallpaperToServer(path, wallpaperInfo, slug != null && dialogId == 0, 0);
+
+        boolean isDahlWallpaper = Arrays.stream(DahlWallpaper.Companion.getItems()).anyMatch(dahlWallpaper -> Objects.equals(slug, dahlWallpaper.getSlug()));
+        if(!isDahlWallpaper) {
+            MessagesController.getInstance(currentAccount).saveWallpaperToServer(path, wallpaperInfo, slug != null && dialogId == 0, 0);
+        }
 
         boolean needFinishFragment = true;
         if (done) {
@@ -3075,7 +3105,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             @Override
             public void onAnimationUpdate(@NonNull ValueAnimator animation) {
                 float value = (Float) animation.getAnimatedValue();
-              //  backgroundImages[1].getImageReceiver().setAlpha(Math.abs(currentIntensity) * (1f - value));
+                //  backgroundImages[1].getImageReceiver().setAlpha(Math.abs(currentIntensity) * (1f - value));
                 backgroundImage.setAlpha(value);
             }
         });
@@ -3093,7 +3123,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
         valueAnimator.setDuration(300);
         valueAnimator.start();
         backgroundImage.getImageReceiver().setCrossfadeDuration(300);
-        backgroundImage.getImageReceiver().setImage(ImageLocation.getForDocument(wallPaper.document), imageFilter, null, null, null, wallPaper.document.size, "jpg", wallPaper, 1);
+        if (wallPaper.document.localPath != null) {
+            backgroundImage.getImageReceiver().setImage(wallPaper.document.localPath, imageFilter, null, null, wallPaper.document.size);
+        } else {
+            backgroundImage.getImageReceiver().setImage(ImageLocation.getForDocument(wallPaper.document), imageFilter, null, null, null, wallPaper.document.size, "jpg", wallPaper, 1);
+        }
         backgroundImage.onNewImageSet();
         selectedPattern = wallPaper;
         isMotion = backgroundCheckBoxView[2].isChecked();
@@ -3917,7 +3951,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 if (TextUtils.isEmpty(fileName)) {
                     return;
                 }
-                path = FileLoader.getInstance(currentAccount).getPathToAttach(wallPaper.document, true);
+                if (wallPaper.document.localPath != null) {
+                    path = new File(wallPaper.document.localPath);
+                } else {
+                    path = FileLoader.getInstance(currentAccount).getPathToAttach(wallPaper.document, true);
+                }
                 size = wallPaper.document.size;
             } else {
                 MediaController.SearchImage wallPaper = (MediaController.SearchImage) object;
@@ -3979,6 +4017,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
 
     public void setPatterns(ArrayList<Object> arrayList) {
         patterns = arrayList;
+        patterns.removeIf(o -> {
+            TLRPC.TL_wallPaper w = (TLRPC.TL_wallPaper) o;
+            return DahlWallpaper.Companion.getSlugs().contains(w.slug);
+        });
+        patterns.addAll(0, DahlWallpaper.getPatterns(Theme.isCurrentThemeDark()));
         if (screenType == SCREEN_TYPE_ACCENT_COLOR || currentWallpaper instanceof WallpapersListActivity.ColorWallpaper) {
             WallpapersListActivity.ColorWallpaper wallPaper = (WallpapersListActivity.ColorWallpaper) currentWallpaper;
             if (wallPaper.patternId != 0) {
@@ -4340,13 +4383,16 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 }
                 if (animated) {
                     backgroundPlayViewAnimator = new AnimatorSet();
-                    backgroundPlayViewAnimator.playTogether(
-                            ObjectAnimator.ofFloat(backgroundPlayAnimationView, View.ALPHA, visible ? 1.0f : 0.0f),
-                            ObjectAnimator.ofFloat(backgroundPlayAnimationView, View.SCALE_X, visible ? 1.0f : 0.0f),
-                            ObjectAnimator.ofFloat(backgroundPlayAnimationView, View.SCALE_Y, visible ? 1.0f : 0.0f),
-                            ObjectAnimator.ofFloat(backgroundCheckBoxView[0], View.TRANSLATION_X, visible ? dp(34) : 0.0f),
-                            ObjectAnimator.ofFloat(backgroundCheckBoxView[1], View.TRANSLATION_X, visible ? -dp(34) : 0.0f),
-                            ObjectAnimator.ofFloat(backgroundCheckBoxView[2], View.TRANSLATION_X, visible ? dp(34) : 0.0f));
+                    ArrayList<Animator> animators = new ArrayList<>(6);
+                    animators.add(ObjectAnimator.ofFloat(backgroundPlayAnimationView, View.ALPHA, visible ? 1.0f : 0.0f));
+                    animators.add(ObjectAnimator.ofFloat(backgroundPlayAnimationView, View.SCALE_X, visible ? 1.0f : 0.0f));
+                    animators.add(ObjectAnimator.ofFloat(backgroundPlayAnimationView, View.SCALE_Y, visible ? 1.0f : 0.0f));
+                    if(backgroundCheckBoxView.length >= 3) {
+                        animators.add(ObjectAnimator.ofFloat(backgroundCheckBoxView[0], View.TRANSLATION_X, visible ? dp(34) : 0.0f));
+                        animators.add(ObjectAnimator.ofFloat(backgroundCheckBoxView[1], View.TRANSLATION_X, visible ? -dp(34) : 0.0f));
+                        animators.add(ObjectAnimator.ofFloat(backgroundCheckBoxView[2], View.TRANSLATION_X, visible ? dp(34) : 0.0f));
+                    }
+                    backgroundPlayViewAnimator.playTogether(animators);
                     backgroundPlayViewAnimator.setDuration(180);
                     backgroundPlayViewAnimator.addListener(new AnimatorListenerAdapter() {
                         @Override
@@ -4363,9 +4409,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                     backgroundPlayAnimationView.setAlpha(visible ? 1.0f : 0.0f);
                     backgroundPlayAnimationView.setScaleX(visible ? 1.0f : 0.0f);
                     backgroundPlayAnimationView.setScaleY(visible ? 1.0f : 0.0f);
-                    backgroundCheckBoxView[0].setTranslationX(visible ? dp(34) : 0.0f);
-                    backgroundCheckBoxView[1].setTranslationX(visible ? -dp(34) : 0.0f);
-                    backgroundCheckBoxView[2].setTranslationX(visible ? dp(34) : 0.0f);
+                    if(backgroundCheckBoxView.length >= 3) {
+                        backgroundCheckBoxView[0].setTranslationX(visible ? dp(34) : 0.0f);
+                        backgroundCheckBoxView[1].setTranslationX(visible ? -dp(34) : 0.0f);
+                        backgroundCheckBoxView[2].setTranslationX(visible ? dp(34) : 0.0f);
+                    }
                 }
             }
         }
@@ -4526,7 +4574,13 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 setBackgroundColor(wallPaper.gradientColor2, 2, true, false);
                 setBackgroundColor(wallPaper.gradientColor3, 3, true, false);
                 if (selectedPattern != null) {
-                    backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                    if (selectedPattern.document.localPath != null) {
+                        backgroundImage.setImage(selectedPattern.document.localPath, imageFilter, null);
+                    } else {
+                        backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                    }
+                } else if (wallPaper.isDahlWallpaper) {
+                    backgroundImage.setImage(wallPaper.path.getAbsolutePath(), imageFilter, null);
                 } else if (Theme.DEFAULT_BACKGROUND_SLUG.equals(wallPaper.slug)) {
                     int w = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
                     int h = Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
@@ -4536,7 +4590,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                     } else {
                         patternColor = MotionBackgroundDrawable.getPatternColor(wallPaper.color, wallPaper.gradientColor1, wallPaper.gradientColor2, wallPaper.gradientColor3);
                     }
-                    backgroundImage.setImageBitmap(SvgHelper.getBitmap(R.raw.dahl_wallpaper, w, h, patternColor));
+                    backgroundImage.setImageBitmap(SvgHelper.getBitmap(R.raw.dahl_wallpaper_russia, w, h, patternColor));
                 }
             } else if (currentWallpaper instanceof WallpapersListActivity.FileWallpaper) {
                 if (currentWallpaperBitmap != null) {
@@ -4641,7 +4695,11 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 }
                 backgroundImage.setBackground(backgroundDrawable);
                 if (selectedPattern != null) {
-                    backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                    if (selectedPattern.document.localPath != null) {
+                        backgroundImage.setImage(selectedPattern.document.localPath, imageFilter, null);
+                    } else {
+                        backgroundImage.setImage(ImageLocation.getForDocument(selectedPattern.document), imageFilter, null, null, "jpg", selectedPattern.document.size, 1, selectedPattern);
+                    }
                 }
             } else {
                 Drawable backgroundDrawable = Theme.getCachedWallpaperNonBlocking();
