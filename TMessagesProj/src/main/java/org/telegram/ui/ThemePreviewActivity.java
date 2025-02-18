@@ -157,7 +157,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -2761,7 +2760,13 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
         }
         wallpaperInfo.forBoth = forBoth;
 
-        boolean isDahlWallpaper = Arrays.stream(DahlWallpaper.Companion.getItems()).anyMatch(dahlWallpaper -> Objects.equals(slug, dahlWallpaper.getSlug()));
+        boolean isDahlWallpaper = false;
+        for(DahlWallpaper dw: DahlWallpaper.Companion.getItems()){
+            if(slug.equals(dw.getSlug())){
+                isDahlWallpaper = true;
+                break;
+            }
+        }
         if(!isDahlWallpaper) {
             MessagesController.getInstance(currentAccount).saveWallpaperToServer(path, wallpaperInfo, slug != null && dialogId == 0, 0);
         }

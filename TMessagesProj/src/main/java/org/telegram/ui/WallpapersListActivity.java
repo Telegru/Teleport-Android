@@ -1251,10 +1251,10 @@ public class WallpapersListActivity extends BaseFragment implements Notification
             return DahlWallpaper.Companion.getSlugs().contains(slug);
         });
 
-        List<ColorWallpaper> dahlWallpapers = Arrays.stream(DahlWallpaper.Companion.getItems())
-                .map(dahlWallpaper -> new ColorWallpaper(dahlWallpaper, Theme.isCurrentThemeDark()))
-                .toList();
-
+        List<ColorWallpaper> dahlWallpapers = new ArrayList<>(DahlWallpaper.Companion.getItems().length);
+        for(DahlWallpaper dw: DahlWallpaper.Companion.getItems()){
+            dahlWallpapers.add(new ColorWallpaper(dw, Theme.isCurrentThemeDark()));
+        }
         wallPapers.addAll(0, dahlWallpapers);
 
         Object object = null;
