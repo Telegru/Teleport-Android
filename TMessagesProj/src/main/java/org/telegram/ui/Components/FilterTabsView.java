@@ -29,7 +29,6 @@ import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Property;
 import android.util.SparseIntArray;
 import android.view.HapticFeedbackConstants;
@@ -200,6 +199,7 @@ public class FilterTabsView extends FrameLayout {
         private float progressToLocked;
 
         private GradientDrawable selectorDrawable;
+        private boolean drawIndicator = true;
 
         public TabView(Context context) {
             super(context);
@@ -255,8 +255,8 @@ public class FilterTabsView extends FrameLayout {
                 float s = (float) Math.sin((p + (currentPosition % 2)) * Math.PI * 2.5f);
                 float a = (float) (SystemClock.elapsedRealtime() / 400f * Math.PI * (currentPosition % 2 == 0 ? 1.0f : -1.0f));
                 canvas.translate(
-                    (float) (Math.cos(a) * AndroidUtilities.dp(0.33f) * (currentPosition % 2 == 0 ? 1.0f : -1.0f)),
-                    (float) (Math.sin(a) * -AndroidUtilities.dp(0.33f))
+                        (float) (Math.cos(a) * AndroidUtilities.dp(0.33f) * (currentPosition % 2 == 0 ? 1.0f : -1.0f)),
+                        (float) (Math.sin(a) * -AndroidUtilities.dp(0.33f))
                 );
                 canvas.rotate(1.4f * s, getMeasuredWidth() / 2f, getMeasuredHeight() / 2f);
             }
@@ -290,11 +290,23 @@ public class FilterTabsView extends FrameLayout {
                 unreadKey = Theme.key_chats_tabUnreadUnactiveBackground;
                 unreadOtherKey = Theme.key_chats_tabUnreadActiveBackground;
             }
+            selectorDrawable.setColor(Theme.getColor(tabLineColorKey));
+            if (currentTab.id == id1) {
+                selectorDrawable.setAlpha((int)(255 * animatingIndicatorProgress));
+            } else {
+                selectorDrawable.setAlpha((int)(255 * (1 - animatingIndicatorProgress)));
+            }
+
             if (animateToKey < 0) {
                 if ((animatingIndicator || manualScrollingToId != -1) && (currentTab.id == id1 || currentTab.id == id2)) {
                     textPaint.setColor(ColorUtils.blendARGB(Theme.getColor(otherKey), Theme.getColor(key), animatingIndicatorProgress));
                 } else {
                     textPaint.setColor(Theme.getColor(key));
+                    if (currentTab.id == id1) {
+                        selectorDrawable.setAlpha(255);
+                    } else {
+                        selectorDrawable.setAlpha(0);
+                    }
                 }
             } else {
                 int color1 = Theme.getColor(key);
@@ -305,9 +317,13 @@ public class FilterTabsView extends FrameLayout {
                     textPaint.setColor(ColorUtils.blendARGB(ColorUtils.blendARGB(color3, color4, animationValue), ColorUtils.blendARGB(color1, color2, animationValue), animatingIndicatorProgress));
                 } else {
                     textPaint.setColor(ColorUtils.blendARGB(color1, color2, animationValue));
+                    if (currentTab.id == id1) {
+                        selectorDrawable.setAlpha(255);
+                    } else {
+                        selectorDrawable.setAlpha(0);
+                    }
                 }
             }
-            selectorDrawable.setColor(Theme.getColor(tabLineColorKey));
 
             float counterWidth;
             int countWidth;
@@ -514,7 +530,7 @@ public class FilterTabsView extends FrameLayout {
                 }
                 if (currentTab.isLocked && progressToLocked != 1f) {
                     progressToLocked += 16 / 150f;
-                } else if (!currentTab.isLocked){
+                } else if (!currentTab.isLocked) {
                     progressToLocked -= 16 / 150f;
                 }
                 progressToLocked = Utilities.clamp(progressToLocked, 1f, 0);
@@ -540,9 +556,9 @@ public class FilterTabsView extends FrameLayout {
 
             }
 
-            if (currentTab.id == id1) {
+            if (drawIndicator && (currentTab.id == id1 || currentTab.id == id2)) {
                 canvas.save();
-                int i = positionToStableId.get(id1, 0);
+                int i = positionToStableId.get(getId(), 0);
                 int indicatorWidth = positionToWidth.get(i, tabWidth);
                 int indicatorX = (int) ((getMeasuredWidth() - indicatorWidth) / 2f);
                 selectorDrawable.setBounds(indicatorX, getMeasuredHeight() - AndroidUtilities.dp(4), indicatorX + indicatorWidth, getMeasuredHeight());
@@ -1044,7 +1060,6 @@ public class FilterTabsView extends FrameLayout {
                 return;
             }
             int positionInList = position % tabs.size();
-            Log.d("FilterTabLayout", "positionInList: " + positionInList + ", current: " + currentPosition);
             TabView tabView = (TabView) view;
             if (isEditing) {
                 if (positionInList != 0) {
@@ -1102,7 +1117,6 @@ public class FilterTabsView extends FrameLayout {
         scrollingToChild = -1;
         previousPosition = currentPosition;
         previousId = selectedTabId;
-        Log.d("FilterTabsView", "scrollToTab: " + positionInList);
         currentPosition = positionInList;
         selectedTabId = tab.id;
 
@@ -1214,15 +1228,15 @@ public class FilterTabsView extends FrameLayout {
         listView.setItemAnimator(animated ? itemAnimator : null);
         adapter.notifyDataSetChanged();
         updateTabsWidths();
-        LinearLayoutManager layoutManager = (LinearLayoutManager)listView.getLayoutManager();
-        if(isEditing || layoutManager == null || !adapter.infiniteScroll){
+        LinearLayoutManager layoutManager = (LinearLayoutManager) listView.getLayoutManager();
+        if (isEditing || layoutManager == null || !adapter.infiniteScroll) {
             return;
         }
         listView.post(() -> {
             int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
-            if(firstVisiblePosition == 0 ){
+            if (firstVisiblePosition == 0) {
                 int i = Integer.MAX_VALUE / 2;
-                while (i % tabs.size() != 0){
+                while (i % tabs.size() != 0) {
                     i--;
                 }
                 layoutManager.scrollToPosition(i);
@@ -1283,7 +1297,7 @@ public class FilterTabsView extends FrameLayout {
             positionToX.put(a, xOffset + additionalTabWidth / 2);
             xOffset += tabWidth + AndroidUtilities.dp(32) + additionalTabWidth;
         }
-        if(adapter.infiniteScroll && allTabsWidth <= getMeasuredWidth()  - AndroidUtilities.dp(7) - AndroidUtilities.dp(7)){
+        if (adapter.infiniteScroll && allTabsWidth <= getMeasuredWidth() - AndroidUtilities.dp(7) - AndroidUtilities.dp(7)) {
             adapter.infiniteScroll = false;
             adapter.notifyDataSetChanged();
         }
@@ -1417,7 +1431,7 @@ public class FilterTabsView extends FrameLayout {
                 }
                 updateTabsWidths();
                 invalidated = false;
-            }else if(infiniteScroll){
+            } else if (infiniteScroll) {
                 updateTabsWidths();
             }
         }
@@ -1445,8 +1459,19 @@ public class FilterTabsView extends FrameLayout {
         if (tabs.isEmpty() || scrollingToChild == position || position < 0 || position >= tabs.size()) {
             return;
         }
+        int adapterPosition = position;
+        if (adapter.infiniteScroll) {
+            LinearLayoutManager layoutManager = (LinearLayoutManager) listView.getLayoutManager();
+            if (layoutManager != null) {
+                int index = layoutManager.findFirstVisibleItemPosition();
+                while (index % tabs.size() != position % tabs.size()) {
+                    index++;
+                }
+                adapterPosition = index;
+            }
+        }
         scrollingToChild = position;
-        listView.smoothScrollToPosition(position);
+        listView.smoothScrollToPosition(adapterPosition);
     }
 
     @Override
@@ -1536,10 +1561,10 @@ public class FilterTabsView extends FrameLayout {
         isEditing = value;
         editingForwardAnimation = true;
         boolean infiniteScroll = !isEditing && this.infiniteScroll;
-       if(adapter.infiniteScroll != infiniteScroll){
-           adapter.infiniteScroll = infiniteScroll;
-           adapter.notifyDataSetChanged();
-       }
+        if (adapter.infiniteScroll != infiniteScroll) {
+            adapter.infiniteScroll = infiniteScroll;
+            adapter.notifyDataSetChanged();
+        }
         listView.invalidateViews();
         invalidate();
         if (!isEditing && orderChanged) {
@@ -1576,7 +1601,7 @@ public class FilterTabsView extends FrameLayout {
                 requestLayout();
                 allTabsWidth = 0;
                 FilterTabsView.Tab defaultTab = findDefaultTab();
-                if(defaultTab != null) {
+                if (defaultTab != null) {
                     defaultTab.setTitle(LocaleController.getString(R.string.FilterAllChats));
                 }
                 for (int b = 0; b < N; b++) {
@@ -1610,7 +1635,7 @@ public class FilterTabsView extends FrameLayout {
             adapter.notifyDataSetChanged();
             allTabsWidth = 0;
             FilterTabsView.Tab defaultTab = findDefaultTab();
-            if(defaultTab != null) {
+            if (defaultTab != null) {
                 defaultTab.setTitle(LocaleController.getString(R.string.FilterAllChats));
             }
             for (int b = 0, N = tabs.size(); b < N; b++) {
@@ -1654,6 +1679,7 @@ public class FilterTabsView extends FrameLayout {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             int positionInList = position % tabs.size();
             TabView tabView = (TabView) holder.itemView;
+            tabView.drawIndicator = infiniteScroll;
             int oldId = tabView.currentTab != null ? tabView.getId() : -1;
             tabView.setTab(tabs.get(positionInList), positionInList);
             if (oldId != tabView.getId()) {
@@ -1729,7 +1755,7 @@ public class FilterTabsView extends FrameLayout {
             }
             ArrayList<MessagesController.DialogFilter> filters = MessagesController.getInstance(UserConfig.selectedAccount).getDialogFilters();
             int temp = positionToStableId.get(theIndex),
-                temp2 = tabs.get(theIndex).id;
+                    temp2 = tabs.get(theIndex).id;
             for (int i = theIndex - 1; i >= 0; --i) {
 //                notifyItemMoved(i, i + 1);
                 positionToStableId.put(i + 1, positionToStableId.get(i));
@@ -1787,7 +1813,7 @@ public class FilterTabsView extends FrameLayout {
             return true;
         }
 
-        private Runnable resetDefaultPosition = () ->  {
+        private Runnable resetDefaultPosition = () -> {
             if (UserConfig.getInstance(UserConfig.selectedAccount).isPremium()) {
                 return;
             }
