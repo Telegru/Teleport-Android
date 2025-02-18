@@ -95,8 +95,6 @@ import androidx.recyclerview.widget.LinearSmoothScrollerCustom;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.exoplayer2.util.Log;
-
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimationNotificationsLocker;
@@ -4544,7 +4542,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         floatingButtonContainer = new FrameLayout(context);
         floatingButtonContainer.setVisibility(onlySelect && initialDialogsType != 10 || folderId != 0 ? View.GONE : View.VISIBLE);
-        int fabBottomMargin = (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE && DahlSettings.isFoldersTabsAtBottom()) ? (14 + 44) : 14;
+        int fabBottomMargin = (filterTabsView != null && DahlSettings.isFoldersTabsAtBottom()) ? (14 + 44) : 14;
         contentView.addView(floatingButtonContainer, LayoutHelper.createFrame((Build.VERSION.SDK_INT >= 21 ? 56 : 60), (Build.VERSION.SDK_INT >= 21 ? 56 : 60), (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, fabBottomMargin));
         floatingButtonContainer.setOnClickListener(v -> {
             if (parentLayout != null && parentLayout.isInPreviewMode()) {
@@ -6744,6 +6742,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
     private void updateFilterTabs(boolean force, boolean animated) {
         if (filterTabsView == null || inPreviewMode || searchIsShowed || (rightSlidingDialogContainer != null && rightSlidingDialogContainer.hasFragment())) {
+            updateFloatingButtonBottomMargin();
             return;
         }
         if (filterOptions != null) {
@@ -6766,37 +6765,40 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 updateFilterTabsVisibility(animated);
                 int id = filterTabsView.getCurrentTabId();
                 int stableId = filterTabsView.getCurrentTabStableId();
-                Log.d("DialogsActivity", "stableId: " + stableId);
                 boolean selectWithStableId = false;
                 if (id != filterTabsView.getDefaultTabId() && id >= dialogFilters.size()) {
                     filterTabsView.resetTabId();
                     selectWithStableId = true;
                 }
-                Log.d("DialogsActivity", "selectWithStableId: " + selectWithStableId);
                 filterTabsView.removeTabs();
                 for (int a = 0, N = filters.size(); a < N; a++) {
                     if (filters.get(a).isDefault()) {
                         filterTabsView.addTab(a, 0, LocaleController.getString(R.string.FilterAllChats), true, filters.get(a).locked);
                     } else {
-                        filterTabsView.addTab(a, filters.get(a).localId, filters.get(a).name, false, filters.get(a).locked);
+                        int i = !filterTabsView.isEditing() && DahlSettings.isHiddenAllChatsFolder() ? (a + 1) : a;
+                        filterTabsView.addTab(i, filters.get(a).localId, filters.get(a).name, false, filters.get(a).locked);
                     }
                 }
                 if (stableId >= 0) {
                     if (selectWithStableId) {
                         if (!filterTabsView.selectTabWithStableId(stableId)) {
-                            while (id >= 0 && !filterTabsView.selectTabWithStableId(filterTabsView.getStableId(id))) {
+                            int defId = DahlSettings.isHiddenAllChatsFolder() ? 1 : 0;
+                            while (id >= defId && !filterTabsView.selectTabWithStableId(filterTabsView.getStableId(id))) {
                                 id--;
                             }
-                            if (id < 0) {
-                                id = 0;
+                            if (id < defId) {
+                                id = defId;
                             }
                         }
                     }
-                    Log.d("DialogsActivity", "id: " + id);
                     if (filterTabsView.getStableId(viewPages[0].selectedType) != stableId) {
                         updateCurrentTab = true;
                         viewPages[0].selectedType = id;
                     }
+                }
+                if(DahlSettings.isHiddenAllChatsFolder() && viewPages[0].selectedType == 0){
+                    updateCurrentTab = true;
+                    viewPages[0].selectedType = 1;
                 }
                 for (int a = 0; a < viewPages.length; a++) {
                     if (viewPages[a].selectedType >= dialogFilters.size()) {
@@ -6855,6 +6857,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             updateDrawerSwipeEnabled();
         }
         updateCounters(false);
+        updateFloatingButtonBottomMargin();
 
         final int currentDialogsType = viewPages[0].dialogsType;
         if (currentDialogsType == 7 || currentDialogsType == 8) {
@@ -6873,6 +6876,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
             }
         }
+    }
+
+    private void updateFloatingButtonBottomMargin(){
+        int fabBottomMargin = (filterTabsView != null && !filterTabsView.isEmpty() && DahlSettings.isFoldersTabsAtBottom()) ? (14 + 44) : 14;
+        FrameLayout.LayoutParams params = LayoutHelper.createFrame(56, 56, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, fabBottomMargin);
+        floatingButtonContainer.setLayoutParams(params);
+        floatingButtonContainer.requestLayout();
     }
 
     private void updateDrawerSwipeEnabled() {
