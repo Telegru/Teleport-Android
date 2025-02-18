@@ -3352,7 +3352,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 (initialDialogsType == DIALOGS_TYPE_DEFAULT && !onlySelect || initialDialogsType == DIALOGS_TYPE_FORWARD) &&
                         folderId == 0 && TextUtils.isEmpty(searchString) && !DahlSettings.isHiddenFoldersTabs()
         ) {
-            filterTabsView = new FilterTabsView(context) {
+            filterTabsView = new FilterTabsView(context, DahlSettings.isFoldersTabInfiniteScroll()) {
                 @Override
                 public boolean onInterceptTouchEvent(MotionEvent ev) {
                     getParent().requestDisallowInterceptTouchEvent(true);

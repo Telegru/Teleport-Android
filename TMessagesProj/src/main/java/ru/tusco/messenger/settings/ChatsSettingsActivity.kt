@@ -24,23 +24,25 @@ class ChatsSettingsActivity : UniversalFragment() {
         items?.add(UItem.asHeader(LocaleController.getString(R.string.ChatsFolders)))
 
         items?.add(
-            UItem.asSwitch(SWITCH_FOLDERS_AT_BOTTOM, LocaleController.getString(R.string.FoldersAtBottom)).setChecked(
+            UItem.asCheck(SWITCH_FOLDERS_AT_BOTTOM, LocaleController.getString(R.string.FoldersAtBottom)).setChecked(
                 DahlSettings.isFoldersTabsAtBottom
             )
         )
         items?.add(
-            UItem.asSwitch(SWITCH_HIDE_ALL_CHATS_FOLDER, LocaleController.getString(R.string.HideAllChatsFolder)).setChecked(
-                DahlSettings.isHiddenAllChatsFolder
-            )
-        )
-        items?.add(
-            UItem.asSwitch(SWITCH_FOLDERS_INFINITE_SCROLL, LocaleController.getString(R.string.FoldersInfiniteScrolling)).setChecked(
+            UItem.asCheck(SWITCH_FOLDERS_INFINITE_SCROLL, LocaleController.getString(R.string.FoldersInfiniteScrolling)).setChecked(
                 DahlSettings.isFoldersTabInfiniteScroll
             )
         )
+        items?.add(UItem.asShadow(-3, null))
+        items?.add(UItem.asHeader(LocaleController.getString(R.string.HideFolders)))
         items?.add(
-            UItem.asSwitch(SWITCH_HIDE_FOLDERS_TABS, LocaleController.getString(R.string.HideFoldersTabs)).setChecked(
+            UItem.asCheck(SWITCH_HIDE_FOLDERS_TABS, LocaleController.getString(R.string.AllChats)).setChecked(
                 DahlSettings.isHiddenFoldersTabs
+            )
+        )
+        items?.add(
+            UItem.asCheck(SWITCH_HIDE_ALL_CHATS_FOLDER, LocaleController.getString(R.string.HideAllChatsFolder)).setChecked(
+                DahlSettings.isHiddenAllChatsFolder
             )
         )
     }

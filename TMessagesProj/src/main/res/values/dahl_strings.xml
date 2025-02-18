@@ -24,10 +24,11 @@
     <string name="IconsVkUI">Иконки VK UI</string>
     <string name="RestartToast">Чтобы изменения вступили в силу перезапустите приложение</string>
 
-    <string name = "ChatsSettings">Чаты</string>
-    <string name = "ChatsFolders">Папки с чатами</string>
-    <string name = "FoldersAtBottom">Папки снизу</string>
-    <string name = "HideAllChatsFolder">Скрыть папку \"Все чаты\"</string>
-    <string name = "FoldersInfiniteScrolling">Листать папки по кругу</string>
-    <string name = "HideFoldersTabs">Скрыть папки</string>
+    <string name="ChatsSettings">Чаты</string>
+    <string name="ChatsFolders">Папки</string>
+    <string name="FoldersAtBottom">Переместить вниз</string>
+    <string name="HideAllChatsFolder">Папку \"Все чаты\"</string>
+    <string name="FoldersInfiniteScrolling">Листать по кругу</string>
+    <string name="AllFolders">Все папки</string>
+    <string name="HideFolders">Скрыть</string>
 </resources>
