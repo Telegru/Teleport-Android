@@ -36,7 +36,7 @@ class ChatsSettingsActivity : UniversalFragment() {
         items?.add(UItem.asShadow(-3, null))
         items?.add(UItem.asHeader(LocaleController.getString(R.string.HideFolders)))
         items?.add(
-            UItem.asCheck(SWITCH_HIDE_FOLDERS_TABS, LocaleController.getString(R.string.AllChats)).setChecked(
+            UItem.asCheck(SWITCH_HIDE_FOLDERS_TABS, LocaleController.getString(R.string.AllFolders)).setChecked(
                 DahlSettings.isHiddenFoldersTabs
             )
         )
