@@ -2,7 +2,11 @@ package ru.tusco.messenger
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.BitmapShader
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Shader
 import android.util.Log
 import androidx.annotation.RawRes
 import org.telegram.messenger.AndroidUtilities
@@ -23,23 +27,25 @@ object DefaultWallpapersHelper {
     @JvmStatic
     fun createWallpaperFiles() {
         for (wallpaper in DahlWallpaper.items) {
-            val patternBitmap = SvgHelper.getBitmap(
+            var patternBitmap = SvgHelper.getBitmap(
                 wallpaper.svg,
                 AndroidUtilities.dp(360f),
                 AndroidUtilities.dp(640f),
                 Color.BLACK
             )
-            var stream: FileOutputStream?
-            try {
-                stream = FileOutputStream(wallpaper.path)
-                val bitmap: Bitmap = patternBitmap.copy(Bitmap.Config.ARGB_8888, true)
-                bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
-                bitmap.recycle()
-                stream.close()
-            } catch (e: Exception) {
-                FileLog.e(e)
-                Log.w("DefaultWallpapersHelper", "Create wallpaper ${wallpaper.slug} error.", e)
+            patternBitmap = createTiledBitmap(patternBitmap, AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y)
+            val stream= FileOutputStream(wallpaper.path)
+            stream.use {
+                try {
+                    val bitmap: Bitmap = patternBitmap.copy(Bitmap.Config.ARGB_8888, true)
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
+                    bitmap.recycle()
+                }catch (e: Exception){
+                    FileLog.e(e)
+                    Log.w("DefaultWallpapersHelper", "Create wallpaper ${wallpaper.slug} error.", e)
+                }
             }
+            patternBitmap.recycle()
         }
     }
 
@@ -74,7 +80,24 @@ object DefaultWallpapersHelper {
                 path
             }
         }
+    }
 
+    @JvmStatic
+    fun createTiledBitmap(tile: Bitmap, targetWidth: Int, targetHeight: Int): Bitmap{
+        if(tile.width < targetWidth || tile.height < targetHeight) {
+            val shader = BitmapShader(tile, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+            val paint = Paint()
+            paint.setShader(shader)
+
+            val bitmap =
+                Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888)
+
+            val canvas = Canvas(bitmap)
+            canvas.drawRect(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat(), paint)
+            tile.recycle()
+            return bitmap
+        }
+        return tile
     }
 }
 

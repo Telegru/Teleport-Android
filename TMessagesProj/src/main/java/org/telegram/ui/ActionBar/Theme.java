@@ -153,6 +153,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
 import ru.tusco.messenger.DahlWallpaper;
+import ru.tusco.messenger.DefaultWallpapersHelper;
 
 public class Theme {
 
@@ -9980,6 +9981,7 @@ public class Theme {
                             patternBitmap = SvgHelper.getBitmap(f, dp(360), dp(640), false);
                         } else {
                             patternBitmap = SvgHelper.getBitmap(R.raw.dahl_wallpaper_russia, dp(360), dp(640), Color.WHITE);
+                            patternBitmap = DefaultWallpapersHelper.createTiledBitmap(patternBitmap, AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
                             //patternBitmap = SvgHelper.getBitmap(R.raw.default_pattern, dp(360), dp(640), Color.WHITE);
                         }
                         if (patternBitmap != null) {
@@ -10152,12 +10154,17 @@ public class Theme {
 //        MotionBackgroundDrawable motionBackgroundDrawable = new MotionBackgroundDrawable(0xffdbddbb, 0xff6ba587, 0xffd5d88d, 0xff88b884, w != 0);
         int[] colors = DahlWallpaper.Russia.INSTANCE.getColors();
         MotionBackgroundDrawable motionBackgroundDrawable = new MotionBackgroundDrawable(colors[0], colors[1], colors[2], colors[3], w != 0);
+        Bitmap bitmap = null;
         if (w <= 0 || h <= 0) {
             w = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
             h = Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
+            bitmap = BitmapFactory.decodeFile(DahlWallpaper.Russia.INSTANCE.getPath());
+        }
+        if(bitmap == null){
+            bitmap = SvgHelper.getBitmap(R.raw.dahl_wallpaper_russia, w, h, Color.BLACK);
         }
         //motionBackgroundDrawable.setPatternBitmap(34, SvgHelper.getBitmap(R.raw.default_pattern, w, h, Color.BLACK));
-        motionBackgroundDrawable.setPatternBitmap(50, SvgHelper.getBitmap(R.raw.dahl_wallpaper_russia, w, h, Color.BLACK));
+        motionBackgroundDrawable.setPatternBitmap(50, bitmap);
         motionBackgroundDrawable.setPatternColorFilter(motionBackgroundDrawable.getPatternColor());
         return motionBackgroundDrawable;
     }

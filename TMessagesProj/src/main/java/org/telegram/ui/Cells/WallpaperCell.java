@@ -195,9 +195,13 @@ public class WallpaperCell extends FrameLayout {
 //                        imageView.getImageReceiver().setAlpha(Math.abs(wallPaper.intensity));
 //                    } else
                     if (wallPaper.path != null) {
-                        int size = AndroidUtilities.dp(imageSide);
-                        String cropped = DefaultWallpapersHelper.getCroppedBitmapPath(wallPaper.path.getAbsolutePath(), size, size);
-                        imageView.setImage(cropped, imageFilter, null);
+                        if(wallPaper.isDahlWallpaper) {
+                            int size = AndroidUtilities.dp(imageSide);
+                            String cropped = DefaultWallpapersHelper.getCroppedBitmapPath(wallPaper.path.getAbsolutePath(), size, size);
+                            imageView.setImage(cropped, imageFilter, null);
+                        }else{
+                            imageView.setImage(wallPaper.path.getAbsolutePath(), imageFilter, null);
+                        }
                     } else {
                         TLRPC.PhotoSize thumb = FileLoader.getClosestPhotoSizeWithSize(wallPaper.pattern.document.thumbs, 100);
                         long size = thumb != null ? thumb.size : wallPaper.pattern.document.size;
