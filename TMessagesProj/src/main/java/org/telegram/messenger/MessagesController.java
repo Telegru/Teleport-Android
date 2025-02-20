@@ -46,6 +46,8 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.util.Consumer;
 
+import com.google.android.exoplayer2.util.Log;
+
 import org.telegram.SQLite.SQLiteCursor;
 import org.telegram.SQLite.SQLiteDatabase;
 import org.telegram.SQLite.SQLiteException;
@@ -387,6 +389,7 @@ public class MessagesController extends BaseController implements NotificationCe
         if (frozenDialogFilters != null) {
             return frozenDialogFilters;
         }
+        Log.d("MessagesController", "folders: " + dialogFilters.size());
         return dialogFilters;
     }
 

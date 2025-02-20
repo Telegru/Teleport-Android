@@ -24,4 +24,12 @@
     <string name="SettingsDahl">Settings Dahl</string>
     <string name="IconsVkUI">Icons VK UI</string>
     <string name="RestartToast">Restart app to apply changes</string>
+
+    <string name="ChatsSettings">Chats</string>
+    <string name="ChatsFolders">Folders</string>
+    <string name="FoldersAtBottom">Move to the bottom</string>
+    <string name="HideAllChatsFolder">\"All Chats\" folder</string>
+    <string name="FoldersInfiniteScrolling">Scroll in a loop</string>
+    <string name="AllFolders">All folders</string>
+    <string name="HideFolders">Hide</string>
 </resources>
