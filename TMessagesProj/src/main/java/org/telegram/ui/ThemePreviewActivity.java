@@ -2684,8 +2684,12 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 if (selectedPattern != null) {
                     boolean isDahl = DahlWallpaper.Companion.getSlugs().contains(selectedPattern.slug);
                     if(isDahl){
-                        int[] defColors = DahlWallpaper.Companion.getBySlug(selectedPattern.slug).getColors(Theme.isCurrentThemeDark());
-                        boolean custom = color != defColors[0] || gradientColor1 != defColors[1] || gradientColor2 != defColors[2] || gradientColor3 != defColors[3];
+                        boolean custom = false;
+                        DahlWallpaper dahlWallpaper = DahlWallpaper.Companion.getBySlug(selectedPattern.slug);
+                        if(dahlWallpaper != null) {
+                            int[] defColors = dahlWallpaper.getColors(Theme.isCurrentThemeDark());
+                            custom = currentIntensity != wallPaper.intensity || color != defColors[0] || gradientColor1 != defColors[1] || gradientColor2 != defColors[2] || gradientColor3 != defColors[3];
+                        }
                         slug = custom ? "custom_" + selectedPattern.slug : selectedPattern.slug;
                         path = new File(selectedPattern.document.localPath);
                     }else{

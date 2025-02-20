@@ -378,7 +378,7 @@ public class WallpapersListActivity extends BaseFragment implements Notification
             gradientColor2 = colors[2];
             gradientColor3 = colors[3];
             gradientRotation = 45;
-            intensity = isDarkTheme ? -0.57f : 1f;
+            intensity = isDarkTheme ? -0.3f : 1f;
             path = new File(dahlWallpaper.getPath());
             isDahlWallpaper = true;
             pattern = dahlWallpaper.toPattern(isDarkTheme);
