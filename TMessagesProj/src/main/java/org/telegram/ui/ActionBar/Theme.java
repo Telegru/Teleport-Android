@@ -2633,11 +2633,12 @@ public class Theme {
                     themeAccent.myMessagesGradientAccentColor2 = 0xff8849b4;
                     themeAccent.myMessagesGradientAccentColor3 = 0xffa751a8;
                     if (name.equals("Night")) {
+                        int[] colors = DahlWallpaper.Russia.INSTANCE.getDarkColors();
                         themeAccent.patternIntensity = -0.57f;
-                        themeAccent.backgroundOverrideColor = 0xff6c7fa6;
-                        themeAccent.backgroundGradientOverrideColor1 = 0xff2e344b;
-                        themeAccent.backgroundGradientOverrideColor2 = 0xff7874a7;
-                        themeAccent.backgroundGradientOverrideColor3 = 0xff333258;
+                        themeAccent.backgroundOverrideColor = colors[0];
+                        themeAccent.backgroundGradientOverrideColor1 = colors[1];
+                        themeAccent.backgroundGradientOverrideColor2 = colors[2];
+                        themeAccent.backgroundGradientOverrideColor3 = colors[3];
                     }
                 }
                 themeAccentsMap.put(themeAccent.id, themeAccent);
@@ -9752,7 +9753,8 @@ public class Theme {
     }
 
     public static boolean hasWallpaperFromTheme() {
-        if (currentTheme.firstAccentIsDefault && currentTheme.currentAccentId == DEFALT_THEME_ACCENT_ID) {
+        if (currentTheme.firstAccentIsDefault && currentTheme.currentAccentId == DEFALT_THEME_ACCENT_ID
+         || currentTheme.name.equals("Night") && currentTheme.currentAccentId == 0) {
             return false;
         }
         return currentColors.indexOfKey(key_chat_wallpaper) >= 0 || themedWallpaperFileOffset > 0 || !TextUtils.isEmpty(themedWallpaperLink);

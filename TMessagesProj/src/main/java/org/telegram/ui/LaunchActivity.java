@@ -1000,7 +1000,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         BackupAgent.requestBackup(this);
 
         RestrictedLanguagesSelectActivity.checkRestrictedLanguages(false);
-        DefaultWallpapersHelper.INSTANCE.createWallpaperFiles();
+        DefaultWallpapersHelper.createWallpaperFiles();
     }
 
     private void showAttachMenuBot(TLRPC.TL_attachMenuBot attachMenuBot, String startApp, boolean sidemenu) {
