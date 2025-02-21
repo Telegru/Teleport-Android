@@ -3584,8 +3584,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         }
                     }
 
+                    int selectedTabColor = DahlSettings.isFoldersTabsAtBottom() ? Theme.getColor(Theme.key_actionBarActionModeDefault) : Theme.getColor(Theme.key_actionBarDefault);
+                    int topCorners = DahlSettings.isFoldersTabsAtBottom() ? 0 : dp(6);
+                    int bottomCorners = DahlSettings.isFoldersTabsAtBottom() ? dp(6) : 0;
                     filterOptions = ItemOptions.makeOptions(DialogsActivity.this, tabView)
-                            .setScrimViewBackground(Theme.createRoundRectDrawable(dp(6), 0, Theme.getColor(Theme.key_actionBarDefault)))
+                            .setScrimViewBackground(Theme.createRoundRectDrawable(topCorners, bottomCorners, selectedTabColor))
                             .addIf(getMessagesController().getDialogFilters().size() > 1, R.drawable.tabs_reorder, getString(R.string.FilterReorder), () -> {
                                 resetScroll();
                                 filterTabsView.setIsEditing(true);
@@ -3622,7 +3625,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 showDeleteAlert(dialogFilter);
                             })
                             .setGravity(Gravity.LEFT)
-                            .translate(dp(-8), dp(-10))
+                            .translate(dp(-8), DahlSettings.isFoldersTabsAtBottom() ? dp(10) : dp(-10))
                             .show();
 
                     return true;
