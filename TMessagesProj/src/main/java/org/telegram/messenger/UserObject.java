@@ -19,6 +19,7 @@ public class UserObject {
 
     public static final long REPLY_BOT = 1271266957L;
     public static final long ANONYMOUS = 2666000L;
+    public static final long VERIFY = 489000L;
 
     public static boolean isDeleted(TLRPC.User user) {
         return user == null || user instanceof TLRPC.TL_userDeleted_old2 || user instanceof TLRPC.TL_userEmpty || user.deleted;
@@ -38,6 +39,10 @@ public class UserObject {
 
     public static boolean isAnonymous(TLRPC.User user) {
         return user != null && user.id == ANONYMOUS;
+    }
+
+    public static boolean isBot(TLRPC.User user) {
+        return user != null && user.bot;
     }
 
     public static boolean isReplyUser(long did) {
@@ -151,13 +156,22 @@ public class UserObject {
         if (emojiStatus == null) {
             return null;
         }
-        if (emojiStatus instanceof TLRPC.TL_emojiStatus)
-            return ((TLRPC.TL_emojiStatus) emojiStatus).document_id;
-        if (emojiStatus instanceof TLRPC.TL_emojiStatusUntil) {
-            TLRPC.TL_emojiStatusUntil untilStatus = (TLRPC.TL_emojiStatusUntil) emojiStatus;
-            if (untilStatus.until > (int) (System.currentTimeMillis() / 1000)) {
-                return untilStatus.document_id;
+        if (MessagesController.getInstance(UserConfig.selectedAccount).premiumFeaturesBlocked()) {
+            return null;
+        }
+        if (emojiStatus instanceof TLRPC.TL_emojiStatus) {
+            final TLRPC.TL_emojiStatus status = (TLRPC.TL_emojiStatus) emojiStatus;
+            if ((status.flags & 1) != 0 && status.until <= (int) (System.currentTimeMillis() / 1000)) {
+                return null;
             }
+            return status.document_id;
+        }
+        if (emojiStatus instanceof TLRPC.TL_emojiStatusCollectible) {
+            final TLRPC.TL_emojiStatusCollectible status = (TLRPC.TL_emojiStatusCollectible) emojiStatus;
+            if ((status.flags & 1) != 0 && status.until <= (int) (System.currentTimeMillis() / 1000)) {
+                return null;
+            }
+            return status.document_id;
         }
         return null;
     }
@@ -191,7 +205,17 @@ public class UserObject {
     }
 
     public static long getProfileEmojiId(TLRPC.User user) {
+        if (user != null && user.emoji_status instanceof TLRPC.TL_emojiStatusCollectible) {
+            return ((TLRPC.TL_emojiStatusCollectible) user.emoji_status).pattern_document_id;
+        }
         if (user != null && user.profile_color != null && (user.profile_color.flags & 2) != 0) return user.profile_color.background_emoji_id;
+        return 0;
+    }
+
+    public static long getProfileCollectibleId(TLRPC.User user) {
+        if (user != null && user.emoji_status instanceof TLRPC.TL_emojiStatusCollectible) {
+            return ((TLRPC.TL_emojiStatusCollectible) user.emoji_status).collectible_id;
+        }
         return 0;
     }
 }

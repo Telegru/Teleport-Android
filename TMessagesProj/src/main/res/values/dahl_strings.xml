@@ -31,4 +31,7 @@
     <string name="FoldersInfiniteScrolling">Листать по кругу</string>
     <string name="AllFolders">Все папки</string>
     <string name="HideFolders">Скрыть</string>
+
+    <string name="ImportantNotice">Важное замечание</string>
+    <string name="ImportantMessage">Это неофициальная версия Телеграм. Нажимая \'Подтвердить\', вы подтверждаете, что ознакомились с этим сообщением и согласны продолжить. Скоро здесь появится множество дополнительных функций, которых нет в основном приложении Телеграм.</string>
 </resources>

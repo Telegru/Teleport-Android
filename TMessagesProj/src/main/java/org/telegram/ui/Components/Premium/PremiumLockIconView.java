@@ -26,6 +26,7 @@ public class PremiumLockIconView extends ImageView {
     public static int TYPE_REACTIONS = 0;
     public static int TYPE_STICKERS_PREMIUM_LOCKED = 1;
     public static int TYPE_REACTIONS_LOCK = 2;
+    public static int TYPE_GIFT_LOCK = 3;
 
     private final int type;
     public boolean isEnter;
@@ -56,6 +57,9 @@ public class PremiumLockIconView extends ImageView {
         } else if (type == TYPE_REACTIONS_LOCK) {
             iconScale = .8f;
             paint.setColor(Theme.getColor(Theme.key_windowBackgroundGray));
+        } else if (type == TYPE_GIFT_LOCK) {
+            setScaleType(ScaleType.CENTER);
+            setImageResource(R.drawable.msg_archive_hide);
         }
     }
 
@@ -96,6 +100,9 @@ public class PremiumLockIconView extends ImageView {
 
     public void setColor(int color) {
         colorRetrieved = true;
+        if (blendColor != null) {
+            color = Theme.blendOver(color, blendColor);
+        }
         if (currentColor != color) {
             currentColor = color;
             if (type == TYPE_REACTIONS || type == TYPE_REACTIONS_LOCK) {
@@ -269,6 +276,11 @@ public class PremiumLockIconView extends ImageView {
         waitingImage = true;
         wasDrawn = false;
         invalidate();
+    }
+
+    private Integer blendColor;
+    public void setBlendWithColor(Integer color) {
+        blendColor = color;
     }
 
     public boolean done() {
