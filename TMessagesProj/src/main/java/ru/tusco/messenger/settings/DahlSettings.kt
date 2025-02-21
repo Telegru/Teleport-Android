@@ -80,4 +80,35 @@ object DahlSettings {
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
+    @JvmStatic
+    var isProxyEnabled: Boolean
+        get() = sharedPreferences.getBoolean("dahl_proxy_enabled", false)
+        set(value) {
+            putBoolean("dahl_proxy_enabled", value)
+//            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isHidePhoneNumber: Boolean
+        get() = sharedPreferences.getBoolean("hide_phone_number_in_menu", false)
+        set(value) {
+            putBoolean("hide_phone_number_in_menu", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isMessagesReadStatus: Boolean
+        get() = sharedPreferences.getBoolean("messages_read_status", false)
+        set(value) {
+            putBoolean("messages_read_status", value)
+//            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isOffline: Boolean
+        get() = sharedPreferences.getBoolean("offline_mode", false)
+        set(value) {
+            putBoolean("offline_mode", value)
+//            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
 }

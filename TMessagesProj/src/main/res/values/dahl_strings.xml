@@ -31,4 +31,20 @@
     <string name="FoldersInfiniteScrolling">Листать по кругу</string>
     <string name="AllFolders">Все папки</string>
     <string name="HideFolders">Скрыть</string>
+    <string name="Categories">Категории</string>
+    <string name="Links">Ссылки</string>
+    <string name="DahlSupportInfo">Пожалуйста, обратите внимание, что в поддержке Даль отвечают волонтеры. Мы постараемся помочь, как можно скорее, но ожидание может занять время.</string>
+    <string name="ConnectionType">Тип соединения</string>
+    <string name="ProxyDahl">Прокси Даль</string>
+    <string name="ProxyDahlInfo">Включайте при сбоях в соединении.</string>
+    <string name="Profile">Профиль</string>
+    <string name="HidePhoneNumber">Скрыть номер телефона</string>
+    <string name="HidePhoneNumberInfo">Номер будет скрыт только из меню Настроек.</string>
+    <string name="Privacy">Приватность</string>
+    <string name="MessagesStatus">Статус прочтения сообщений</string>
+    <string name="MessagesStatusInfo">Ваш собеседник не будет видеть, что его сообщение прочитано</string>
+    <string name="OfflineMode">Режим \"Оффлайн\"</string>
+    <string name="OfflineModeInfo">Для других вы всегда будете в оффлайн режиме</string>
+    <string name="PremiumFeatures">Premium функции</string>
+    <string name="PremiumFeaturesInfo">Настройте Premium функции под себя.</string>
 </resources>

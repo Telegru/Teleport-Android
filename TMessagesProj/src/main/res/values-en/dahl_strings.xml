@@ -32,4 +32,20 @@
     <string name="FoldersInfiniteScrolling">Scroll in a loop</string>
     <string name="AllFolders">All folders</string>
     <string name="HideFolders">Hide</string>
+    <string name="Categories">Categories</string>
+    <string name="Links">Links</string>
+    <string name="DahlSupportInfo">Please note that Dahl Support is done by volunteers. We try to respond as quickly as possible, but it may take a while.</string>
+    <string name="ConnectionType">Connection type</string>
+    <string name="ProxyDahl">Proxy Dahl</string>
+    <string name="ProxyDahlInfo">Turn on in case of connection failures.</string>
+    <string name="Profile">Profile</string>
+    <string name="HidePhoneNumber">Hide phone number</string>
+    <string name="HidePhoneNumberInfo">The number will only be hidden from the Settings menu.</string>
+    <string name="Privacy">Privacy</string>
+    <string name="MessagesStatus">Message read status</string>
+    <string name="MessagesStatusInfo">Your contact will not see that their message has been read.</string>
+    <string name="OfflineMode">\"Offline\" mode</string>
+    <string name="OfflineModeInfo">For others, you’ll always appear in offline mode.</string>
+    <string name="PremiumFeatures">Premium features</string>
+    <string name="PremiumFeaturesInfo">Customize Premium features for yourself.</string>
 </resources>
