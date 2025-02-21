@@ -3584,8 +3584,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         }
                     }
 
+                    int selectedTabColor = DahlSettings.isFoldersTabsAtBottom() ? Theme.getColor(Theme.key_actionBarActionModeDefault) : Theme.getColor(Theme.key_actionBarDefault);
+                    int topCorners = DahlSettings.isFoldersTabsAtBottom() ? 0 : dp(6);
+                    int bottomCorners = DahlSettings.isFoldersTabsAtBottom() ? dp(6) : 0;
                     filterOptions = ItemOptions.makeOptions(DialogsActivity.this, tabView)
-                            .setScrimViewBackground(Theme.createRoundRectDrawable(dp(6), 0, Theme.getColor(Theme.key_actionBarDefault)))
+                            .setScrimViewBackground(Theme.createRoundRectDrawable(topCorners, bottomCorners, selectedTabColor))
                             .addIf(getMessagesController().getDialogFilters().size() > 1, R.drawable.tabs_reorder, getString(R.string.FilterReorder), () -> {
                                 resetScroll();
                                 filterTabsView.setIsEditing(true);
@@ -3622,7 +3625,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 showDeleteAlert(dialogFilter);
                             })
                             .setGravity(Gravity.LEFT)
-                            .translate(dp(-8), dp(-10))
+                            .translate(dp(-8), DahlSettings.isFoldersTabsAtBottom() ? dp(10) : dp(-10))
                             .show();
 
                     return true;
@@ -6879,10 +6882,27 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void updateFloatingButtonBottomMargin(){
-        int fabBottomMargin = (filterTabsView != null && !filterTabsView.isEmpty() && DahlSettings.isFoldersTabsAtBottom()) ? (14 + 44) : 14;
-        FrameLayout.LayoutParams params = LayoutHelper.createFrame(56, 56, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, fabBottomMargin);
-        floatingButtonContainer.setLayoutParams(params);
-        floatingButtonContainer.requestLayout();
+        boolean tabsAtBottom = (filterTabsView != null && !filterTabsView.isEmpty() && DahlSettings.isFoldersTabsAtBottom());
+        if(floatingButtonContainer != null) {
+            int fabBottomMargin = tabsAtBottom ? (14 + 44) : 14;
+            FrameLayout.LayoutParams params = LayoutHelper.createFrame(56, 56, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, fabBottomMargin);
+            floatingButtonContainer.setLayoutParams(params);
+            floatingButtonContainer.requestLayout();
+        }
+
+        if(writeButtonContainer != null) {
+            int writeBottomMargin = tabsAtBottom ? (10 + 44) : 10;
+            FrameLayout.LayoutParams writeParams = LayoutHelper.createFrame(60, 60, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 6, writeBottomMargin);
+            writeButtonContainer.setLayoutParams(writeParams);
+            writeButtonContainer.requestLayout();
+        }
+
+        if(commentView != null){
+            int commentBottomMargin = tabsAtBottom ? 44 : 0;
+            FrameLayout.LayoutParams commentParams = LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 0, 0, 0, commentBottomMargin);
+            commentView.setLayoutParams(commentParams);
+            commentView.requestLayout();
+        }
     }
 
     private void updateDrawerSwipeEnabled() {
