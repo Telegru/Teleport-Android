@@ -6879,10 +6879,27 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void updateFloatingButtonBottomMargin(){
-        int fabBottomMargin = (filterTabsView != null && !filterTabsView.isEmpty() && DahlSettings.isFoldersTabsAtBottom()) ? (14 + 44) : 14;
-        FrameLayout.LayoutParams params = LayoutHelper.createFrame(56, 56, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, fabBottomMargin);
-        floatingButtonContainer.setLayoutParams(params);
-        floatingButtonContainer.requestLayout();
+        boolean tabsAtBottom = (filterTabsView != null && !filterTabsView.isEmpty() && DahlSettings.isFoldersTabsAtBottom());
+        if(floatingButtonContainer != null) {
+            int fabBottomMargin = tabsAtBottom ? (14 + 44) : 14;
+            FrameLayout.LayoutParams params = LayoutHelper.createFrame(56, 56, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, fabBottomMargin);
+            floatingButtonContainer.setLayoutParams(params);
+            floatingButtonContainer.requestLayout();
+        }
+
+        if(writeButtonContainer != null) {
+            int writeBottomMargin = tabsAtBottom ? (10 + 44) : 10;
+            FrameLayout.LayoutParams writeParams = LayoutHelper.createFrame(60, 60, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 6, writeBottomMargin);
+            writeButtonContainer.setLayoutParams(writeParams);
+            writeButtonContainer.requestLayout();
+        }
+
+        if(commentView != null){
+            int commentBottomMargin = tabsAtBottom ? 44 : 0;
+            FrameLayout.LayoutParams commentParams = LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 0, 0, 0, commentBottomMargin);
+            commentView.setLayoutParams(commentParams);
+            commentView.requestLayout();
+        }
     }
 
     private void updateDrawerSwipeEnabled() {
