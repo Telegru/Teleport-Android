@@ -2,6 +2,7 @@ package org.telegram.ui.Cells;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
@@ -32,6 +33,8 @@ import org.telegram.ui.Components.MotionBackgroundDrawable;
 import org.telegram.ui.Components.RadialProgress2;
 
 import java.io.File;
+
+import ru.tusco.messenger.DefaultWallpapersHelper;
 
 public class PatternCell extends BackupImageView implements DownloadController.FileDownloadProgressListener {
 
@@ -97,7 +100,9 @@ public class PatternCell extends BackupImageView implements DownloadController.F
         currentPattern = wallPaper;
         if (wallPaper != null) {
             if(wallPaper.document.localPath != null){
-                setImage(wallPaper.document.localPath,SIZE + "_" + SIZE, null);
+                int size = AndroidUtilities.dp(SIZE);
+                String cropped = DefaultWallpapersHelper.getCroppedBitmapPath(wallPaper.document.localPath, size, size);
+                setImage(cropped,SIZE + "_" + SIZE, null);
             }else {
                 TLRPC.PhotoSize thumb = FileLoader.getClosestPhotoSizeWithSize(wallPaper.document.thumbs, AndroidUtilities.dp(SIZE));
                 setImage(ImageLocation.getForDocument(thumb, wallPaper.document), SIZE + "_" + SIZE, null, null, "png", 0, 1, wallPaper);

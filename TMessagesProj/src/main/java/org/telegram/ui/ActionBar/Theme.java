@@ -153,6 +153,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
 import ru.tusco.messenger.DahlWallpaper;
+import ru.tusco.messenger.DefaultWallpapersHelper;
 
 public class Theme {
 
@@ -2633,11 +2634,12 @@ public class Theme {
                     themeAccent.myMessagesGradientAccentColor2 = 0xff8849b4;
                     themeAccent.myMessagesGradientAccentColor3 = 0xffa751a8;
                     if (name.equals("Night")) {
+                        int[] colors = DahlWallpaper.Russia.INSTANCE.getDarkColors();
                         themeAccent.patternIntensity = -0.57f;
-                        themeAccent.backgroundOverrideColor = 0xff6c7fa6;
-                        themeAccent.backgroundGradientOverrideColor1 = 0xff2e344b;
-                        themeAccent.backgroundGradientOverrideColor2 = 0xff7874a7;
-                        themeAccent.backgroundGradientOverrideColor3 = 0xff333258;
+                        themeAccent.backgroundOverrideColor = colors[0];
+                        themeAccent.backgroundGradientOverrideColor1 = colors[1];
+                        themeAccent.backgroundGradientOverrideColor2 = colors[2];
+                        themeAccent.backgroundGradientOverrideColor3 = colors[3];
                     }
                 }
                 themeAccentsMap.put(themeAccent.id, themeAccent);
@@ -9752,7 +9754,8 @@ public class Theme {
     }
 
     public static boolean hasWallpaperFromTheme() {
-        if (currentTheme.firstAccentIsDefault && currentTheme.currentAccentId == DEFALT_THEME_ACCENT_ID) {
+        if (currentTheme.firstAccentIsDefault && currentTheme.currentAccentId == DEFALT_THEME_ACCENT_ID
+         || currentTheme.name.equals("Night") && currentTheme.currentAccentId == 0) {
             return false;
         }
         return currentColors.indexOfKey(key_chat_wallpaper) >= 0 || themedWallpaperFileOffset > 0 || !TextUtils.isEmpty(themedWallpaperLink);
@@ -9978,6 +9981,7 @@ public class Theme {
                             patternBitmap = SvgHelper.getBitmap(f, dp(360), dp(640), false);
                         } else {
                             patternBitmap = SvgHelper.getBitmap(R.raw.dahl_wallpaper_russia, dp(360), dp(640), Color.WHITE);
+                            patternBitmap = DefaultWallpapersHelper.createTiledBitmap(patternBitmap, AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
                             //patternBitmap = SvgHelper.getBitmap(R.raw.default_pattern, dp(360), dp(640), Color.WHITE);
                         }
                         if (patternBitmap != null) {
@@ -10150,12 +10154,17 @@ public class Theme {
 //        MotionBackgroundDrawable motionBackgroundDrawable = new MotionBackgroundDrawable(0xffdbddbb, 0xff6ba587, 0xffd5d88d, 0xff88b884, w != 0);
         int[] colors = DahlWallpaper.Russia.INSTANCE.getColors();
         MotionBackgroundDrawable motionBackgroundDrawable = new MotionBackgroundDrawable(colors[0], colors[1], colors[2], colors[3], w != 0);
+        Bitmap bitmap = null;
         if (w <= 0 || h <= 0) {
             w = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
             h = Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
+            bitmap = BitmapFactory.decodeFile(DahlWallpaper.Russia.INSTANCE.getPath());
+        }
+        if(bitmap == null){
+            bitmap = SvgHelper.getBitmap(R.raw.dahl_wallpaper_russia, w, h, Color.BLACK);
         }
         //motionBackgroundDrawable.setPatternBitmap(34, SvgHelper.getBitmap(R.raw.default_pattern, w, h, Color.BLACK));
-        motionBackgroundDrawable.setPatternBitmap(50, SvgHelper.getBitmap(R.raw.dahl_wallpaper_russia, w, h, Color.BLACK));
+        motionBackgroundDrawable.setPatternBitmap(50, bitmap);
         motionBackgroundDrawable.setPatternColorFilter(motionBackgroundDrawable.getPatternColor());
         return motionBackgroundDrawable;
     }

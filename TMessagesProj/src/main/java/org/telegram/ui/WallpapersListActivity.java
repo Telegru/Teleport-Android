@@ -378,9 +378,10 @@ public class WallpapersListActivity extends BaseFragment implements Notification
             gradientColor2 = colors[2];
             gradientColor3 = colors[3];
             gradientRotation = 45;
-            intensity = isDarkTheme ? -0.4f : 1.0f;
+            intensity = isDarkTheme ? -0.3f : 1f;
             path = new File(dahlWallpaper.getPath());
             isDahlWallpaper = true;
+            pattern = dahlWallpaper.toPattern(isDarkTheme);
         }
 
         public String getUrl() {
@@ -1001,6 +1002,15 @@ public class WallpapersListActivity extends BaseFragment implements Notification
                     colorWallpaper.parentWallpaper = wallPaper;
                     object = colorWallpaper;
                 }
+            }else if(object instanceof ColorWallpaper){
+                ColorWallpaper wallpaper = (ColorWallpaper) object;
+                if(wallpaper.slug.startsWith("custom_")){
+                    String s = wallpaper.slug.replace("custom_", "");
+                    DahlWallpaper dw = DahlWallpaper.Companion.getBySlug(s);
+                    if(dw != null){
+                        wallpaper.pattern = dw.toPattern(Theme.isCurrentThemeDark());
+                    }
+                }
             }
             ThemePreviewActivity wallpaperActivity = new ThemePreviewActivity(object, null, true, false) {
                 @Override
@@ -1073,6 +1083,9 @@ public class WallpapersListActivity extends BaseFragment implements Notification
                 allWallPapers.addAll(arrayList);
             }
             ArrayList<TLRPC.WallPaper> wallPapersToDelete = null;
+            for(DahlWallpaper dw : DahlWallpaper.Companion.getItems()){
+                allWallPapersDict.put(dw.getSlug(), dw.toPattern(Theme.isCurrentThemeDark()));
+            }
             for (int a = 0, N = arrayList.size(); a < N; a++) {
                 TLRPC.WallPaper wallPaper = arrayList.get(a);
                 if ("fqv01SQemVIBAAAApND8LDRUhRU".equals(wallPaper.slug)) {
@@ -1207,6 +1220,9 @@ public class WallpapersListActivity extends BaseFragment implements Notification
                         wallPapers.add(colorWallpaper);
                     }
                 }
+                for(DahlWallpaper dw : DahlWallpaper.Companion.getItems()){
+                    allWallPapersDict.put(dw.getSlug(), dw.toPattern(Theme.isCurrentThemeDark()));
+                }
                 fillWallpapersWithCustom();
                 getMessagesStorage().putWallpapers(res.wallpapers, 1);
             }
@@ -1250,12 +1266,6 @@ public class WallpapersListActivity extends BaseFragment implements Notification
             String slug = ((ColorWallpaper)o).slug;
             return DahlWallpaper.Companion.getSlugs().contains(slug);
         });
-
-        List<ColorWallpaper> dahlWallpapers = Arrays.stream(DahlWallpaper.Companion.getItems())
-                .map(dahlWallpaper -> new ColorWallpaper(dahlWallpaper, Theme.isCurrentThemeDark()))
-                .toList();
-
-        wallPapers.addAll(0, dahlWallpapers);
 
         Object object = null;
         for (int a = 0, N = wallPapers.size(); a < N; a++) {
@@ -1377,6 +1387,16 @@ public class WallpapersListActivity extends BaseFragment implements Notification
         } catch (Exception e) {
             FileLog.e(e);
         }
+
+        List<ColorWallpaper> dahlWallpapers = new ArrayList<>(DahlWallpaper.Companion.getItems().length);
+        for(DahlWallpaper dw: DahlWallpaper.Companion.getItems()){
+            ColorWallpaper cw = new ColorWallpaper(dw, Theme.isCurrentThemeDark());
+            dahlWallpapers.add(cw);
+            patterns.add(cw.pattern);
+            patternsDict.put(cw.pattern.document.id, cw.pattern);
+        }
+        wallPapers.addAll(0, dahlWallpapers);
+
         if (Theme.hasWallpaperFromTheme() && !Theme.isThemeWallpaperPublic()) {
             if (themeWallpaper == null) {
                 themeWallpaper = new FileWallpaper(Theme.THEME_BACKGROUND_SLUG, -2, -2);
