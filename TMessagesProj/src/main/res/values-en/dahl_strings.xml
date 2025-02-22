@@ -22,7 +22,7 @@
 
     <string name="ThemeDahl">Dahl</string>
     <string name="SettingsDahl">Settings Dahl</string>
-    <string name="IconsVkUI">Icons VK UI</string>
+    <string name="IconsVkUI">Use VK UI set</string>
     <string name="RestartToast">Restart app to apply changes</string>
 
     <string name="ChatsSettings">Chats</string>
@@ -48,4 +48,13 @@
     <string name="OfflineModeInfo">For others, you’ll always appear in offline mode.</string>
     <string name="PremiumFeatures">Premium features</string>
     <string name="PremiumFeaturesInfo">Customize Premium features for yourself.</string>
+    <string name="DisableInChatsAndChannels">Disable in chats and channels</string>
+    <string name="BottomPanelInChannels">Bottom panel in channels</string>
+    <string name="Wallpapers">Wallpapers</string>
+    <string name="PersonalColors">Personal colors</string>
+    <string name="TgSettingsMenu">Telegram settings menu</string>
+    <string name="HideHelpBlock">Hide "Help" block</string>
+    <string name="NavigationDrawer">Side menu</string>
+    <string name="NavigationDrawerItems">Side menu items</string>
+    <string name="Icons">Icons</string>
 </resources>

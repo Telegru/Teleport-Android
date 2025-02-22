@@ -14,20 +14,29 @@ object DahlSettings {
     val isSquaringEnabled = true
     val avatarCornerRadius = if (isSquaringEnabled) 16 else AndroidUtilities.dp(28f)
 
-    private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
+    private val sharedPreferences: SharedPreferences =
+        ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
     fun putBoolean(key: String, value: Boolean) {
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-        val editor = preferences.edit()
+        val editor = sharedPreferences.edit()
         editor.putBoolean(key, value)
         editor.apply()
     }
 
     fun putInt(key: String, value: Int) {
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-        val editor = preferences.edit()
+        val editor = sharedPreferences.edit()
         editor.putInt(key, value)
         editor.apply()
+    }
+
+    fun putStringSet(key: String, value: Set<String>) {
+        val editor = sharedPreferences.edit()
+        editor.putStringSet(key, value)
+        editor.apply()
+    }
+
+    fun remove(key: String) {
+        sharedPreferences.edit().remove(key).apply()
     }
 
     const val NO_REPLACEMENT = 0
@@ -97,10 +106,10 @@ object DahlSettings {
         }
 
     @JvmStatic
-    var isMessagesReadStatus: Boolean
-        get() = sharedPreferences.getBoolean("messages_read_status", false)
+    var hideMessageReadStatus: Boolean
+        get() = sharedPreferences.getBoolean("hide_message_read_status", false)
         set(value) {
-            putBoolean("messages_read_status", value)
+            putBoolean("hide_message_read_status", value)
 //            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
@@ -109,6 +118,40 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("offline_mode", false)
         set(value) {
             putBoolean("offline_mode", value)
-//            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isHiddenBottomPanelInChannels: Boolean
+        get() = sharedPreferences.getBoolean("hide_bottom_panel_in_channels", false)
+        set(value) {
+            putBoolean("hide_bottom_panel_in_channels", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isDisabledPersonalColors: Boolean
+        get() = sharedPreferences.getBoolean("disabled_personal_colors", false)
+        set(value) {
+            putBoolean("disabled_personal_colors", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isHiddenHelpBlock: Boolean
+        get() = sharedPreferences.getBoolean("hide_help_block", false)
+        set(value) {
+            putBoolean("hide_help_block", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    var navigationDrawerItems: Set<String>?
+        get() = sharedPreferences.getStringSet("navigation_drawer_items", null)
+        set(value) {
+            if (value != null) {
+                putStringSet("navigation_drawer_items", value)
+            } else {
+                remove("navigation_drawer_items")
+            }
         }
 }

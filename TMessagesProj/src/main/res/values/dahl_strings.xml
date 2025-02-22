@@ -21,7 +21,7 @@
 
     <string name="ThemeDahl">Даль</string>
     <string name="SettingsDahl">Настройки Даль</string>
-    <string name="IconsVkUI">Иконки VK UI</string>
+    <string name="IconsVkUI">Использовать набор VK UI</string>
     <string name="RestartToast">Чтобы изменения вступили в силу перезапустите приложение</string>
 
     <string name="ChatsSettings">Чаты</string>
@@ -47,4 +47,14 @@
     <string name="OfflineModeInfo">Для других вы всегда будете в оффлайн режиме</string>
     <string name="PremiumFeatures">Premium функции</string>
     <string name="PremiumFeaturesInfo">Настройте Premium функции под себя.</string>
+    <string name="DisableInChatsAndChannels">Отключить в чатах и каналах</string>
+    <string name="BottomPanelInChannels">Нижнюю панель в каналах</string>
+    <string name="PersonalColors">Персональные цвета</string>
+    <string name="Wallpapers">Обои</string>
+    <string name="TgSettingsMenu">Меню настроек Telegram</string>
+    <string name="HideHelpBlock">Скрыть блок \"Помощь\"</string>
+    <string name="NavigationDrawer">Боковое меню</string>
+    <string name="NavigationDrawerItems">Пункты бокового меню</string>
+    <string name="Icons">Иконки</string>
+
 </resources>

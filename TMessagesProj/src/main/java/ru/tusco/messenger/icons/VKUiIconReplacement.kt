@@ -112,5 +112,6 @@ class VKUiIconReplacement: BaseIconReplacement() {
         R.drawable.msg_view_file to R.drawable.view_outline_28,
         R.drawable.chats_saved to R.drawable.bookmark_outline_28,
         R.drawable.profile_newmsg to R.drawable.comment_outline_28,
+        R.drawable.msg_media to R.drawable.all_categories_outline_28
     )
 }

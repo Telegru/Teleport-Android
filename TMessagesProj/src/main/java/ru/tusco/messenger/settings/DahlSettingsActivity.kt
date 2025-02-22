@@ -41,8 +41,8 @@ class DahlSettingsActivity : UniversalFragment() {
 
     override fun fillItems(items: ArrayList<UItem>?, adapter: UniversalAdapter?) {
         items?.add(UItem.asHeader(getString(R.string.Categories)))
-        items?.add(UItem.asButton(GENERAL, R.drawable.all_categories_outline_28, getString(R.string.General)))
-        items?.add(UItem.asButton(APPEARANCE, R.drawable.palette_outline_28, getString(R.string.Appearance)))
+        items?.add(UItem.asButton(GENERAL, R.drawable.msg_media, getString(R.string.General)))
+        items?.add(UItem.asButton(APPEARANCE, R.drawable.msg_theme, getString(R.string.Appearance)))
         items?.add(UItem.asButton(CHATS, R.drawable.msg2_discussion, getString(R.string.ChatsSettings)))
 
         items?.add(UItem.asShadow(-3, null))
@@ -54,6 +54,7 @@ class DahlSettingsActivity : UniversalFragment() {
     override fun onClick(item: UItem?, view: View?, position: Int, x: Float, y: Float) {
         when (item?.id) {
             GENERAL -> presentFragment(GeneralSettingsActivity())
+            APPEARANCE -> presentFragment(AppearanceSettingsActivity())
             CHATS -> presentFragment(ChatsSettingsActivity())
             SUPPORT -> showSupportAlert()
             else -> {}

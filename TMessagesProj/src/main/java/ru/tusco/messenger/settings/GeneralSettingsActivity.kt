@@ -22,6 +22,7 @@ class GeneralSettingsActivity : UniversalFragment() {
     override fun getTitle(): CharSequence = getString(R.string.General)
 
     override fun fillItems(items: ArrayList<UItem>?, adapter: UniversalAdapter?) {
+
         items?.add(UItem.asHeader(getString(R.string.ConnectionType)))
         items?.add(UItem.asCheck(PROXY, getString(R.string.ProxyDahl)).setChecked(DahlSettings.isProxyEnabled))
         items?.add(UItem.asShadow(getString(R.string.ProxyDahlInfo)))
@@ -38,7 +39,7 @@ class GeneralSettingsActivity : UniversalFragment() {
                     setTextAndValueAndCheck(
                         getString(R.string.MessagesStatus),
                         getString(R.string.MessagesStatusInfo),
-                        DahlSettings.isMessagesReadStatus,
+                        DahlSettings.hideMessageReadStatus,
                         true,
                         true
                     )
@@ -69,7 +70,14 @@ class GeneralSettingsActivity : UniversalFragment() {
     }
 
     override fun onClick(item: UItem?, view: View?, position: Int, x: Float, y: Float) {
-
+        when(item?.id){
+            PROXY -> DahlSettings.isProxyEnabled = !DahlSettings.isProxyEnabled
+            HIDE_PHONE_NUMBER -> DahlSettings.isHidePhoneNumber = !DahlSettings.isHidePhoneNumber
+            MESSAGE_READ_STATUS -> DahlSettings.hideMessageReadStatus = !DahlSettings.hideMessageReadStatus
+            OFFLINE_MODE -> DahlSettings.isOffline = !DahlSettings.isOffline
+            else -> {}
+        }
+        listView.adapter.update(true)
     }
 
     override fun onLongClick(item: UItem?, view: View?, position: Int, x: Float, y: Float): Boolean = false
