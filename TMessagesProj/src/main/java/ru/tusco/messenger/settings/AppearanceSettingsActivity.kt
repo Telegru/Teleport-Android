@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.core.util.forEach
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -55,26 +54,26 @@ class AppearanceSettingsActivity : UniversalFragment() {
 
     override fun fillItems(items: ArrayList<UItem>?, adapter: UniversalAdapter?) {
 
-        items?.add(UItem.asHeader(getString(R.string.DisableInChatsAndChannels)))
-        items?.add(
-            UItem.asCheck(BOTTOM_PANEL, getString(R.string.BottomPanelInChannels)).setChecked(DahlSettings.isHiddenBottomPanelInChannels)
-        )
-        items?.add(UItem.asCheck(PERSONAL_COLORS, getString(R.string.PersonalColors)).setChecked(DahlSettings.isDisabledPersonalColors))
-
-        items?.add(UItem.asShadow(-3, null))
+//        items?.add(UItem.asHeader(getString(R.string.EnableInChatsAndChannels)))
+//        items?.add(
+//            UItem.asCheck(BOTTOM_PANEL, getString(R.string.BottomPanelInChannels)).setChecked(DahlSettings.isShowBottomPanelInChannels)
+//        )
+//        items?.add(UItem.asCheck(PERSONAL_COLORS, getString(R.string.PersonalColors)).setChecked(DahlSettings.isEnabledPersonalColors))
+//
+//        items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.Profile)))
         items?.add(UItem.asButton(WALLPAPERS, getString(R.string.Wallpapers)))
 
-        items?.add(UItem.asShadow(-3, null))
-
-        items?.add(UItem.asHeader(getString(R.string.TgSettingsMenu)))
-        items?.add(UItem.asCheck(HIDE_HELP, getString(R.string.HideHelpBlock)).setChecked(DahlSettings.isHiddenHelpBlock))
-
-        items?.add(UItem.asShadow(-3, null))
-
-        items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
-        items?.add(UItem.asButton(NAVIGATION_DRAWER, getString(R.string.NavigationDrawerItems)))
+//        items?.add(UItem.asShadow(-3, null))
+//
+//        items?.add(UItem.asHeader(getString(R.string.TgSettingsMenu)))
+//        items?.add(UItem.asCheck(HIDE_HELP, getString(R.string.HideHelpBlock)).setChecked(DahlSettings.isHiddenHelpBlock))
+//
+//        items?.add(UItem.asShadow(-3, null))
+//
+//        items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
+//        items?.add(UItem.asButton(NAVIGATION_DRAWER, getString(R.string.NavigationDrawerItems)))
 
         items?.add(UItem.asShadow(-3, null))
 
@@ -90,8 +89,8 @@ class AppearanceSettingsActivity : UniversalFragment() {
     override fun onClick(item: UItem?, view: View?, position: Int, x: Float, y: Float) {
 //        var showRestartAppMessage = false
         when (item?.id) {
-            BOTTOM_PANEL -> DahlSettings.isHiddenBottomPanelInChannels = !DahlSettings.isHiddenBottomPanelInChannels
-            PERSONAL_COLORS -> DahlSettings.isDisabledPersonalColors = !DahlSettings.isDisabledPersonalColors
+            BOTTOM_PANEL -> DahlSettings.isShowBottomPanelInChannels = !DahlSettings.isShowBottomPanelInChannels
+            PERSONAL_COLORS -> DahlSettings.isEnabledPersonalColors = !DahlSettings.isEnabledPersonalColors
             WALLPAPERS -> presentFragment(WallpapersListActivity(WallpapersListActivity.TYPE_ALL))
             HIDE_HELP -> DahlSettings.isHiddenHelpBlock = !DahlSettings.isHiddenHelpBlock
             NAVIGATION_DRAWER -> {}

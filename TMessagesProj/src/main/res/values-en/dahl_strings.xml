@@ -28,10 +28,9 @@
     <string name="ChatsSettings">Chats</string>
     <string name="ChatsFolders">Folders</string>
     <string name="FoldersAtBottom">Move to the bottom</string>
-    <string name="HideAllChatsFolder">\"All Chats\" folder</string>
+    <string name="HideAllChatsFolder">Hide \"All Chats\" folder</string>
     <string name="FoldersInfiniteScrolling">Scroll in a loop</string>
-    <string name="AllFolders">All folders</string>
-    <string name="HideFolders">Hide</string>
+    <string name="ShowAllFolderss">Show all folders</string>
     <string name="Categories">Categories</string>
     <string name="Links">Links</string>
     <string name="DahlSupportInfo">Please note that Dahl Support is done by volunteers. We try to respond as quickly as possible, but it may take a while.</string>
@@ -48,7 +47,7 @@
     <string name="OfflineModeInfo">For others, you’ll always appear in offline mode.</string>
     <string name="PremiumFeatures">Premium features</string>
     <string name="PremiumFeaturesInfo">Customize Premium features for yourself.</string>
-    <string name="DisableInChatsAndChannels">Disable in chats and channels</string>
+    <string name="EnableInChatsAndChannels">Disable in chats and channels</string>
     <string name="BottomPanelInChannels">Bottom panel in channels</string>
     <string name="Wallpapers">Wallpapers</string>
     <string name="PersonalColors">Personal colors</string>
@@ -57,4 +56,21 @@
     <string name="NavigationDrawer">Side menu</string>
     <string name="NavigationDrawerItems">Side menu items</string>
     <string name="Icons">Icons</string>
+    <string name="BlockPremium">Premium block</string>
+    <string name="HideFromSettings">Hide from settings</string>
+    <string name="HidePremiumInfo">The setup of Premium features will be hidden from the general \"Settings\" section.</string>
+    <string name="StatusIcons">Status icons</string>
+    <string name="AnimatedAvatars">Animated avatars</string>
+    <string name="CustomChannelsWallpapers">Custom wallpapers in channels</string>
+    <string name="AnimatedReactions">Animated reactions</string>
+    <string name="AnimatedPremiumStickers">Animated Premium stickers</string>
+    <string name="TouchPremiumStickers">Tapping on premium stickers</string>
+    <string name="Stories">Stories</string>
+    <string name="HideStories">Hide stories</string>
+    <string name="HideAddStory">Hide create button</string>
+    <string name="NeedConfirm">Confirm</string>
+    <string name="ConfirmCalling">Calling</string>
+    <string name="ConfirmAudioMessage">Audio message sending</string>
+    <string name="ConfirmVideoMessageCamera">Camera for video messages</string>
+    <string name="AlwaysAsk">Always ask</string>
 </resources>
