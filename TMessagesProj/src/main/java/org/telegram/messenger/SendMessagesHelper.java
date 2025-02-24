@@ -56,6 +56,7 @@ import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -87,8 +88,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -589,6 +588,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         public String path;
         public String caption;
         public String thumbPath;
+        public String coverPath;
         public String paintPath;
         public int ttl;
         public ArrayList<TLRPC.MessageEntity> entities;
@@ -1861,10 +1861,10 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     }
 
     public int sendMessage(ArrayList<MessageObject> messages, final long peer, boolean forwardFromMyName, boolean hideCaption, boolean notify, int scheduleDate) {
-        return sendMessage(messages, peer, forwardFromMyName, hideCaption, notify, scheduleDate, null);
+        return sendMessage(messages, peer, forwardFromMyName, hideCaption, notify, scheduleDate, null, -1);
     }
 
-    public int sendMessage(ArrayList<MessageObject> messages, final long peer, boolean forwardFromMyName, boolean hideCaption, boolean notify, int scheduleDate, MessageObject replyToTopMsg) {
+    public int sendMessage(ArrayList<MessageObject> messages, final long peer, boolean forwardFromMyName, boolean hideCaption, boolean notify, int scheduleDate, MessageObject replyToTopMsg, int video_timestamp) {
         if (messages == null || messages.isEmpty()) {
             return 0;
         }
@@ -2291,6 +2291,10 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     req.drop_author = forwardFromMyName;
                     req.drop_media_captions = hideCaption;
                     req.with_my_score = messages.size() == 1 && messages.get(0).messageOwner.with_my_score;
+                    if (video_timestamp >= 0) {
+                        req.flags |= 1048576;
+                        req.video_timestamp = video_timestamp;
+                    }
 
                     final ArrayList<TLRPC.Message> newMsgObjArr = arr;
                     final ArrayList<MessageObject> newMsgArr = new ArrayList<>(objArr);
@@ -2321,7 +2325,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                 TLRPC.Update update = updates.updates.get(a1);
                                 if (update instanceof TLRPC.TL_updateNewMessage || update instanceof TLRPC.TL_updateNewChannelMessage || update instanceof TLRPC.TL_updateNewScheduledMessage || update instanceof TLRPC.TL_updateQuickReplyMessage) {
 
-                                    boolean currentSchedule = scheduleDate != 0;
+                                    boolean currentSchedule = false;
+                                    boolean scheduled = scheduleDate != 0;
 
                                     updates.updates.remove(a1);
                                     a1--;
@@ -2330,9 +2335,11 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                         TLRPC.TL_updateNewMessage updateNewMessage = (TLRPC.TL_updateNewMessage) update;
                                         message = updateNewMessage.message;
                                         getMessagesController().processNewDifferenceParams(-1, updateNewMessage.pts, -1, updateNewMessage.pts_count);
+                                        currentSchedule = false;
                                     } else if (update instanceof TLRPC.TL_updateNewScheduledMessage) {
                                         TLRPC.TL_updateNewScheduledMessage updateNewMessage = (TLRPC.TL_updateNewScheduledMessage) update;
                                         message = updateNewMessage.message;
+                                        currentSchedule = true;
                                     } else if (update instanceof TLRPC.TL_updateQuickReplyMessage) {
                                         QuickRepliesController.getInstance(currentAccount).processUpdate(update, null, 0);
                                         TLRPC.TL_updateQuickReplyMessage updateQuickReplyMessage = (TLRPC.TL_updateQuickReplyMessage) update;
@@ -2341,6 +2348,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                         TLRPC.TL_updateNewChannelMessage updateNewChannelMessage = (TLRPC.TL_updateNewChannelMessage) update;
                                         message = updateNewChannelMessage.message;
                                         getMessagesController().processNewChannelDifferenceParams(updateNewChannelMessage.pts, updateNewChannelMessage.pts_count, message.peer_id.channel_id);
+                                        currentSchedule = false;
                                     }
                                     if (scheduledOnline && message.date != 0x7FFFFFFE) {
                                         currentSchedule = false;
@@ -2380,17 +2388,19 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                         newMsgObj1.id = message.id;
                                         sentCount++;
 
-                                        if (scheduleDate != 0 && !currentSchedule) {
+                                        if (scheduled != currentSchedule) {
+                                            final int fromMode = scheduled ? ChatActivity.MODE_SCHEDULED : 0;
+                                            final int toMode = currentSchedule ? ChatActivity.MODE_SCHEDULED : 0;
                                             AndroidUtilities.runOnUIThread(() -> {
-                                                ArrayList<Integer> messageIds = new ArrayList<>();
-                                                messageIds.add(oldId);
-                                                getMessagesController().deleteMessages(messageIds, null, null, newMsgObj1.dialog_id, newMsgObj1.quick_reply_shortcut_id, false, ChatActivity.MODE_SCHEDULED);
                                                 getMessagesStorage().getStorageQueue().postRunnable(() -> {
-                                                    getMessagesStorage().putMessages(sentMessages, true, false, false, 0, 0, 0);
+                                                    getMessagesStorage().putMessages(sentMessages, true, false, false, 0, toMode, 0);
                                                     AndroidUtilities.runOnUIThread(() -> {
+                                                        ArrayList<Integer> messageIds = new ArrayList<>();
+                                                        messageIds.add(oldId);
+                                                        getMessagesController().deleteMessages(messageIds, null, null, newMsgObj1.dialog_id, false, fromMode, false, 0, null, 0, toMode == ChatActivity.MODE_SCHEDULED, message.id);
                                                         ArrayList<MessageObject> messageObjects = new ArrayList<>();
                                                         messageObjects.add(new MessageObject(msgObj.currentAccount, msgObj.messageOwner, true, true));
-                                                        getMessagesController().updateInterfaceWithMessages(newMsgObj1.dialog_id, messageObjects, 0);
+                                                        getMessagesController().updateInterfaceWithMessages(newMsgObj1.dialog_id, messageObjects, toMode);
                                                         getMediaDataController().increasePeerRaiting(newMsgObj1.dialog_id);
                                                         processSentMessage(oldId);
                                                         removeFromSendingMessages(oldId, scheduleDate != 0);
@@ -2851,6 +2861,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         delayedMessage.performMediaUpload = performMediaUpload;
                     }
                 }
+                if (inputMedia instanceof TLRPC.TL_inputMediaEmpty && (messageObject.type == MessageObject.TYPE_TEXT || messageObject.type == MessageObject.TYPE_EMOJIS)) {
+                    inputMedia = null;
+                }
 
                 TLObject reqSend;
 
@@ -2861,6 +2874,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 if (inputMedia != null) {
                     request.flags |= 16384;
                     request.media = inputMedia;
+                } else if (!messageObject.editingMessageSearchWebPage) {
+                    request.no_webpage = true;
                 }
                 if (messageObject.scheduled) {
                     request.schedule_date = messageObject.messageOwner.date;
@@ -3398,10 +3413,10 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     }
                     parentFragment.showDialog(builder.create());
                 } else if ("SRP_ID_INVALID".equals(error.text)) {
-                    TLRPC.TL_account_getPassword getPasswordReq = new TLRPC.TL_account_getPassword();
+                    TL_account.getPassword getPasswordReq = new TL_account.getPassword();
                     ConnectionsManager.getInstance(currentAccount).sendRequest(getPasswordReq, (response2, error2) -> AndroidUtilities.runOnUIThread(() -> {
                         if (error2 == null) {
-                            TLRPC.account_Password currentPassword = (TLRPC.account_Password) response2;
+                            TL_account.Password currentPassword = (TL_account.Password) response2;
                             passwordFragment.setCurrentPasswordInfo(null, currentPassword);
                             TwoStepVerificationActivity.initPasswordNewAlgo(currentPassword);
                             sendCallback(cache, messageObject, button, passwordFragment.getNewSrpPassword(), passwordFragment, parentFragment);
@@ -6094,6 +6109,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     final TLRPC.Updates updates = (TLRPC.Updates) response;
                     ArrayList<TLRPC.Update> updatesArr = ((TLRPC.Updates) response).updates;
                     LongSparseArray<SparseArray<TLRPC.MessageReplies>> channelReplies = null;
+                    boolean currentSchedule = scheduled;
                     for (int a = 0; a < updatesArr.size(); a++) {
                         TLRPC.Update update = updatesArr.get(a);
                         if (update instanceof TLRPC.TL_updateMessageID) {
@@ -6102,6 +6118,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                             updatesArr.remove(a);
                             a--;
                         } else if (update instanceof TLRPC.TL_updateNewMessage) {
+                            currentSchedule = false;
                             final TLRPC.TL_updateNewMessage newMessage = (TLRPC.TL_updateNewMessage) update;
                             newMessages.put(newMessage.message.id, newMessage.message);
                             Utilities.stageQueue.postRunnable(() -> getMessagesController().processNewDifferenceParams(-1, newMessage.pts, -1, newMessage.pts_count));
@@ -6145,11 +6162,13 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                 });
                             }
                         } else if (update instanceof TLRPC.TL_updateNewScheduledMessage) {
+                            currentSchedule = true;
                             final TLRPC.TL_updateNewScheduledMessage newMessage = (TLRPC.TL_updateNewScheduledMessage) update;
                             newMessages.put(newMessage.message.id, newMessage.message);
                             updatesArr.remove(a);
                             a--;
                         } else if (update instanceof TLRPC.TL_updateQuickReplyMessage) {
+                            currentSchedule = false;
                             QuickRepliesController.getInstance(currentAccount).processUpdate(update, msgObjs.isEmpty() ? null : msgObjs.get(0).getQuickReplyName(), msgObjs.isEmpty() ? null : msgObjs.get(0).getQuickReplyId());
                             final TLRPC.TL_updateQuickReplyMessage newMessage = (TLRPC.TL_updateQuickReplyMessage) update;
                             newMessages.put(newMessage.message.id, newMessage.message);
@@ -6162,6 +6181,11 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         getNotificationCenter().postNotificationName(NotificationCenter.didUpdateMessagesViews, null, null, channelReplies, true);
                     }
 
+                    final int[] totalSent = new int[1];
+                    final int[] done = new int[1];
+                    totalSent[0] = 0;
+                    done[0] = 0;
+                    final ArrayList<Integer> oldIds = new ArrayList<>();
                     for (int i = 0; i < msgObjs.size(); i++) {
                         final MessageObject msgObj = msgObjs.get(i);
                         final String originalPath = originalPaths.get(i);
@@ -6212,22 +6236,31 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                             break;
                         }
 
+                        final boolean finalCurrentSchedule = currentSchedule;
                         if (!isSentError) {
+                            totalSent[0]++;
+                            oldIds.add(oldId);
                             getStatsController().incrementSentItemsCount(ApplicationLoader.getCurrentNetworkType(), StatsController.TYPE_MESSAGES, 1);
                             newMsgObj.send_state = MessageObject.MESSAGE_SEND_STATE_SENT;
-                            getNotificationCenter().postNotificationName(NotificationCenter.messageReceivedByServer, oldId, newMsgObj.id, newMsgObj, newMsgObj.dialog_id, grouped_id, existFlags, scheduled);
-                            getNotificationCenter().postNotificationName(NotificationCenter.messageReceivedByServer2, oldId, newMsgObj.id, newMsgObj, newMsgObj.dialog_id, grouped_id, existFlags, scheduled);
+                            getNotificationCenter().postNotificationName(NotificationCenter.messageReceivedByServer, oldId, newMsgObj.id, newMsgObj, newMsgObj.dialog_id, grouped_id, existFlags, currentSchedule);
+                            getNotificationCenter().postNotificationName(NotificationCenter.messageReceivedByServer2, oldId, newMsgObj.id, newMsgObj, newMsgObj.dialog_id, grouped_id, existFlags, currentSchedule);
                             getMessagesStorage().getStorageQueue().postRunnable(() -> {
-                                int mode = scheduled ? ChatActivity.MODE_SCHEDULED : 0;
+                                int mode = finalCurrentSchedule ? ChatActivity.MODE_SCHEDULED : 0;
                                 if (newMsgObj.quick_reply_shortcut_id != 0 || newMsgObj.quick_reply_shortcut != null) {
                                     mode = ChatActivity.MODE_QUICK_REPLIES;
                                 }
-                                getMessagesStorage().updateMessageStateAndId(newMsgObj.random_id, MessageObject.getPeerId(newMsgObj.peer_id), oldId, newMsgObj.id, 0, false, scheduled ? 1 : 0, newMsgObj.quick_reply_shortcut_id);
+                                getMessagesStorage().updateMessageStateAndId(newMsgObj.random_id, MessageObject.getPeerId(newMsgObj.peer_id), oldId, newMsgObj.id, 0, false, mode, newMsgObj.quick_reply_shortcut_id);
                                 getMessagesStorage().putMessages(sentMessages, true, false, false, 0, mode, newMsgObj.quick_reply_shortcut_id);
                                 AndroidUtilities.runOnUIThread(() -> {
+                                    done[0]++;
+                                    if (done[0] == totalSent[0] && scheduled != finalCurrentSchedule) {
+                                        long dialogId = msgObj.getDialogId();
+                                        final int scheduledMessageId = finalCurrentSchedule && newMessages.size() > 1 ? newMessages.keyAt(0) : 0;
+                                        getMessagesController().deleteMessages(oldIds, null, null, dialogId, false, scheduled ? ChatActivity.MODE_SCHEDULED : 0, false, 0, null, 0, finalCurrentSchedule && !scheduled, scheduledMessageId);
+                                    }
                                     getMediaDataController().increasePeerRaiting(newMsgObj.dialog_id);
-                                    getNotificationCenter().postNotificationName(NotificationCenter.messageReceivedByServer, oldId, newMsgObj.id, newMsgObj, newMsgObj.dialog_id, grouped_id, existFlags, scheduled);
-                                    getNotificationCenter().postNotificationName(NotificationCenter.messageReceivedByServer2, oldId, newMsgObj.id, newMsgObj, newMsgObj.dialog_id, grouped_id, existFlags, scheduled);
+                                    getNotificationCenter().postNotificationName(NotificationCenter.messageReceivedByServer, oldId, newMsgObj.id, newMsgObj, newMsgObj.dialog_id, grouped_id, existFlags, finalCurrentSchedule);
+                                    getNotificationCenter().postNotificationName(NotificationCenter.messageReceivedByServer2, oldId, newMsgObj.id, newMsgObj, newMsgObj.dialog_id, grouped_id, existFlags, finalCurrentSchedule);
                                     processSentMessage(oldId);
                                     removeFromSendingMessages(oldId, scheduled);
                                 });
@@ -6432,7 +6465,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                     sentMessages.add(message = newMessage.message);
                                     Utilities.stageQueue.postRunnable(() -> getMessagesController().processNewDifferenceParams(-1, newMessage.pts, -1, newMessage.pts_count));
                                     updatesArr.remove(a);
-                                    break;
+                                    a--;
                                 } else if (update instanceof TLRPC.TL_updateNewChannelMessage) {
                                     final TLRPC.TL_updateNewChannelMessage newMessage = (TLRPC.TL_updateNewChannelMessage) update;
                                     long channelId = MessagesController.getUpdateChannelId(newMessage);
@@ -6462,6 +6495,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                     sentMessages.add(message = newMessage.message);
                                     Utilities.stageQueue.postRunnable(() -> getMessagesController().processNewChannelDifferenceParams(newMessage.pts, newMessage.pts_count, newMessage.message.peer_id.channel_id));
                                     updatesArr.remove(a);
+                                    currentSchedule = false;
                                     a--;
                                     if (newMessage.message.pinned) {
                                         Utilities.stageQueue.postRunnable(() -> {
@@ -6470,18 +6504,39 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                             getMessagesStorage().updatePinnedMessages(-channelId, mids, true, -1, 0, false, null);
                                         });
                                     }
-                                    break;
                                 } else if (update instanceof TLRPC.TL_updateNewScheduledMessage) {
                                     final TLRPC.TL_updateNewScheduledMessage newMessage = (TLRPC.TL_updateNewScheduledMessage) update;
+                                    for (int i = 0; i < sentMessages.size(); ++i) {
+                                        if (sentMessages.get(i).id == newMessage.message.id) {
+                                            sentMessages.remove(i);
+                                            break;
+                                        }
+                                    }
                                     sentMessages.add(message = newMessage.message);
                                     updatesArr.remove(a);
-                                    break;
+                                    a--;
+                                    currentSchedule = true;
                                 } else if (update instanceof TLRPC.TL_updateQuickReplyMessage) {
                                     QuickRepliesController.getInstance(currentAccount).processUpdate(update, msgObj.getQuickReplyName(), msgObj.getQuickReplyId());
                                     final TLRPC.TL_updateQuickReplyMessage newMessage = (TLRPC.TL_updateQuickReplyMessage) update;
                                     sentMessages.add(message = newMessage.message);
                                     updatesArr.remove(a);
-                                    break;
+                                    a--;
+                                } else if (update instanceof TLRPC.TL_updateDeleteScheduledMessages) {
+                                    final TLRPC.TL_updateDeleteScheduledMessages upd = (TLRPC.TL_updateDeleteScheduledMessages) update;
+                                    if (msgObj.getDialogId() == DialogObject.getPeerDialogId(upd.peer)) {
+                                        for (int msg_id : upd.messages) {
+                                            for (int i = 0; i < sentMessages.size(); ++i) {
+                                                if (sentMessages.get(i).id == msg_id) {
+                                                    sentMessages.remove(i);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        currentSchedule = false;
+                                        updatesArr.remove(a);
+                                        a--;
+                                    }
                                 }
                             }
                             if (channelReplies != null) {
@@ -6538,16 +6593,18 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         if (!isSentError) {
                             getStatsController().incrementSentItemsCount(ApplicationLoader.getCurrentNetworkType(), StatsController.TYPE_MESSAGES, 1);
                             newMsgObj.send_state = MessageObject.MESSAGE_SEND_STATE_SENT;
-                            if (scheduled && !currentSchedule) {
+                            if (scheduled != currentSchedule) {
+                                final boolean finalCurrentSchedule = currentSchedule;
                                 ArrayList<Integer> messageIds = new ArrayList<>();
                                 messageIds.add(oldId);
-                                getMessagesController().deleteMessages(messageIds, null, null, newMsgObj.dialog_id, 0, false, ChatActivity.MODE_SCHEDULED);
+                                ArrayList<MessageObject> messageObjects = new ArrayList<>();
+                                messageObjects.add(new MessageObject(msgObj.currentAccount, msgObj.messageOwner, true, true));
                                 getMessagesStorage().getStorageQueue().postRunnable(() -> {
-                                    getMessagesStorage().putMessages(sentMessages, true, false, false, 0, false, 0, 0);
+                                    getMessagesStorage().putMessages(sentMessages, true, false, false, 0, false, !scheduled ? ChatActivity.MODE_SCHEDULED : ChatActivity.MODE_DEFAULT, 0);
                                     AndroidUtilities.runOnUIThread(() -> {
-                                        ArrayList<MessageObject> messageObjects = new ArrayList<>();
-                                        messageObjects.add(new MessageObject(msgObj.currentAccount, msgObj.messageOwner, true, true));
-                                        getMessagesController().updateInterfaceWithMessages(newMsgObj.dialog_id, messageObjects, 0);
+                                        final int scheduledMessageId = finalCurrentSchedule && newMsgObj != null ? newMsgObj.id : 0;
+                                        getMessagesController().deleteMessages(messageIds, null, null, newMsgObj.dialog_id, false, scheduled ? ChatActivity.MODE_SCHEDULED : ChatActivity.MODE_DEFAULT, false, 0, null, 0, !scheduled && finalCurrentSchedule, scheduledMessageId);
+                                        getMessagesController().updateInterfaceWithMessages(newMsgObj.dialog_id, messageObjects, finalCurrentSchedule ? ChatActivity.MODE_SCHEDULED : ChatActivity.MODE_DEFAULT);
                                         getMediaDataController().increasePeerRaiting(newMsgObj.dialog_id);
                                         processSentMessage(oldId);
                                         removeFromSendingMessages(oldId, scheduled);
@@ -7052,8 +7109,17 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipfile))) {
                             ZipEntry zipEntry = zis.getNextEntry();
                             while (zipEntry != null) {
-                                if (zipEntry.getName().endsWith(".txt")) {
-                                    File newFile = MediaController.createFileInCache(zipEntry.getName(), "txt");
+                                String name = zipEntry.getName();
+                                if (name == null) {
+                                    zipEntry = zis.getNextEntry();
+                                    continue;
+                                }
+                                int idx = name.lastIndexOf("/");
+                                if (idx >= 0) {
+                                    name = name.substring(idx + 1);
+                                }
+                                if (name.endsWith(".txt")) {
+                                    File newFile = MediaController.createFileInCache(name, "txt");
                                     path = newFile.getAbsolutePath();
                                     FileOutputStream fos = new FileOutputStream(newFile);
                                     byte[] buffer = new byte[1024];
@@ -8089,6 +8155,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(result.send_message.message, dialogId, replyToMsg, replyToTopMsg, webPage, !result.send_message.no_webpage, result.send_message.entities, result.send_message.reply_markup, params, notify, scheduleDate, null, false);
             params2.quick_reply_shortcut = quick_reply_shortcut;
             params2.quick_reply_shortcut_id = quick_reply_shortcut_id;
+            params2.replyQuote = quote;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         } else if (result.send_message instanceof TLRPC.TL_botInlineMessageMediaVenue) {
             TLRPC.TL_messageMediaVenue venue = new TLRPC.TL_messageMediaVenue();
@@ -8104,6 +8171,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(venue, dialogId, replyToMsg, replyToTopMsg, result.send_message.reply_markup, params, notify, scheduleDate);
             params2.quick_reply_shortcut = quick_reply_shortcut;
             params2.quick_reply_shortcut_id = quick_reply_shortcut_id;
+            params2.replyQuote = quote;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         } else if (result.send_message instanceof TLRPC.TL_botInlineMessageMediaGeo) {
             SendMessagesHelper.SendMessageParams params2;
@@ -8122,6 +8190,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             }
             params2.quick_reply_shortcut = quick_reply_shortcut;
             params2.quick_reply_shortcut_id = quick_reply_shortcut_id;
+            params2.replyQuote = quote;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         } else if (result.send_message instanceof TLRPC.TL_botInlineMessageMediaContact) {
             TLRPC.User user = new TLRPC.TL_user();
@@ -8136,6 +8205,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(user, dialogId, replyToMsg, replyToTopMsg, result.send_message.reply_markup, params, notify, scheduleDate);
             params2.quick_reply_shortcut = quick_reply_shortcut;
             params2.quick_reply_shortcut_id = quick_reply_shortcut_id;
+            params2.replyQuote = quote;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         } else if (result.send_message instanceof TLRPC.TL_botInlineMessageMediaInvoice) {
             if (DialogObject.isEncryptedDialog(dialogId)) {
@@ -8157,6 +8227,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(messageMediaInvoice, dialogId, replyToMsg, replyToTopMsg, result.send_message.reply_markup, params, notify, scheduleDate);
             params2.quick_reply_shortcut = quick_reply_shortcut;
             params2.quick_reply_shortcut_id = quick_reply_shortcut_id;
+            params2.replyQuote = quote;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         } else if (result.send_message instanceof TLRPC.TL_botInlineMessageMediaWebPage) {
             TLRPC.TL_botInlineMessageMediaWebPage request = (TLRPC.TL_botInlineMessageMediaWebPage) result.send_message;
@@ -8165,6 +8236,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(result.send_message.message, dialogId, replyToMsg, replyToTopMsg, webPage, !result.send_message.no_webpage, result.send_message.entities, result.send_message.reply_markup, params, notify, scheduleDate, null, false);
             params2.quick_reply_shortcut = quick_reply_shortcut;
             params2.quick_reply_shortcut_id = quick_reply_shortcut_id;
+            params2.replyQuote = quote;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         }
     }
@@ -8765,6 +8837,29 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                         document.size = (int) temp.length();
                                     }
                                     fillVideoAttribute(info.path, attributeVideo, null);
+                                }
+                            } else if (!document.thumbs.isEmpty()) {
+                                if (info.thumbPath != null) {
+                                    thumb = BitmapFactory.decodeFile(info.thumbPath);
+                                }
+                                if (thumb == null) {
+                                    thumb = createVideoThumbnailAtTime(info.path, startTime);
+                                    if (thumb == null) {
+                                        thumb = createVideoThumbnail(info.path, MediaStore.Video.Thumbnails.MINI_KIND);
+                                    }
+                                }
+
+                                TLRPC.PhotoSize size = null;
+                                if (thumb != null) {
+                                    int side = isEncrypted || info.ttl != 0 ? 90 : Math.max(thumb.getWidth(), thumb.getHeight());
+                                    size = ImageLoader.scaleAndSaveImage(null, thumb, videoEditedInfo != null && videoEditedInfo.isSticker ? Bitmap.CompressFormat.WEBP : Bitmap.CompressFormat.JPEG, false, side, side, side > 90 ? 80 : 55, isEncrypted, 0, 0, false);
+                                    if (size != null && size.location != null) {
+                                        thumbKey = getKeyForPhotoSize(accountInstance, size, null, true, false);
+                                    }
+                                }
+                                if (size != null) {
+                                    document.thumbs.add(size);
+                                    document.flags |= 1;
                                 }
                             }
                             if (videoEditedInfo != null && videoEditedInfo.muted) {
@@ -9465,6 +9560,38 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                             document.size = (int) temp.length();
                         }
                         fillVideoAttribute(videoPath, attributeVideo, null);
+                    }
+                } else if (document.thumbs.isEmpty()) {
+                    if (videoEditedInfo != null && videoEditedInfo.notReadyYet) {
+                        thumb = videoEditedInfo.thumb;
+                    }
+                    if (thumb == null) {
+                        thumb = createVideoThumbnailAtTime(videoPath, startTime);
+                    }
+                    if (thumb == null) {
+                        thumb = createVideoThumbnail(videoPath, MediaStore.Video.Thumbnails.MINI_KIND);
+                    }
+                    int side = isEncrypted || ttl != 0 ? 90 : 320;
+                    TLRPC.PhotoSize size = ImageLoader.scaleAndSaveImage(thumb, side, side, side > 90 ? 80 : 55, isEncrypted);
+                    if (thumb != null && size != null) {
+                        if (isRound) {
+                            if (isEncrypted) {
+                                thumb = Bitmap.createScaledBitmap(thumb, 90, 90, true);
+                                Utilities.blurBitmap(thumb, 7, Build.VERSION.SDK_INT < 21 ? 0 : 1, thumb.getWidth(), thumb.getHeight(), thumb.getRowBytes());
+                                Utilities.blurBitmap(thumb, 7, Build.VERSION.SDK_INT < 21 ? 0 : 1, thumb.getWidth(), thumb.getHeight(), thumb.getRowBytes());
+                                Utilities.blurBitmap(thumb, 7, Build.VERSION.SDK_INT < 21 ? 0 : 1, thumb.getWidth(), thumb.getHeight(), thumb.getRowBytes());
+                                thumbKey = String.format(size.location.volume_id + "_" + size.location.local_id + "@%d_%d_b2", (int) (AndroidUtilities.roundMessageSize / AndroidUtilities.density), (int) (AndroidUtilities.roundMessageSize / AndroidUtilities.density));
+                            } else {
+                                Utilities.blurBitmap(thumb, 3, Build.VERSION.SDK_INT < 21 ? 0 : 1, thumb.getWidth(), thumb.getHeight(), thumb.getRowBytes());
+                                thumbKey = String.format(size.location.volume_id + "_" + size.location.local_id + "@%d_%d_b", (int) (AndroidUtilities.roundMessageSize / AndroidUtilities.density), (int) (AndroidUtilities.roundMessageSize / AndroidUtilities.density));
+                            }
+                        } else {
+                            thumb = null;
+                        }
+                    }
+                    if (size != null) {
+                        document.thumbs.add(size);
+                        document.flags |= 1;
                     }
                 }
                 if (videoEditedInfo != null && videoEditedInfo.needConvert()) {

@@ -222,6 +222,7 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
 
     private int currentAccount;
     private View parentView;
+    private Runnable parentRunnable;
 
     private int param;
     private Object currentParentObject;
@@ -289,7 +290,7 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
     private boolean allowLottieVibration = true;
     private boolean allowStartAnimation = true;
     private boolean allowStartLottieAnimation = true;
-    private boolean useSharedAnimationQueue;
+    public boolean useSharedAnimationQueue;
     private boolean allowDecodeSingleFrame;
     private int autoRepeat = 1;
     private int autoRepeatCount = -1;
@@ -2047,12 +2048,10 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
         manualAlphaAnimator = value;
     }
 
-    @Keep
     public float getCurrentAlpha() {
         return currentAlpha;
     }
 
-    @Keep
     public void setCurrentAlpha(float value) {
         currentAlpha = value;
     }
@@ -2600,6 +2599,10 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
         if (drawable != null) {
             drawable.setAutoRepeat(value);
         }
+    }
+
+    public int getAutoRepeat() {
+        return autoRepeat;
     }
 
     public void setAutoRepeatCount(int count) {

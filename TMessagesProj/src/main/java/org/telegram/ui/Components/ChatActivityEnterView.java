@@ -130,6 +130,7 @@ import org.telegram.messenger.MediaController;
 import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
+import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.NotificationsController;
 import org.telegram.messenger.R;
@@ -145,6 +146,7 @@ import org.telegram.messenger.camera.CameraController;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_bots;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.ActionBar.ActionBar;
@@ -160,12 +162,11 @@ import org.telegram.ui.BasePermissionsActivity;
 import org.telegram.ui.Business.BusinessLinksController;
 import org.telegram.ui.Business.QuickRepliesController;
 import org.telegram.ui.ChatActivity;
-import org.telegram.ui.Components.Premium.GiftPremiumBottomSheet;
 import org.telegram.ui.Components.Premium.PremiumFeatureBottomSheet;
 import org.telegram.ui.Components.Premium.boosts.BoostRepository;
-import org.telegram.ui.Components.Premium.boosts.PremiumPreviewGiftToUsersBottomSheet;
 import org.telegram.ui.ContentPreviewViewer;
 import org.telegram.ui.DialogsActivity;
+import org.telegram.ui.Gifts.GiftSheet;
 import org.telegram.ui.GroupStickersActivity;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.MessageSendPreview;
@@ -190,6 +191,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -666,7 +668,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     private MessageObject editingMessageObject;
     private boolean editingCaption;
 
-    private TLRPC.TL_businessChatLink editingBusinessLink;
+    private TL_account.TL_businessChatLink editingBusinessLink;
 
     private BusinessLinkPresetMessage lastSavedBusinessLinkMessage;
 
@@ -3250,23 +3252,22 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
             TLRPC.User user = getParentFragment().getCurrentUser();
             if (user == null) return;
+            final boolean birthday = getParentFragment().getCurrentUserInfo() != null && BirthdayController.isToday(getParentFragment().getCurrentUserInfo().birthday);
             ArrayList<TLRPC.TL_premiumGiftOption> options = new ArrayList<>(getParentFragment().getCurrentUserInfo().premium_gifts);
             if (options.isEmpty()) {
                 final AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER);
-                final int reqId = BoostRepository.loadGiftOptions(null, loadedOptions -> {
+                progressDialog.showDelayed(200);
+                final int reqId = BoostRepository.loadGiftOptions(currentAccount, null, loadedOptions -> {
                     progressDialog.dismiss();
                     loadedOptions = BoostRepository.filterGiftOptions(loadedOptions, 1);
                     loadedOptions = BoostRepository.filterGiftOptionsByBilling(loadedOptions);
-                    ArrayList<TLRPC.User> users = new ArrayList<>();
-                    users.add(user);
-                    PremiumPreviewGiftToUsersBottomSheet.show(users, loadedOptions);
+                    new GiftSheet(getContext(), currentAccount, user.id, loadedOptions, null).setBirthday(birthday).show();
                 });
                 progressDialog.setOnCancelListener(di -> {
                     parentFragment.getConnectionsManager().cancelRequest(reqId, true);
                 });
-                progressDialog.showDelayed(200);
             } else {
-                new GiftPremiumBottomSheet(getParentFragment(), getParentFragment().getCurrentUser()).show();
+                new GiftSheet(getContext(), currentAccount, user.id, null, null).setBirthday(birthday).show();
             }
         });
     }
@@ -3899,8 +3900,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             botCommandsMenuButton.setOpened(open);
             try {
                 performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-            } catch (Exception ignore) {
-            }
+            } catch (Exception ignore) {}
             if (hasBotWebView()) {
                 if (open) {
                     if (emojiViewVisible || botKeyboardViewVisible) {
@@ -3973,7 +3973,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         createBotWebViewMenuContainer();
         Runnable onRequestWebView = () -> {
             AndroidUtilities.hideKeyboard(this);
-            WebViewRequestProps props = WebViewRequestProps.of(currentAccount, dialog_id, dialog_id, botMenuWebViewTitle, botMenuWebViewUrl, BotWebViewAttachedSheet.TYPE_BOT_MENU_BUTTON, 0, false, null, false, null, null, 0, false);
+            WebViewRequestProps props = WebViewRequestProps.of(currentAccount, dialog_id, dialog_id, botMenuWebViewTitle, botMenuWebViewUrl, BotWebViewAttachedSheet.TYPE_BOT_MENU_BUTTON, 0, false, null, false, null, null, 0, false, false);
             if (LaunchActivity.instance != null && LaunchActivity.instance.getBottomSheetTabs() != null && LaunchActivity.instance.getBottomSheetTabs().tryReopenTab(props) != null) {
                 if (botCommandsMenuButton != null) {
                     botCommandsMenuButton.setOpened(false);
@@ -3989,10 +3989,10 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                         }
                     });
                 });
-                Browser.openAsInternalIntent(getContext(), botMenuWebViewUrl, false, progress);
+                Browser.openAsInternalIntent(getContext(), botMenuWebViewUrl, false, false, progress);
                 return;
             }
-            if (AndroidUtilities.isTablet()) {
+//            if (AndroidUtilities.isTablet() || true) {
                 BotWebViewSheet webViewSheet = new BotWebViewSheet(getContext(), resourcesProvider);
                 webViewSheet.setDefaultFullsize(false);
                 webViewSheet.setNeedsContext(true);
@@ -4003,20 +4003,20 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 if (botCommandsMenuButton != null) {
                     botCommandsMenuButton.setOpened(false);
                 }
-            } else {
-                if (parentFragment != null && parentFragment.getParentActivity() != null) {
-                    BotWebViewAttachedSheet sheet = parentFragment.createBotViewer();
-                    sheet.setDefaultFullsize(false);
-                    sheet.setNeedsContext(false);
-                    sheet.setParentActivity(parentFragment.getParentActivity());
-                    sheet.requestWebView(parentFragment, props);
-                    sheet.show();
-
-                    if (botCommandsMenuButton != null) {
-                        botCommandsMenuButton.setOpened(false);
-                    }
-                }
-            }
+//            } else {
+//                if (parentFragment != null && parentFragment.getParentActivity() != null) {
+//                    BotWebViewAttachedSheet sheet = parentFragment.createBotViewer();
+//                    sheet.setDefaultFullsize(false);
+//                    sheet.setNeedsContext(false);
+//                    sheet.setParentActivity(parentFragment.getParentActivity());
+//                    sheet.requestWebView(parentFragment, props);
+//                    sheet.show();
+//
+//                    if (botCommandsMenuButton != null) {
+//                        botCommandsMenuButton.setOpened(false);
+//                    }
+//                }
+//            }
         };
 
         if (SharedPrefsHelper.isWebViewConfirmShown(currentAccount, dialog_id)) {
@@ -4084,7 +4084,9 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
     private void startLockTransition() {
         AnimatorSet animatorSet = new AnimatorSet();
-        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+        try {
+            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+        } catch (Exception ignored) {}
 
         ObjectAnimator translate = ObjectAnimator.ofFloat(this, "lockAnimatedTranslation", startTranslation);
         translate.setStartDelay(100);
@@ -8696,7 +8698,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         }
     }
 
-    public void setEditingBusinessLink(TLRPC.TL_businessChatLink businessLink) {
+    public void setEditingBusinessLink(TL_account.TL_businessChatLink businessLink) {
         editingBusinessLink = businessLink;
         updateFieldHint(false);
         if (editingBusinessLink != null) {
@@ -9877,7 +9879,11 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             return false;
         }
         if (parentFragment != null && parentFragment.getChatMode() == ChatActivity.MODE_QUICK_REPLIES) return false;
-        if (button instanceof TLRPC.TL_keyboardButton) {
+        if (button instanceof TLRPC.TL_keyboardButtonCopy) {
+            final TLRPC.TL_keyboardButtonCopy btn = (TLRPC.TL_keyboardButtonCopy) button;
+            AndroidUtilities.addToClipboard(btn.copy_text);
+            BulletinFactory.of(parentFragment).createCopyBulletin(LocaleController.formatString(R.string.ExactTextCopied, btn.copy_text)).show(true);
+        } else if (button instanceof TLRPC.TL_keyboardButton) {
             SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(button.text, dialog_id, replyMessageObject, getThreadMessage(), null, false, null, null, null, true, 0, null, false);
             params.quick_reply_shortcut = parentFragment != null ? parentFragment.quickReplyShortcut : null;
             params.quick_reply_shortcut_id = parentFragment != null ? parentFragment.getQuickReplyId() : 0;
@@ -9912,26 +9918,26 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                         return;
                     }
 
-                    final WebViewRequestProps props = WebViewRequestProps.of(currentAccount, messageObject.messageOwner.dialog_id, botId, button.text, button.url, button instanceof TLRPC.TL_keyboardButtonSimpleWebView ? BotWebViewAttachedSheet.TYPE_SIMPLE_WEB_VIEW_BUTTON : BotWebViewAttachedSheet.TYPE_WEB_VIEW_BUTTON, replyMessageObject != null ? replyMessageObject.messageOwner.id : 0, false, null, false, null, null, 0, false);
+                    final WebViewRequestProps props = WebViewRequestProps.of(currentAccount, messageObject.messageOwner.dialog_id, botId, button.text, button.url, button instanceof TLRPC.TL_keyboardButtonSimpleWebView ? BotWebViewAttachedSheet.TYPE_SIMPLE_WEB_VIEW_BUTTON : BotWebViewAttachedSheet.TYPE_WEB_VIEW_BUTTON, replyMessageObject != null ? replyMessageObject.messageOwner.id : 0, false, null, false, null, null, 0, false, false);
                     if (LaunchActivity.instance != null && LaunchActivity.instance.getBottomSheetTabs() != null && LaunchActivity.instance.getBottomSheetTabs().tryReopenTab(props) != null) {
                         if (botCommandsMenuButton != null) {
                             botCommandsMenuButton.setOpened(false);
                         }
                         return;
                     }
-                    if (AndroidUtilities.isTablet()) {
+//                    if (AndroidUtilities.isTablet() || true) {
                         BotWebViewSheet webViewSheet = new BotWebViewSheet(getContext(), resourcesProvider);
                         webViewSheet.setParentActivity(parentActivity);
                         webViewSheet.requestWebView(parentFragment, props);
                         webViewSheet.show();
-                    } else {
-                        BotWebViewAttachedSheet webViewSheet = parentFragment.createBotViewer();
-                        webViewSheet.setDefaultFullsize(false);
-                        webViewSheet.setNeedsContext(true);
-                        webViewSheet.setParentActivity(parentActivity);
-                        webViewSheet.requestWebView(parentFragment, props);
-                        webViewSheet.show();
-                    }
+//                    } else {
+//                        BotWebViewAttachedSheet webViewSheet = parentFragment.createBotViewer();
+//                        webViewSheet.setDefaultFullsize(false);
+//                        webViewSheet.setNeedsContext(true);
+//                        webViewSheet.setParentActivity(parentActivity);
+//                        webViewSheet.requestWebView(parentFragment, props);
+//                        webViewSheet.show();
+//                    }
                 }
             };
             if (SharedPrefsHelper.isWebViewConfirmShown(currentAccount, botId)) {
@@ -10053,7 +10059,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             TLRPC.TL_keyboardButtonRequestPeer btn = (TLRPC.TL_keyboardButtonRequestPeer) button;
             if (btn.peer_type != null && messageObject != null && messageObject.messageOwner != null) {
                 if (btn.peer_type instanceof TLRPC.TL_requestPeerTypeUser && btn.max_quantity > 1) {
-                    MultiContactsSelectorBottomSheet.open(btn.max_quantity, ids -> {
+                    TLRPC.TL_requestPeerTypeUser peer_type = (TLRPC.TL_requestPeerTypeUser) btn.peer_type;
+                    MultiContactsSelectorBottomSheet.open(peer_type.bot, peer_type.premium, btn.max_quantity, ids -> {
                         if (ids != null && !ids.isEmpty()) {
                             TLRPC.TL_messages_sendBotRequestedPeer req = new TLRPC.TL_messages_sendBotRequestedPeer();
                             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(messageObject.messageOwner.peer_id);
@@ -10088,7 +10095,13 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                         req.peer = MessagesController.getInstance(currentAccount).getInputPeer(messageObject.messageOwner.peer_id);
                         req.msg_id = messageObject.getId();
                         req.button_id = btn.button_id;
-                        req.requested_peers.add(MessagesController.getInstance(currentAccount).getInputPeer(dids.get(0).dialogId));
+                        HashSet<Long> dialogIds = new HashSet<>();
+                        for (MessagesStorage.TopicKey key : dids) {
+                            dialogIds.add(key.dialogId);
+                        }
+                        for (long did : dialogIds) {
+                            req.requested_peers.add(MessagesController.getInstance(currentAccount).getInputPeer(did));
+                        }
                         ConnectionsManager.getInstance(currentAccount).sendRequest(req, null);
                     }
                     dialogFragment.finishFragment();
@@ -10353,7 +10366,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 AlertDialog.Builder builder = new AlertDialog.Builder(parentActivity, resourcesProvider);
                 builder.setTitle(getString(R.string.ClearRecentEmojiTitle));
                 builder.setMessage(getString(R.string.ClearRecentEmojiText));
-                builder.setPositiveButton(getString(R.string.ClearForAll), (dialogInterface, i) -> emojiView.clearRecentEmoji());
+                builder.setPositiveButton(getString(R.string.ClearButton), (dialogInterface, i) -> emojiView.clearRecentEmoji());
                 builder.setNegativeButton(getString(R.string.Cancel), null);
                 parentFragment.showDialog(builder.create());
             }
@@ -10376,7 +10389,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     inputStickerSet.access_hash = stickerSet.access_hash;
                     inputStickerSet.id = stickerSet.id;
                 }
-                StickersAlert alert = new StickersAlert(parentActivity, fragment, inputStickerSet, null, ChatActivityEnterView.this, resourcesProvider);
+                StickersAlert alert = new StickersAlert(parentActivity, fragment, inputStickerSet, null, ChatActivityEnterView.this, resourcesProvider, false);
                 fragment.showDialog(alert);
                 if (edit) {
                     alert.enableEditMode();

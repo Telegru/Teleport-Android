@@ -2,7 +2,6 @@ package org.telegram.ui.Stories;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.nfc.tech.NfcA;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.webkit.MimeTypeMap;
@@ -49,6 +48,7 @@ import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.Vector;
 import org.telegram.tgnet.tl.TL_bots;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -1205,7 +1205,7 @@ public class StoriesController {
     }
 
     public void updateStoriesPinned(long dialogId, ArrayList<TL_stories.StoryItem> storyItems, boolean pinned, Utilities.Callback<Boolean> whenDone) {
-        TL_stories.TL_stories_togglePinned req = new TL_stories.TL_stories_togglePinned();
+        TL_stories.togglePinned req = new TL_stories.togglePinned();
         TL_stories.PeerStories peerStories = getStories(dialogId);
         for (int i = 0; i < storyItems.size(); ++i) {
             TL_stories.StoryItem storyItem = storyItems.get(i);
@@ -1276,7 +1276,7 @@ public class StoriesController {
             TL_stories.TL_stories_readStories req = new TL_stories.TL_stories_readStories();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
             req.max_id = storyItem.id;
-            ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> {});
+            ConnectionsManager.getInstance(currentAccount).sendRequest(req, null);
             NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.storiesReadUpdated);
             return true;
         }
@@ -1855,7 +1855,7 @@ public class StoriesController {
                     messageObject.videoEditedInfo = info;
                     duration = info.estimatedDuration / 1000L;
                     if (messageObject.videoEditedInfo.needConvert()) {
-                        MediaController.getInstance().scheduleVideoConvert(messageObject, false, false);
+                        MediaController.getInstance().scheduleVideoConvert(messageObject, false, false, false);
                     } else {
                         boolean rename = new File(messageObject.videoEditedInfo.originalPath).renameTo(new File(path));
                         if (rename) {
@@ -2449,6 +2449,8 @@ public class StoriesController {
         }
     }
 
+    public final ArrayList<SearchStoriesList> attachedSearchLists = new ArrayList<>();
+
     public void updateStoriesInLists(long dialogId, List<TL_stories.StoryItem> storyItems) {
         FileLog.d("updateStoriesInLists " + dialogId + " storyItems[" + storyItems.size() + "] {" + storyItemIds(storyItems) + "}");
         StoriesList pinned = getStoriesList(dialogId, StoriesList.TYPE_PINNED, false);
@@ -2458,6 +2460,9 @@ public class StoriesController {
         }
         if (archived != null) {
             archived.updateStories(storyItems);
+        }
+        for (SearchStoriesList list : attachedSearchLists) {
+            list.updateStories(storyItems);
         }
     }
 
@@ -2553,8 +2558,8 @@ public class StoriesController {
                 this.done = true;
 
                 final ArrayList<TL_bots.botPreviewMedia> medias = new ArrayList<>();
-                if (res instanceof TLRPC.Vector) {
-                    ArrayList<Object> objects = ((TLRPC.Vector) res).objects;
+                if (res instanceof Vector) {
+                    ArrayList<Object> objects = ((Vector) res).objects;
                     for (Object o : objects) {
                         TL_bots.botPreviewMedia media = (TL_bots.botPreviewMedia) o;
                         medias.add(media);
@@ -2797,17 +2802,20 @@ public class StoriesController {
     public static class SearchStoriesList extends StoriesList {
 
         public final String query;
+        public final String username;
         public final TL_stories.MediaArea queryArea;
 
-        public SearchStoriesList(int currentAccount, String query) {
+        public SearchStoriesList(int currentAccount, String username, String query) {
             super(currentAccount, 0, TYPE_SEARCH, null);
             this.query = query;
+            this.username = username;
             this.queryArea = null;
         }
 
         public SearchStoriesList(int currentAccount, TL_stories.MediaArea area) {
             super(currentAccount, 0, TYPE_SEARCH, null);
             this.query = null;
+            this.username = null;
             this.queryArea = area;
         }
 
@@ -2859,6 +2867,32 @@ public class StoriesController {
             }
 
             loading = true;
+
+            TLObject chat = null;
+            if (!TextUtils.isEmpty(username)) {
+                chat = MessagesController.getInstance(currentAccount).getUserOrChat(username);
+                if (chat == null) {
+                    MessagesController.getInstance(currentAccount).getUserNameResolver().resolve(username, resolvedId -> {
+                        TLObject resolvedChat = MessagesController.getInstance(currentAccount).getUserOrChat(username);
+                        loading = false;
+                        if (resolvedChat != null) {
+                            load(force, count, ids);
+                        } else {
+                            this.count = 0;
+                            last_offset = "";
+                            AndroidUtilities.cancelRunOnUIThread(super.notify);
+                            AndroidUtilities.runOnUIThread(super.notify);
+                        }
+                    });
+                    return true;
+                }
+            }
+            if (chat != null) {
+                req.flags |= 4;
+                req.peer = MessagesController.getInputPeer(chat);
+//                if (req.hashtag.startsWith("#") || req.hashtag.startsWith("$"))
+//                    req.hashtag = req.hashtag.substring(1);
+            }
 
             this.reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
                 this.reqId = 0;

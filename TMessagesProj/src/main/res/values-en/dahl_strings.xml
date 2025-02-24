@@ -30,6 +30,11 @@
     <string name="FoldersAtBottom">Move to the bottom</string>
     <string name="HideAllChatsFolder">Hide \"All Chats\" folder</string>
     <string name="FoldersInfiniteScrolling">Scroll in a loop</string>
+    <string name="AllFolders">All folders</string>
+    <string name="HideFolders">Hide</string>
+
+    <string name="ImportantNotice">Important Notice</string>
+    <string name="ImportantMessage">This is a forked version and not the official Telegram app. By clicking \'Confirm\', you acknowledge and understand this. Soon, many interesting features will appear here that are not present in the official application.</string>
     <string name="ShowAllFolderss">Show all folders</string>
     <string name="Categories">Categories</string>
     <string name="Links">Links</string>
