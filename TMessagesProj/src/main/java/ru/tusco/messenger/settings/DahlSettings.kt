@@ -5,8 +5,13 @@ import android.content.SharedPreferences
 import androidx.annotation.StringRes
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
+import org.telegram.messenger.SharedConfig
+import org.telegram.messenger.SharedConfig.ProxyInfo
+import org.telegram.tgnet.ConnectionsManager
 import org.telegram.ui.LaunchActivity
+import ru.tusco.messenger.Extra
 import ru.tusco.messenger.icons.BaseIconReplacement
 import ru.tusco.messenger.icons.IconReplacementNone
 import ru.tusco.messenger.icons.VKUiIconReplacement
@@ -105,10 +110,47 @@ object DahlSettings {
 
     @JvmStatic
     var isProxyEnabled: Boolean
-        get() = sharedPreferences.getBoolean("dahl_proxy_enabled", false)
+        get() {
+            val proxyInfo = ProxyInfo(Extra.PROXY_ADDRESS, Extra.PROXY_PORT, null, null, Extra.PROXY_SECRET)
+            val current = SharedConfig.currentProxy
+            return SharedConfig.isProxyEnabled() && current.link == proxyInfo.link
+        }
         set(value) {
-            putBoolean("dahl_proxy_enabled", value)
-//            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+            val editor = MessagesController.getGlobalMainSettings().edit()
+            if (value) {
+                val proxyInfo = ProxyInfo(Extra.PROXY_ADDRESS, Extra.PROXY_PORT, null, null, Extra.PROXY_SECRET)
+                SharedConfig.addProxy(proxyInfo)
+                SharedConfig.currentProxy = proxyInfo
+                editor
+                    .putBoolean("proxy_enabled", true)
+                    .putString("proxy_ip", proxyInfo.address)
+                    .putString("proxy_pass", proxyInfo.password)
+                    .putString("proxy_user", proxyInfo.username)
+                    .putInt("proxy_port", proxyInfo.port)
+                    .putString("proxy_secret", proxyInfo.secret)
+                    .apply()
+                ConnectionsManager.setProxySettings(
+                    true,
+                    proxyInfo.address,
+                    proxyInfo.port,
+                    proxyInfo.username,
+                    proxyInfo.password,
+                    proxyInfo.secret
+                )
+            } else {
+                editor
+                    .putBoolean("proxy_enabled", false)
+                    .apply()
+
+                ConnectionsManager.setProxySettings(
+                    false,
+                    "",
+                    1080,
+                    "",
+                    "",
+                    ""
+                )
+            }
         }
 
     @JvmStatic

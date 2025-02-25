@@ -40,7 +40,7 @@
     <string name="Links">Links</string>
     <string name="DahlSupportInfo">Please note that Dahl Support is done by volunteers. We try to respond as quickly as possible, but it may take a while.</string>
     <string name="ConnectionType">Connection type</string>
-    <string name="ProxyDahl">Proxy Dahl</string>
+    <string name="ProxyDahl">Dahl Proxy</string>
     <string name="ProxyDahlInfo">Turn on in case of connection failures.</string>
     <string name="Profile">Profile</string>
     <string name="HidePhoneNumber">Hide phone number</string>
