@@ -86,7 +86,7 @@ class GeneralSettingsActivity : UniversalFragment(), NotificationCenter.Notifica
         items?.add(UItem.asCustom(DAHL_PROXY, TextDetailProxyCell(context).also {
             it.isDahl = true
             it.setProxy(dahlProxy)
-            it.setChecked(dahlProxy.link == SharedConfig.currentProxy.link)
+            it.setChecked(dahlProxy.link == SharedConfig.currentProxy?.link)
             it.updateStatus(useProxySettings, currentConnectionState)
         }))
 
