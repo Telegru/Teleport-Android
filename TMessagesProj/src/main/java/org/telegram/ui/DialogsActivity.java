@@ -6771,7 +6771,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         filterTabsView.addTab(a, 0, LocaleController.getString(R.string.FilterAllChats), null, false, true, filters.get(a).locked);
                     } else {
                         int i = !filterTabsView.isEditing() && DahlSettings.isHiddenAllChatsFolder() ? (a + 1) : a;
-                        final MessagesController.DialogFilter filter = filters.get(i);
+                        final MessagesController.DialogFilter filter = filters.get(a);
                         filterTabsView.addTab(i, filter.localId, filter.name, filter.entities, filter.title_noanimate,false, filter.locked);
                     }
                 }
