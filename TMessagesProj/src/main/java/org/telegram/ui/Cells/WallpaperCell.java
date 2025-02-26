@@ -180,7 +180,7 @@ public class WallpaperCell extends FrameLayout {
                         } else {
                             imageView.getImageReceiver().setGradientBitmap(motionBackgroundDrawable.getBitmap());
                             if(wallPaper.isDahlWallpaper){
-                                imageView.getImageReceiver().setAlpha(Math.abs(wallPaper.intensity));
+                                imageView.getImageReceiver().setAlpha(0.3f);
                             }
                         }
                         patternColor = MotionBackgroundDrawable.getPatternColor(wallPaper.color, wallPaper.gradientColor1, wallPaper.gradientColor2, wallPaper.gradientColor3);
@@ -196,8 +196,8 @@ public class WallpaperCell extends FrameLayout {
 //                    } else
                     if (wallPaper.path != null) {
                         if(wallPaper.isDahlWallpaper) {
-                            int size = AndroidUtilities.dp(imageSide);
-                            String cropped = DefaultWallpapersHelper.getCroppedBitmapPath(wallPaper.path.getAbsolutePath(), size, size);
+                            int size = AndroidUtilities.dp(imageSide * 1.5f);
+                            String cropped = DefaultWallpapersHelper.getCroppedBitmapPath(wallPaper.path.getAbsolutePath(), size, size, false);
                             imageView.setImage(cropped, imageFilter, null);
                         }else{
                             imageView.setImage(wallPaper.path.getAbsolutePath(), imageFilter, null);

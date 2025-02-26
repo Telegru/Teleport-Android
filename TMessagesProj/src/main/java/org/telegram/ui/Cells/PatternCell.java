@@ -100,8 +100,8 @@ public class PatternCell extends BackupImageView implements DownloadController.F
         currentPattern = wallPaper;
         if (wallPaper != null) {
             if(wallPaper.document.localPath != null){
-                int size = AndroidUtilities.dp(SIZE);
-                String cropped = DefaultWallpapersHelper.getCroppedBitmapPath(wallPaper.document.localPath, size, size);
+                int size = AndroidUtilities.dp(SIZE * 1.7f);
+                String cropped = DefaultWallpapersHelper.getCroppedBitmapPath(wallPaper.document.localPath, size, size, false);
                 setImage(cropped,SIZE + "_" + SIZE, null);
             }else {
                 TLRPC.PhotoSize thumb = FileLoader.getClosestPhotoSizeWithSize(wallPaper.document.thumbs, AndroidUtilities.dp(SIZE));

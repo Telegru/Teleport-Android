@@ -83,7 +83,6 @@ import org.telegram.ui.Components.WallpaperUpdater;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -379,7 +378,7 @@ public class WallpapersListActivity extends BaseFragment implements Notification
             gradientColor2 = colors[2];
             gradientColor3 = colors[3];
             gradientRotation = 45;
-            intensity = isDarkTheme ? -0.3f : 1f;
+            intensity = isDarkTheme ? -0.57f : 1f;
             path = new File(dahlWallpaper.getPath());
             isDahlWallpaper = true;
             pattern = dahlWallpaper.toPattern(isDarkTheme);
@@ -1389,15 +1388,6 @@ public class WallpapersListActivity extends BaseFragment implements Notification
             FileLog.e(e);
         }
 
-        List<ColorWallpaper> dahlWallpapers = new ArrayList<>(DahlWallpaper.Companion.getItems().length);
-        for(DahlWallpaper dw: DahlWallpaper.Companion.getItems()){
-            ColorWallpaper cw = new ColorWallpaper(dw, Theme.isCurrentThemeDark());
-            dahlWallpapers.add(cw);
-            patterns.add(cw.pattern);
-            patternsDict.put(cw.pattern.document.id, cw.pattern);
-        }
-        wallPapers.addAll(0, dahlWallpapers);
-
         if (Theme.hasWallpaperFromTheme() && !Theme.isThemeWallpaperPublic()) {
             if (themeWallpaper == null) {
                 themeWallpaper = new FileWallpaper(Theme.THEME_BACKGROUND_SLUG, -2, -2);
@@ -1407,8 +1397,17 @@ public class WallpapersListActivity extends BaseFragment implements Notification
             themeWallpaper = null;
         }
 
+        List<ColorWallpaper> dahlWallpapers = new ArrayList<>(DahlWallpaper.Companion.getItems().length);
+        for(DahlWallpaper dw: DahlWallpaper.Companion.getItems()){
+            ColorWallpaper cw = new ColorWallpaper(dw, Theme.isCurrentThemeDark());
+            dahlWallpapers.add(cw);
+            patterns.add(cw.pattern);
+            patternsDict.put(cw.pattern.document.id, cw.pattern);
+        }
+        wallPapers.addAll(0, dahlWallpapers);
+
         Theme.ThemeInfo themeInfo = Theme.getActiveTheme();
-        if (TextUtils.isEmpty(selectedBackgroundSlug) || !DahlWallpaper.Russia.INSTANCE.getSlug().equals(selectedBackgroundSlug) && object == null) {
+        if (TextUtils.isEmpty(selectedBackgroundSlug) || !DahlWallpaper.Companion.getSlugs().contains(selectedBackgroundSlug) && object == null) {
             if (!Theme.COLOR_BACKGROUND_SLUG.equals(selectedBackgroundSlug) && selectedColor != 0) {
                 if (themeInfo.overrideWallpaper != null) {
                     addedColorWallpaper = new ColorWallpaper(selectedBackgroundSlug, selectedColor, selectedGradientColor1, selectedGradientColor2, selectedGradientColor3, selectedGradientRotation, selectedIntensity, selectedBackgroundMotion, new File(ApplicationLoader.getFilesDirFixed(), themeInfo.overrideWallpaper.fileName));

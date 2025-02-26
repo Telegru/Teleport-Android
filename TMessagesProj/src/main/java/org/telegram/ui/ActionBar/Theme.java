@@ -2629,19 +2629,20 @@ public class Theme {
                 }
 
                 //override default themes
-                if (isHome(themeAccent) && name.equals("Dark Blue") || name.equals("Night")) {
+//                if (isHome(themeAccent) && name.equals("Dark Blue") || name.equals("Night")) {
+                if (name.equals("Night")) {
                     themeAccent.myMessagesAccentColor = 0xff6573f8;
                     themeAccent.myMessagesGradientAccentColor1 = 0xff7644cb;
                     themeAccent.myMessagesGradientAccentColor2 = 0xff8849b4;
                     themeAccent.myMessagesGradientAccentColor3 = 0xffa751a8;
-                    if (name.equals("Night")) {
+//                    if (name.equals("Night")) {
                         int[] colors = DahlWallpaper.Russia.INSTANCE.getDarkColors();
                         themeAccent.patternIntensity = -0.57f;
                         themeAccent.backgroundOverrideColor = colors[0];
                         themeAccent.backgroundGradientOverrideColor1 = colors[1];
                         themeAccent.backgroundGradientOverrideColor2 = colors[2];
                         themeAccent.backgroundGradientOverrideColor3 = colors[3];
-                    }
+//                    }
                 }
                 themeAccentsMap.put(themeAccent.id, themeAccent);
                 themeAccents.add(themeAccent);

@@ -50,7 +50,7 @@ object DefaultWallpapersHelper {
     }
 
     @JvmStatic
-    fun getCroppedBitmapPath(path: String, width: Int, height: Int): String {
+    fun getCroppedBitmapPath(path: String, width: Int, height: Int, centered: Boolean): String {
         val filename = File(path).name
         val cropPath = "${ApplicationLoader.getFilesDirFixed().path}/${width}_${height}_$filename"
         val cropFile = File(cropPath)
@@ -61,8 +61,8 @@ object DefaultWallpapersHelper {
         val original = BitmapFactory.decodeFile(path) ?: return path
         if (width <= 0 || height <= 0) return path
         if (width > original.width || height > original.height) return path
-        val x = (original.width - width) / 2
-        val y = (original.height - height) / 2
+        val x = if(centered) (original.width - width) / 2 else 0
+        val y = if(centered) (original.height - height) / 2 else 0
         val cropped = Bitmap.createBitmap(original, x, y, width, height)
         original.recycle()
 
