@@ -1619,6 +1619,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         avatarImage = new ImageReceiver();
         avatarImage.setAllowLoadingOnAttachedOnly(true);
         avatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
+        //avatarImage.setRoundRadius(AndroidUtilities.dp(21f));
         avatarDrawable = new AvatarDrawable();
         replyImageReceiver = new ImageReceiver(this);
         replyImageReceiver.setAllowLoadingOnAttachedOnly(true);
@@ -5849,7 +5850,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             drawCommentButton = false;
             photoImage.setSideClip(0);
             photoImage.setAspectFit(false);
-            photoImage.setRoundRadiusEnabled(false);
+            photoImage.setRoundRadiusEnabled(true);
             fitPhotoImage = false;
             gradientShader = null;
             motionBackgroundDrawable = null;

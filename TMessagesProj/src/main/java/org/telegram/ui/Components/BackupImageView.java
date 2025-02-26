@@ -32,6 +32,8 @@ import org.telegram.messenger.SecureDocument;
 import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.TLObject;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class BackupImageView extends View {
 
     protected ImageReceiver imageReceiver;
@@ -243,9 +245,9 @@ public class BackupImageView extends View {
     }
 
     public void setRoundRadius(int value) {
-        imageReceiver.setRoundRadius(16);
+        imageReceiver.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : value);
         if (blurAllowed) {
-            blurImageReceiver.setRoundRadius(16);
+            blurImageReceiver.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : value);
         }
         invalidate();
     }

@@ -50,14 +50,14 @@ public class AvatarsDrawable {
     ValueAnimator transitionProgressAnimator;
     boolean updateAfterTransition;
 
-    private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint xRefP = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint xRefP = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     Runnable updateDelegate;
     int currentStyle;
     boolean centered;
 
-    private boolean isInCall;
+    private final boolean isInCall;
     public int count;
     public int height;
     public int width;
@@ -271,14 +271,14 @@ public class AvatarsDrawable {
             currentStates[a] = new DrawingState();
             currentStates[a].imageReceiver = new ImageReceiver(parent);
             currentStates[a].imageReceiver.setInvalidateAll(true);
-            currentStates[a].imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
+            currentStates[a].imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getCounterCornerRadius());
             currentStates[a].avatarDrawable = new AvatarDrawable();
             currentStates[a].avatarDrawable.setTextSize(AndroidUtilities.dp(12));
 
             animatingStates[a] = new DrawingState();
             animatingStates[a].imageReceiver = new ImageReceiver(parent);
             animatingStates[a].imageReceiver.setInvalidateAll(true);
-            animatingStates[a].imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
+            animatingStates[a].imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getCounterCornerRadius());
             animatingStates[a].avatarDrawable = new AvatarDrawable();
             animatingStates[a].avatarDrawable.setTextSize(AndroidUtilities.dp(12));
         }
@@ -383,7 +383,7 @@ public class AvatarsDrawable {
         } else {
             animatingStates[index].imageReceiver.setForUserOrChat(currentChat, animatingStates[index].avatarDrawable);
         }
-        animatingStates[index].imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
+        animatingStates[index].imageReceiver.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : size / 2);
         animatingStates[index].imageReceiver.setImageCoords(0, 0, size, size);
         invalidate();
     }
