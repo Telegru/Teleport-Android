@@ -392,7 +392,6 @@ public class MessagesController extends BaseController implements NotificationCe
         if (frozenDialogFilters != null) {
             return frozenDialogFilters;
         }
-        Log.d("MessagesController", "folders: " + dialogFilters.size());
         return dialogFilters;
     }
 
