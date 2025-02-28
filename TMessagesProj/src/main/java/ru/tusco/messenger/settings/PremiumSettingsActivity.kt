@@ -20,6 +20,7 @@ class PremiumSettingsActivity: UniversalFragment() {
         const val SWITCH_TOUCH_ON_PREMIUM_STICKER = 7
         const val SWITCH_HIDE_STORIES = 8
         const val SWITCH_HIDE_ADD_STORY = 9
+        const val SWITCH_HIDE_VIEWED_STORIES = 10
     }
 
     override fun getTitle(): CharSequence = getString(R.string.PremiumFeatures)
@@ -38,10 +39,11 @@ class PremiumSettingsActivity: UniversalFragment() {
 //        items?.add(UItem.asCheck(SWITCH_TOUCH_ON_PREMIUM_STICKER, getString(R.string.TouchPremiumStickers)).setChecked(DahlSettings.touchOnPremiumStickers))
 //
 //        items?.add(UItem.asShadow(-3, null))
-//
-//        items?.add(UItem.asHeader(getString(R.string.Stories)))
-//        items?.add(UItem.asCheck(SWITCH_HIDE_STORIES, getString(R.string.HideStories)).setChecked(DahlSettings.hideStories))
-//        items?.add(UItem.asCheck(SWITCH_HIDE_ADD_STORY, getString(R.string.HideAddStory)).setChecked(DahlSettings.hideAddStory))
+
+        items?.add(UItem.asHeader(getString(R.string.Stories)))
+        items?.add(UItem.asCheck(SWITCH_HIDE_STORIES, getString(R.string.HideStories)).setChecked(DahlSettings.hideStories))
+        items?.add(UItem.asCheck(SWITCH_HIDE_ADD_STORY, getString(R.string.HideAddStory)).setEnabled(!DahlSettings.hideStories).setChecked(DahlSettings.hideAddStory || DahlSettings.hideStories))
+        items?.add(UItem.asCheck(SWITCH_HIDE_VIEWED_STORIES, getString(R.string.HideViewedStories)).setChecked(DahlSettings.hideViewedStories))
     }
 
     override fun onClick(item: UItem?, view: View?, position: Int, x: Float, y: Float) {
@@ -54,8 +56,14 @@ class PremiumSettingsActivity: UniversalFragment() {
             SWITCH_ANIMATED_PREMIUM_STICKERS -> DahlSettings.animatedPremiumStickers = !DahlSettings.animatedPremiumStickers
             SWITCH_TOUCH_ON_PREMIUM_STICKER -> DahlSettings.touchOnPremiumStickers = !DahlSettings.touchOnPremiumStickers
             SWITCH_HIDE_STORIES -> DahlSettings.hideStories = !DahlSettings.hideStories
-            SWITCH_HIDE_ADD_STORY -> DahlSettings.hideAddStory = !DahlSettings.hideAddStory
+            SWITCH_HIDE_ADD_STORY -> {
+                if(!DahlSettings.hideStories) {
+                    DahlSettings.hideAddStory = !DahlSettings.hideAddStory
+                }
+            }
+            SWITCH_HIDE_VIEWED_STORIES -> DahlSettings.hideViewedStories = !DahlSettings.hideViewedStories
         }
+        listView.adapter.update(true)
     }
 
     override fun onLongClick(item: UItem?, view: View?, position: Int, x: Float, y: Float): Boolean = false

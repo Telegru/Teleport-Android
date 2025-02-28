@@ -73,6 +73,7 @@
     <string name="Stories">Stories</string>
     <string name="HideStories">Hide stories</string>
     <string name="HideAddStory">Hide create button</string>
+    <string name="HideViewedStories">Hide viewed stories</string>
     <string name="NeedConfirm">Confirm</string>
     <string name="ConfirmCalling">Calling</string>
     <string name="ConfirmAudioMessage">Audio message sending</string>

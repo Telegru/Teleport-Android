@@ -83,6 +83,8 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class StoriesController {
 
     public final static int STATE_READ = 0;
@@ -271,7 +273,19 @@ public class StoriesController {
     }
 
     public boolean hasStories() {
-        return (dialogListStories != null && dialogListStories.size() > 0) || hasSelfStories();
+        if(DahlSettings.getHideStories()){
+            return false;
+        }
+        int count = dialogListStories == null ? 0 : dialogListStories.size();
+        if(count > 0 && DahlSettings.getHideViewedStories()){
+            for (TL_stories.PeerStories story : dialogListStories) {
+                long dialogId = DialogObject.getPeerDialogId(story.peer);
+                if(!hasUnreadStories(dialogId)){
+                    count--;
+                }
+            }
+        }
+        return count > 0 || hasSelfStories();
     }
 
     public void loadStories() {
