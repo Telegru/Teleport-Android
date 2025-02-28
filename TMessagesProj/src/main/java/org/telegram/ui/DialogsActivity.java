@@ -6744,12 +6744,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             filterOptions.dismiss();
             filterOptions = null;
         }
-        List<MessagesController.DialogFilter> dialogFilters = getMessagesController().getDialogFilters();
-        List<MessagesController.DialogFilter> filters = new ArrayList<>(dialogFilters);
-        if (!filterTabsView.isEditing() && filters.size() > 1 && DahlSettings.isHiddenAllChatsFolder()) {
-            filters.removeIf(MessagesController.DialogFilter::isDefault);
-        }
-        if (dialogFilters.size() > 1) {
+        List<MessagesController.DialogFilter> filters = getMessagesController().getDialogFilters();
+        boolean hideAllChats = !filterTabsView.isEditing() && DahlSettings.isHiddenAllChatsFolder();
+        if (filters.size() > 1) {
             if (force || filterTabsView.getVisibility() != View.VISIBLE) {
                 boolean animatedUpdateItems = animated;
                 if (filterTabsView.getVisibility() != View.VISIBLE) {
@@ -6761,29 +6758,32 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 int id = filterTabsView.getCurrentTabId();
                 int stableId = filterTabsView.getCurrentTabStableId();
                 boolean selectWithStableId = false;
-                if (id != filterTabsView.getDefaultTabId() && id >= dialogFilters.size()) {
+                if (id != filterTabsView.getDefaultTabId() && id >= filters.size()) {
                     filterTabsView.resetTabId();
                     selectWithStableId = true;
                 }
                 filterTabsView.removeTabs();
                 for (int a = 0, N = filters.size(); a < N; a++) {
                     if (filters.get(a).isDefault()) {
-                        filterTabsView.addTab(a, 0, LocaleController.getString(R.string.FilterAllChats), null, false, true, filters.get(a).locked);
+                        if(!hideAllChats) filterTabsView.addTab(a, 0, LocaleController.getString(R.string.FilterAllChats), null, false, true, filters.get(a).locked);
                     } else {
-                        int i = !filterTabsView.isEditing() && DahlSettings.isHiddenAllChatsFolder() ? (a + 1) : a;
                         final MessagesController.DialogFilter filter = filters.get(a);
-                        filterTabsView.addTab(i, filter.localId, filter.name, filter.entities, filter.title_noanimate,false, filter.locked);
+                        filterTabsView.addTab(a, filter.localId, filter.name, filter.entities, filter.title_noanimate,false, filter.locked);
                     }
                 }
-                if (stableId >= 0) {
+                if(hideAllChats && stableId <= 0){
+                    id = filterTabsView.getFirstTabId();
+                    updateCurrentTab = true;
+                    viewPages[0].selectedType = id;
+                    filterTabsView.selectTabWithStableId(filterTabsView.getStableId(0));
+                } else if (stableId >= 0) {
                     if (selectWithStableId) {
                         if (!filterTabsView.selectTabWithStableId(stableId)) {
-                            int defId = DahlSettings.isHiddenAllChatsFolder() ? 1 : 0;
-                            while (id >= defId && !filterTabsView.selectTabWithStableId(filterTabsView.getStableId(id))) {
+                            while (id >= 0 && !filterTabsView.selectTabWithStableId(filterTabsView.getStableId(id))) {
                                 id--;
                             }
-                            if (id < defId) {
-                                id = defId;
+                            if (id < 0) {
+                                id = 0;
                             }
                         }
                     }
@@ -6797,8 +6797,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     viewPages[0].selectedType = 1;
                 }
                 for (int a = 0; a < viewPages.length; a++) {
-                    if (viewPages[a].selectedType >= dialogFilters.size()) {
-                        viewPages[a].selectedType = dialogFilters.size() - 1;
+                    if (viewPages[a].selectedType >= filters.size()) {
+                        viewPages[a].selectedType = filters.size() - 1;
                     }
                     viewPages[a].listView.setScrollingTouchSlop(RecyclerView.TOUCH_SLOP_PAGING);
                 }
@@ -6881,6 +6881,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             FrameLayout.LayoutParams params = LayoutHelper.createFrame(56, 56, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, fabBottomMargin);
             floatingButtonContainer.setLayoutParams(params);
             floatingButtonContainer.requestLayout();
+        }
+        if(floatingButton2Container != null){
+            int fabBottomMargin = tabsAtBottom ? (14 + 60 + 8 + 44) : 14 + 60 + 8;
+            FrameLayout.LayoutParams params = LayoutHelper.createFrame(36, 36, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 24 : 0, 0, LocaleController.isRTL ? 0 : 24, fabBottomMargin);
+            floatingButton2Container.setLayoutParams(params);
+            floatingButton2Container.requestLayout();
         }
 
         if(writeButtonContainer != null) {
@@ -8855,7 +8861,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     public boolean storiesEnabled = true;
 
     private void updateStoriesPosting() {
-        final boolean storiesEnabled = getMessagesController().storiesEnabled();
+        final boolean storiesEnabled = getMessagesController().storiesEnabled() && !DahlSettings.getHideStories() && !DahlSettings.getHideAddStory();
         if (this.storiesEnabled != storiesEnabled) {
             if (floatingButton2Container != null) {
                 floatingButton2Container.setVisibility(onlySelect && initialDialogsType != 10 || folderId != 0 || !storiesEnabled || (searchItem != null && searchItem.isSearchFieldVisible()) || isInPreviewMode() ? View.GONE : View.VISIBLE);

@@ -3,12 +3,14 @@ package ru.tusco.messenger.settings
 import android.app.Activity
 import android.content.SharedPreferences
 import androidx.annotation.StringRes
+import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.SharedConfig
 import org.telegram.messenger.SharedConfig.ProxyInfo
+import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.ui.LaunchActivity
 import ru.tusco.messenger.Extra
@@ -260,6 +262,7 @@ object DahlSettings {
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
+    @JvmStatic
     var hideStories: Boolean
         get() = sharedPreferences.getBoolean("hide_stories", false)
         set(value) {
@@ -267,10 +270,20 @@ object DahlSettings {
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
+    @JvmStatic
     var hideAddStory: Boolean
         get() = sharedPreferences.getBoolean("hide_add_story", false)
         set(value) {
             putBoolean("hide_add_story", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var hideViewedStories: Boolean
+        get() = sharedPreferences.getBoolean("hide_viewed_stories", false)
+        set(value) {
+            putBoolean("hide_viewed_stories", value)
+            AccountInstance.getInstance(UserConfig.selectedAccount).messagesController.storiesController.scheduleSort()
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
