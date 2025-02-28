@@ -78,4 +78,6 @@
     <string name="ConfirmAudioMessage">Audio message sending</string>
     <string name="ConfirmVideoMessageCamera">Camera for video messages</string>
     <string name="AlwaysAsk">Always ask</string>
+    <string name="DahlProxyEnable">Enable Dahl proxy</string>
+    <string name="DahlProxyDisable">Disable Dahl proxy</string>
 </resources>

@@ -38,11 +38,13 @@ import org.telegram.ui.Components.SideMenultItemAnimator;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
 
     private Context mContext;
     private DrawerLayoutContainer mDrawerLayoutContainer;
-    private ArrayList<Item> items = new ArrayList<>(11);
+    private ArrayList<Item> items = new ArrayList<>(12);
     private ArrayList<Integer> accountNumbers = new ArrayList<>();
     private boolean accountsShown;
     public DrawerProfileCell profileCell;
@@ -303,6 +305,8 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         dahlSettingsIcon = R.drawable.settings_dahl;
         UserConfig me = UserConfig.getInstance(UserConfig.selectedAccount);
         boolean showDivider = false;
+        items.add(new Item(100, LocaleController.getString(DahlSettings.isProxyEnabled() ? R.string.DahlProxyDisable : R.string.DahlProxyEnable), R.drawable.shield_keyhole_outline_28));
+        items.add(null); // divider
         items.add(new Item(16, LocaleController.getString(R.string.MyProfile), R.drawable.left_status_profile));
         if (me != null && me.isPremium()) {
             if (me.getEmojiStatus() != null) {

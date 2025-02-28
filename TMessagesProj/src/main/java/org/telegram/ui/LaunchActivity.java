@@ -231,6 +231,7 @@ import java.util.zip.ZipInputStream;
 
 import ru.tusco.messenger.DefaultWallpapersHelper;
 import ru.tusco.messenger.icons.DrawableResourceManager;
+import ru.tusco.messenger.settings.DahlSettings;
 import ru.tusco.messenger.settings.DahlSettingsActivity;
 
 public class LaunchActivity extends BasePermissionsActivity implements INavigationLayout.INavigationLayoutDelegate, NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate {
@@ -692,6 +693,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 } else if (id == 99) {
                     drawerLayoutContainer.closeDrawer(true);
                     presentFragment(new DahlSettingsActivity());
+                } else if(id == 100){
+                    drawerLayoutContainer.closeDrawer(false);
+                    DahlSettings.setProxyEnabled(!DahlSettings.isProxyEnabled());
                 }
             }
         });
@@ -7777,6 +7781,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void updateCurrentConnectionState(int account) {
         if (actionBarLayout == null) {
             return;
@@ -7817,6 +7822,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             };
         }
         actionBarLayout.setTitleOverlayText(title, titleId, action);
+        if(drawerLayoutAdapter != null) {
+            drawerLayoutAdapter.notifyDataSetChanged();
+        }
     }
 
     public void hideVisibleActionMode() {
