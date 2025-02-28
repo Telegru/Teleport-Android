@@ -80,6 +80,22 @@
     <string name="ConfirmAudioMessage">Отправку аудиосообщения</string>
     <string name="ConfirmVideoMessageCamera">Камера видеосообщения</string>
     <string name="AlwaysAsk">Спрашивать</string>
+  
     <string name="DahlProxyEnable">Включить прокси Даль</string>
     <string name="DahlProxyDisable">Выключить прокси Даль</string>
+
+    <string name="AppIconBlack">Черная</string>
+    <string name="AppIconMetallic">Металл</string>
+    <string name="AppIconSilver">Серебро</string>
+    <string name="AppIconInverted">Инверсия</string>
+    <string name="AppIconWhite">Белая</string>
+    <string name="AppIconUnicorn">Единорог</string>
+    <string name="AppIconOutline">Контур</string>
+    <string name="AppIconTitanium">Титан</string>
+    <string name="AppIconSparkling">Игристое</string>
+    <string name="AppIconRussia">Россия</string>
+    <string name="AppIconTriangle">Треугольник</string>
+    <string name="AppIconTatarstan">Татарстан</string>
+    <string name="AppIconBirch">Береза</string>
+    <string name="AppIconWinter">Зима</string>
 </resources>
