@@ -6875,7 +6875,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void updateFloatingButtonBottomMargin(){
-        boolean tabsAtBottom = (filterTabsView != null && !filterTabsView.isEmpty() && DahlSettings.isFoldersTabsAtBottom());
+        boolean isFoldersVisible = true;
+        if (filterTabsView == null || filterTabsView.isEmpty() || filterTabsView.getVisibility() != View.VISIBLE) {
+            isFoldersVisible = false;
+        }else if(filterTabsView.getTabsCount() == 1 && filterTabsView.getTab(0).isDefault){
+            isFoldersVisible = false;
+        }
+        boolean tabsAtBottom = (isFoldersVisible && DahlSettings.isFoldersTabsAtBottom());
+
         if(floatingButtonContainer != null) {
             int fabBottomMargin = tabsAtBottom ? (14 + 44) : 14;
             FrameLayout.LayoutParams params = LayoutHelper.createFrame(56, 56, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, fabBottomMargin);
@@ -7787,6 +7794,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         if (fragmentView != null) {
                             fragmentView.requestLayout();
                         }
+                        updateFloatingButtonBottomMargin();
                         notificationsLocker.unlock();
                     }
                 });
@@ -7807,6 +7815,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 filterTabsProgress = visible ? 1f : 0;
                 filterTabsView.setVisibility(visible ? View.VISIBLE : View.GONE);
+                updateFloatingButtonBottomMargin();
                 if (fragmentView != null) {
                     fragmentView.invalidate();
                 }
