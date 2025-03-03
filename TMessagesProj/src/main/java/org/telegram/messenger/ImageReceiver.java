@@ -1017,7 +1017,7 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
             ((ClipRoundedDrawable) drawable).setRadii(r[0], r[1], r[2], r[3]);
         } else if ((hasRoundRadius() || gradientShader != null) && (drawable instanceof BitmapDrawable || drawable instanceof AvatarDrawable)) {
             if (drawable instanceof AvatarDrawable) {
-                ((AvatarDrawable) drawable).setRoundRadius(16);
+                ((AvatarDrawable) drawable).setRoundRadius(r[0]);
             } else {
                 BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
                 if (bitmapDrawable instanceof RLottieDrawable) {

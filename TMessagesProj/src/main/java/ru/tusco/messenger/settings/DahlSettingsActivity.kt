@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.BuildVars
+import org.telegram.messenger.LocaleController
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
@@ -210,7 +211,7 @@ class DahlSettingsActivity : BaseFragment() {
         info.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubtitle))
         info.typeface = AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM)
         info.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
-        info.setText(R.string.Slide1Message)
+        info.text = AndroidUtilities.replaceTags(getString(R.string.Slide1Message))
         info.setLines(2)
         info.maxLines = 2
         info.setPadding(0, 0, 0, AndroidUtilities.dp(21f))
@@ -220,7 +221,7 @@ class DahlSettingsActivity : BaseFragment() {
         infoLayoutParams.marginEnd = AndroidUtilities.dp(21f)
         textLayout.addView(info, infoLayoutParams)
 
-        header.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefault))
+        header.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite))
         return header
     }
 

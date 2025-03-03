@@ -20,6 +20,8 @@ import android.view.animation.OvershootInterpolator;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class CounterView extends View {
 
     public CounterDrawable counterDrawable;

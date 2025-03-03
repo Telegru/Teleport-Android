@@ -18,6 +18,7 @@ import android.content.pm.ActivityInfo;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -180,7 +181,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
 
                 int y = (oneFourth * 3 - AndroidUtilities.dp(275)) / 2;
                 frameLayout2.layout(0, y, frameLayout2.getMeasuredWidth(), y + frameLayout2.getMeasuredHeight());
-                y += AndroidUtilities.dp(IMAGE_HEIGHT);
+                y += AndroidUtilities.dp(IMAGE_HEIGHT + 25);
                 int x = (getMeasuredWidth() - bottomPages.getMeasuredWidth()) / 2;
                 bottomPages.layout(x, y, x + bottomPages.getMeasuredWidth(), y + bottomPages.getMeasuredHeight());
                 viewPager.layout(0, 0, viewPager.getMeasuredWidth(), viewPager.getMeasuredHeight());
@@ -465,14 +466,14 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
     }
 
     private void checkContinueText() {
-        LocaleController.LocaleInfo englishInfo = null;
+        LocaleController.LocaleInfo russianInfo = null;
         LocaleController.LocaleInfo systemInfo = null;
         LocaleController.LocaleInfo currentLocaleInfo = LocaleController.getInstance().getCurrentLocaleInfo();
         String systemLang = MessagesController.getInstance(currentAccount).suggestedLangCode;
-        if (systemLang == null || systemLang.equals("en") && LocaleController.getInstance().getSystemDefaultLocale().getLanguage() != null && !LocaleController.getInstance().getSystemDefaultLocale().getLanguage().equals("en")) {
+        if (systemLang == null || systemLang.equals("ru") && LocaleController.getInstance().getSystemDefaultLocale().getLanguage() != null && !LocaleController.getInstance().getSystemDefaultLocale().getLanguage().equals("ru")) {
             systemLang = LocaleController.getInstance().getSystemDefaultLocale().getLanguage();
             if (systemLang == null) {
-                systemLang = "en";
+                systemLang = "ru";
             }
         }
 
@@ -480,17 +481,17 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         String alias = LocaleController.getLocaleAlias(arg);
         for (int a = 0; a < LocaleController.getInstance().languages.size(); a++) {
             LocaleController.LocaleInfo info = LocaleController.getInstance().languages.get(a);
-            if (info.shortName.equals("en")) {
-                englishInfo = info;
+            if (info.shortName.equals("ru")) {
+                russianInfo = info;
             }
             if (info.shortName.replace("_", "-").equals(systemLang) || info.shortName.equals(arg) || info.shortName.equals(alias)) {
                 systemInfo = info;
             }
-            if (englishInfo != null && systemInfo != null) {
+            if (russianInfo != null && systemInfo != null) {
                 break;
             }
         }
-        if (englishInfo == null || systemInfo == null || englishInfo == systemInfo) {
+        if (russianInfo == null || systemInfo == null || russianInfo == systemInfo) {
             return;
         }
         TLRPC.TL_langpack_getStrings req = new TLRPC.TL_langpack_getStrings();
@@ -498,8 +499,8 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
             req.lang_code = systemInfo.getLangCode();
             localeInfo = systemInfo;
         } else {
-            req.lang_code = englishInfo.getLangCode();
-            localeInfo = englishInfo;
+            req.lang_code = russianInfo.getLangCode();
+            localeInfo = russianInfo;
         }
         req.keys.add("ContinueOnThisLanguage");
         String finalSystemLang = systemLang;
@@ -556,10 +557,10 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         public Object instantiateItem(ViewGroup container, int position) {
             TextView headerTextView = new TextView(container.getContext());
             headerTextView.setTag(pagerHeaderTag);
-            headerTextView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_PLAYFAIR_DISPLAY));
+            headerTextView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_PLAYFAIR_BOLD));
             TextView messageTextView = new TextView(container.getContext());
             messageTextView.setTag(pagerMessageTag);
-            messageTextView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+            messageTextView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_REGULAR));
             messageTextView.setAlpha(0.5f);
             ImageView imageView = new ImageView(container.getContext());
 
@@ -567,15 +568,14 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
                 @Override
                 protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
                     int y;
-                    imageView.layout(0, -100, AndroidUtilities.getRealScreenSize().x, imageView.getMeasuredHeight());
-                    y = imageView.getMeasuredHeight();
-                    y += AndroidUtilities.dp(16);
+                    imageView.layout(0, -(AndroidUtilities.getRealScreenSize().y / 2) - AndroidUtilities.getStatusBarHeight(getContext()) * 3, AndroidUtilities.getRealScreenSize().x, imageView.getMeasuredHeight());
+                    y = (int) (AndroidUtilities.getRealScreenSize().y / 2.6);
                     int x = AndroidUtilities.dp(18);
                     headerTextView.layout(x, y, x + headerTextView.getMeasuredWidth(), y + headerTextView.getMeasuredHeight());
 
-                    y += headerTextView.getTextSize();
-                    y += AndroidUtilities.dp(16);
-                    x = AndroidUtilities.dp(16);
+                    y += headerTextView.getMeasuredHeight();
+                    y += AndroidUtilities.dp(12);
+                    x = AndroidUtilities.dp(32);
                     messageTextView.layout(x, y, x + messageTextView.getMeasuredWidth(), y + messageTextView.getMeasuredHeight());
                 }
             };
@@ -584,14 +584,15 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
             frameLayout.addView(imageView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT, 0, 0, 0, 0));
 
             headerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            headerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 26);
+            headerTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 32);
             headerTextView.setGravity(Gravity.CENTER);
+
             frameLayout.addView(headerTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT, 18, 244, 18, 0));
 
-            messageTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText3));
-            messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+            messageTextView.setTextColor(Color.WHITE);
+            messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
             messageTextView.setGravity(Gravity.CENTER);
-            frameLayout.addView(messageTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT, 16, 286, 16, 0));
+            frameLayout.addView(messageTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT, 32, 286, 32, 0));
 
             container.addView(frameLayout, 0);
 
@@ -959,7 +960,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
 
     private void updateColors(boolean fromTheme) {
         fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-        switchLanguageTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
+        switchLanguageTextView.setTextColor(Color.WHITE);
         startMessagingButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
         startMessagingButton.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(6), Theme.DAHL_ACTION_COLOR, Theme.getColor(Theme.key_chats_actionPressedBackground)));
         darkThemeDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_changephoneinfo_image2), PorterDuff.Mode.SRC_IN));
@@ -981,7 +982,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
                 TextView headerTextView = ch.findViewWithTag(pagerHeaderTag);
                 headerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                 TextView messageTextView = ch.findViewWithTag(pagerMessageTag);
-                messageTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText3));
+                messageTextView.setTextColor(Color.WHITE);
             }
         } else Intro.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
     }

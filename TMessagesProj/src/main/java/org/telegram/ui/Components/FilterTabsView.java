@@ -495,7 +495,7 @@ public class FilterTabsView extends FrameLayout {
                     float s = animateCounterEnter ? changeProgress : 1f - changeProgress;
                     canvas.scale(s, s, rect.centerX(), rect.centerY());
                 }
-                canvas.drawRoundRect(rect, 11.5f * AndroidUtilities.density, 11.5f * AndroidUtilities.density, counterPaint);
+                canvas.drawRoundRect(rect, DahlSettings.INSTANCE.getCounterCornerRadius(), DahlSettings.INSTANCE.getCounterCornerRadius(), counterPaint);
 
                 if (animateCounterReplace) {
                     float y = countTop;

@@ -51,7 +51,11 @@ public class AvatarSpan extends ReplacementSpan {
     }
 
     public void setSize(float sz) {
-        imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
+        if (DahlSettings.getRectangularAvatars()) {
+            imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
+        } else {
+            imageReceiver.setRoundRadius(dp(sz));
+        }
         this.sz = sz;
     }
 
