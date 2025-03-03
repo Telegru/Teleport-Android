@@ -76,22 +76,22 @@ import ru.tusco.messenger.settings.DahlSettings;
 
 public class DrawerProfileCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
-    private BackupImageView avatarImageView;
-    private SimpleTextView nameTextView;
-    private TextView phoneTextView;
-    private ImageView shadowView;
-    private ImageView arrowView;
-    private RLottieImageView darkThemeView;
+    private final BackupImageView avatarImageView;
+    private final SimpleTextView nameTextView;
+    private final TextView phoneTextView;
+    private final ImageView shadowView;
+    private final ImageView arrowView;
+    private final RLottieImageView darkThemeView;
     private static RLottieDrawable sunDrawable;
     private boolean updateRightDrawable = true;
     private Long statusGiftId;
-    private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable status;
-    private AnimatedStatusView animatedStatus;
+    private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable status;
+    private final AnimatedStatusView animatedStatus;
 
-    private Rect srcRect = new Rect();
-    private Rect destRect = new Rect();
-    private Paint paint = new Paint();
-    private Paint backPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Rect srcRect = new Rect();
+    private final Rect destRect = new Rect();
+    private final Paint paint = new Paint();
+    private final Paint backPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Integer currentColor;
     private Integer currentMoonColor;
     private SnowflakesEffect snowflakesEffect;
@@ -116,7 +116,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         addView(shadowView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 70, Gravity.LEFT | Gravity.BOTTOM));
 
         avatarImageView = new BackupImageView(context);
-        avatarImageView.getImageReceiver().setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
+        avatarImageView.getImageReceiver().setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : AndroidUtilities.dp(32));
         addView(avatarImageView, LayoutHelper.createFrame(64, 64, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 0, 67));
 
         nameTextView = new SimpleTextView(context) {
@@ -297,12 +297,12 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     }
 
     public static class AnimatedStatusView extends View {
-        private int stateSize;
-        private int effectsSize;
-        private int renderedEffectsSize;
+        private final int stateSize;
+        private final int effectsSize;
+        private final int renderedEffectsSize;
 
         private int animationUniq;
-        private ArrayList<Object> animations = new ArrayList<>();
+        private final ArrayList<Object> animations = new ArrayList<>();
         public AnimatedStatusView(Context context, int stateSize, int effectsSize) {
             super(context);
             this.stateSize = stateSize;

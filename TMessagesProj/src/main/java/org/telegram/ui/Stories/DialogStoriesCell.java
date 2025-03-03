@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
@@ -112,6 +113,8 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
     private HintView2 premiumHint;
 
     public static final int COLLAPSED_SIZE = 28;
+
+    private final int avatarSize = DahlSettings.getRectangularAvatars() ? 40 : 48;
 
     boolean updateOnIdleState;
     private int clipTop;
@@ -528,10 +531,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
 
     private boolean shouldDrawSelfInMini() {
         long dialogId = UserConfig.getInstance(currentAccount).clientUserId;
-        if (storiesController.hasUnreadStories(dialogId) || (storiesController.hasSelfStories() && storiesController.getDialogListStories().size() <= 3)) {
-            return true;
-        }
-        return false;
+        return storiesController.hasUnreadStories(dialogId) || (storiesController.hasSelfStories() && storiesController.getDialogListStories().size() <= 3);
     }
 
     Comparator<StoryCell> comparator = (o1, o2) -> o2.position - o1.position;
@@ -921,7 +921,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         if (cell == null) {
             return;
         }
-        final StoryCell finalCell = (StoryCell) cell;
+        final StoryCell finalCell = cell;
         if (dialogId != 0) {
             final Theme.ResourcesProvider resourcesProvider = fragment != null ? fragment.getResourceProvider() : null;
             AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER, resourcesProvider);
@@ -1151,6 +1151,8 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         private boolean selectedForOverscroll;
         boolean progressWasDrawn;
 
+        private final int avatarSize = DahlSettings.getRectangularAvatars() ? 40 : 48;
+
         private final AnimatedFloat failT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
 
         public StoryCell(Context context) {
@@ -1167,8 +1169,8 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             }
             createTextView();
             addView(textViewContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-            avatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
-            crossfageToAvatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
+            avatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
+            crossfageToAvatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
         }
 
         private void createTextView() {
@@ -1181,8 +1183,8 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             textView.setMaxLines(1);
 
             textViewContainer.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 1, 0, 1, 0));
-            avatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
-            crossfageToAvatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
+            avatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
+            crossfageToAvatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
         }
 
         public void setDialogId(long dialogId) {
@@ -1311,7 +1313,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         }
 
         float getCy() {
-            float size = AndroidUtilities.dp(48);
+            float size = AndroidUtilities.dp(avatarSize);
             float collapsedSize = AndroidUtilities.dp(COLLAPSED_SIZE);
 
             float finalSize = AndroidUtilities.lerp(size, collapsedSize, progressToCollapsed);
@@ -1323,7 +1325,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
 
         @Override
         protected void dispatchDraw(Canvas canvas) {
-            float size = AndroidUtilities.dp(48);
+            float size = AndroidUtilities.dp(avatarSize);
             float collapsedSize = AndroidUtilities.dp(COLLAPSED_SIZE);
             float overscrollSize = AndroidUtilities.dp(8) *  Utilities.clamp(overscrollPrgoress / 0.5f, 1f, 0);
             if (selectedForOverscroll) {
@@ -1355,7 +1357,11 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                 backgroundPaint.setColor(Theme.getColor(Theme.key_actionBarDefaultArchived));
             }
             if (progressToCollapsed != 0) {
-                canvas.drawCircle(cx, cy, radius + AndroidUtilities.dp(3), backgroundPaint);
+                if (DahlSettings.getRectangularAvatars()) {
+                    canvas.drawRoundRect(x - AndroidUtilities.dp(4), y - AndroidUtilities.dp(4), x + finalSize + AndroidUtilities.dp(4), y + finalSize + AndroidUtilities.dp(4), DahlSettings.INSTANCE.getAvatarCornerRadius(), DahlSettings.INSTANCE.getAvatarCornerRadius(), backgroundPaint);
+                } else {
+                    canvas.drawCircle(cx, cy, radius + AndroidUtilities.dp(3), backgroundPaint);
+                }
             }
 
             canvas.save();
@@ -1385,7 +1391,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                         radialProgress = DialogStoriesCell.this.radialProgress;
                     } else {
                         DialogStoriesCell.this.radialProgress = radialProgress = new RadialProgress(this);
-                        radialProgress.setBackground(null, true, false);
+                        radialProgress.setBackground(null, DahlSettings.getRectangularAvatars(), false);
                     }
                 }
                 if (drawAvatar) {
@@ -1472,6 +1478,25 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                     canvas.restore();
                 }
             }
+//            if (progressToCollapsed != 0) {
+//                if (DahlSettings.getRectangularAvatars() && !isLast) {
+//                    //canvas.drawRoundRect(x + finalSize - AndroidUtilities.dp(1.7f), y - AndroidUtilities.dp(2.3f), x + finalSize + AndroidUtilities.dp(4.5f), y + finalSize + AndroidUtilities.dp(1.7f), DahlSettings.INSTANCE.getAvatarCornerRadius(), DahlSettings.INSTANCE.getAvatarCornerRadius(), backgroundPaint);
+//                    //canvas.drawArc(x + finalSize - AndroidUtilities.dp(1.7f), y - AndroidUtilities.dp(2.3f), x + finalSize + AndroidUtilities.dp(4.5f), y + finalSize + AndroidUtilities.dp(1.7f), DahlSettings.INSTANCE.getAvatarCornerRadius(), DahlSettings.INSTANCE.getAvatarCornerRadius(), true, backgroundPaint);
+//                    Path path = new Path();
+//                    path.reset();
+//                    float width = x + finalSize + AndroidUtilities.dp(1f);
+//                    float height = y + finalSize + AndroidUtilities.dp(2.4f);
+//                    float cornerRadius = 8;
+//                    backgroundPaint.setStrokeWidth(16);
+//
+//                    path.moveTo(width - cornerRadius, y - AndroidUtilities.dp(2.6f)); // Start at the top-right corner (before the curve)
+//                    path.quadTo(width, y - AndroidUtilities.dp(2.6f), width, y + cornerRadius); // Draw the top-right rounded corner
+//                    path.lineTo(width, height - cornerRadius); // Draw the vertical line down
+//                    path.quadTo(width, height, width - cornerRadius, height);
+//                    path.close();
+//                    canvas.drawPath(path, backgroundPaint);
+//                }
+//            }
             canvas.restore();
 
             if (crossfadeToDialog && progressToCollapsed2 > 0) {
@@ -1670,7 +1695,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                 this.progressToCollapsed = progressToCollapsed;
                 this.progressToCollapsed2 = progressToCollapsed2;
                 float progressHalf = Utilities.clamp(progressToCollapsed / 0.5f, 1f, 0f);
-                float size = AndroidUtilities.dp(48);
+                float size = AndroidUtilities.dp(avatarSize);
                 float collapsedSize = AndroidUtilities.dp(COLLAPSED_SIZE);
                 invalidate();
                 recyclerListView.invalidate();
@@ -1775,7 +1800,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
     }
 
     static float getAvatarRight(int width, float progressToCollapsed) {
-        float size = AndroidUtilities.dp(48);
+        float size = AndroidUtilities.dp(DahlSettings.getRectangularAvatars() ? 40 : 48);
         float collapsedSize = AndroidUtilities.dp(COLLAPSED_SIZE);
         float finalSize = AndroidUtilities.lerp(size, collapsedSize, progressToCollapsed);
         float radius = finalSize / 2f;

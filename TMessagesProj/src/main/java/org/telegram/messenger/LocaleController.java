@@ -69,7 +69,7 @@ public class LocaleController {
                     final Locale locale = currentLocale == null ? Locale.getDefault() : currentLocale;
                     String lang = locale.getLanguage();
                     if (lang == null) {
-                        lang = "en";
+                        lang = "ru";
                     }
                     lang = lang.toLowerCase();
                     formatterDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, is24HourFormat ? getStringInternal("formatterDay24H", R.string.formatterDay24H) : getStringInternal("formatterDay12H", R.string.formatterDay12H), is24HourFormat ? "HH:mm" : "h:mm a");
@@ -87,7 +87,7 @@ public class LocaleController {
                     final Locale locale = currentLocale == null ? Locale.getDefault() : currentLocale;
                     String lang = locale.getLanguage();
                     if (lang == null) {
-                        lang = "en";
+                        lang = "ru";
                     }
                     lang = lang.toLowerCase();
                     formatterConstDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, is24HourFormat ? "HH:mm" : "h:mm a", is24HourFormat ? "HH:mm" : "h:mm a");
@@ -607,6 +607,15 @@ public class LocaleController {
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
 
+        localeInfo = new LocaleInfo();
+        localeInfo.name = "Русский";
+        localeInfo.nameEnglish = "Russian";
+        localeInfo.shortName = localeInfo.pluralLangCode = "ru";
+        localeInfo.pathToFile = null;
+        localeInfo.builtIn = true;
+        languages.add(localeInfo);
+        languagesDict.put(localeInfo.shortName, localeInfo);
+
         loadOtherLanguages();
         if (remoteLanguages.isEmpty()) {
             AndroidUtilities.runOnUIThread(() -> loadRemoteLanguages(UserConfig.selectedAccount));
@@ -668,7 +677,7 @@ public class LocaleController {
             if (currentInfo == null) {
                 currentInfo = getLanguageFromDict(getLocaleString(systemDefaultLocale));
                 if (currentInfo == null) {
-                    currentInfo = getLanguageFromDict("en");
+                    currentInfo = getLanguageFromDict("ru");
                 }
             }
 
@@ -848,13 +857,13 @@ public class LocaleController {
 
     private String getLocaleString(Locale locale) {
         if (locale == null) {
-            return "en";
+            return "ru";
         }
         String languageCode = locale.getLanguage();
         String countryCode = locale.getCountry();
         String variantCode = locale.getVariant();
         if (languageCode.length() == 0 && countryCode.length() == 0) {
-            return "en";
+            return "ru";
         }
         StringBuilder result = new StringBuilder(11);
         result.append(languageCode);
@@ -872,13 +881,13 @@ public class LocaleController {
     public static String getSystemLocaleStringIso639() {
         Locale locale = getInstance().getSystemDefaultLocale();
         if (locale == null) {
-            return "en";
+            return "ru";
         }
         String languageCode = locale.getLanguage();
         String countryCode = locale.getCountry();
         String variantCode = locale.getVariant();
         if (languageCode.length() == 0 && countryCode.length() == 0) {
-            return "en";
+            return "ru";
         }
         StringBuilder result = new StringBuilder(11);
         result.append(languageCode);
@@ -900,13 +909,13 @@ public class LocaleController {
         }
         Locale locale = getInstance().currentLocale;
         if (locale == null) {
-            return "en";
+            return "ru";
         }
         String languageCode = locale.getLanguage();
         String countryCode = locale.getCountry();
         String variantCode = locale.getVariant();
         if (languageCode.length() == 0 && countryCode.length() == 0) {
-            return "en";
+            return "ru";
         }
         StringBuilder result = new StringBuilder(11);
         result.append(languageCode);
@@ -1063,7 +1072,7 @@ public class LocaleController {
                 info = getLanguageFromDict(getLocaleString(systemDefaultLocale));
             }
             if (info == null) {
-                info = getLanguageFromDict("en");
+                info = getLanguageFromDict("ru");
             }
             applyLanguage(info, true, false, currentAccount);
         }
@@ -2033,7 +2042,7 @@ public class LocaleController {
                 if (currentPluralRules == null) {
                     currentPluralRules = allRules.get(currentLocale.getLanguage());
                     if (currentPluralRules == null) {
-                        currentPluralRules = allRules.get("en");
+                        currentPluralRules = allRules.get("ru");
                     }
                 }
             }
@@ -2511,7 +2520,7 @@ public class LocaleController {
         }
         String lang = locale.getLanguage();
         if (lang == null) {
-            lang = "en";
+            lang = "ru";
         }
         lang = lang.toLowerCase();
         isRTL = lang.length() == 2 && (lang.equals("ar") || lang.equals("fa") || lang.equals("he") || lang.equals("iw")) ||
@@ -2900,7 +2909,7 @@ public class LocaleController {
                         if (currentPluralRules == null) {
                             currentPluralRules = allRules.get(currentLocale.getLanguage());
                             if (currentPluralRules == null) {
-                                currentPluralRules = allRules.get("en");
+                                currentPluralRules = allRules.get("ru");
                             }
                         }
                         changingConfiguration = true;

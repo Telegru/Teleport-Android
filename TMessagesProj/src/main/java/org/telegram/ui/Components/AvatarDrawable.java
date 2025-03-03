@@ -8,7 +8,6 @@
 
 package org.telegram.ui.Components;
 
-import static org.telegram.messenger.AndroidUtilities.TYPEFACE_PLAYFAIR_DISPLAY;
 import static org.telegram.messenger.AndroidUtilities.dp;
 
 import android.graphics.Canvas;
@@ -128,8 +127,8 @@ public class AvatarDrawable extends Drawable {
         super();
         this.resourcesProvider = resourcesProvider;
         namePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        namePaint.setTypeface(AndroidUtilities.getTypeface("fonts/nizhegorodsky.ttf"));
-        namePaint.setTextSize(dp(36));
+        namePaint.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_NIZHEGORODSKY));
+        namePaint.setTextSize(dp(27));
     }
 
     public AvatarDrawable(TLRPC.User user) {
@@ -555,22 +554,25 @@ public class AvatarDrawable extends Drawable {
         int size = bounds.width();
         namePaint.setColor(ColorUtils.setAlphaComponent(getThemedColor(Theme.key_avatar_text), alpha));
         Paint backgroundPaint = Theme.avatar_backgroundPaint;
-//        if (hasAdvancedGradient && advancedGradient != null) {
-//            advancedGradient.setBounds(bounds.left, bounds.top, bounds.left + size, bounds.top + size);
-//            backgroundPaint = advancedGradient.paint;
-//        } else if (hasGradient) {
-//            int color = ColorUtils.setAlphaComponent(getColor(), alpha);
-//            int color2 = ColorUtils.setAlphaComponent(getColor2(), alpha);
-//            if (gradient == null || gradientBottom != bounds.height() || gradientColor1 != color || gradientColor2 != color2) {
-//                gradient = new LinearGradient(0, 0, 0, gradientBottom = bounds.height(), gradientColor1 = Color.parseColor("#3D4052"), gradientColor2 = Color.parseColor("#09090C"), Shader.TileMode.CLAMP);
-//            }
-//            backgroundPaint.setShader(gradient);
-//            backgroundPaint.setAlpha(alpha);
-//        } else {
-//            backgroundPaint.setShader(null);
-//            backgroundPaint.setColor(ColorUtils.setAlphaComponent(getColor(), alpha));
-//        }
-        gradient = new LinearGradient(0, 0, 0, gradientBottom = bounds.height(), gradientColor1 = Color.parseColor("#3D4052"), gradientColor2 = Color.parseColor("#09090C"), Shader.TileMode.CLAMP);
+        if (hasAdvancedGradient && advancedGradient != null) {
+            advancedGradient.setBounds(bounds.left, bounds.top, bounds.left + size, bounds.top + size);
+            backgroundPaint = advancedGradient.paint;
+        } else if (hasGradient) {
+            int color = ColorUtils.setAlphaComponent(getColor(), alpha);
+            int color2 = ColorUtils.setAlphaComponent(getColor2(), alpha);
+            if (gradient == null || gradientBottom != bounds.height() || gradientColor1 != color || gradientColor2 != color2) {
+                gradient = new LinearGradient(0, 0, 0, gradientBottom = bounds.height(), gradientColor1 = color, gradientColor2 = color2, Shader.TileMode.CLAMP);
+            }
+            backgroundPaint.setShader(gradient);
+            backgroundPaint.setAlpha(alpha);
+        } else {
+            gradient = new LinearGradient(0, 0, 0, gradientBottom = bounds.height(), gradientColor1 = Color.parseColor("#3D4052"), gradientColor2 = Color.parseColor("#09090C"), Shader.TileMode.CLAMP);
+            backgroundPaint.setShader(gradient);
+            backgroundPaint.setColor(ColorUtils.setAlphaComponent(getColor(), alpha));
+        }
+        if (avatarType == AVATAR_TYPE_SAVED) {
+            gradient = new LinearGradient(0, 0, 0, gradientBottom = bounds.height(), gradientColor1 = Color.parseColor("#3D4052"), gradientColor2 = Color.parseColor("#09090C"), Shader.TileMode.CLAMP);
+        }
         backgroundPaint.setShader(gradient);
         backgroundPaint.setAlpha(alpha);
         canvas.save();
@@ -596,21 +598,21 @@ public class AvatarDrawable extends Drawable {
             if (archivedAvatarProgress != 0) {
                 backgroundPaint.setColor(ColorUtils.setAlphaComponent(getThemedColor(Theme.key_avatar_backgroundArchived), alpha));
                 canvas.drawCircle(size / 2.0f, size / 2.0f, size / 2.0f * archivedAvatarProgress, backgroundPaint);
-                if (Theme.dialogs_archiveAvatarDrawableRecolored) {
-                    Theme.dialogs_archiveAvatarDrawable.beginApplyLayerColors();
-                    Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow1.**", Theme.getNonAnimatedColor(Theme.key_avatar_backgroundArchived));
-                    Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow2.**", Theme.getNonAnimatedColor(Theme.key_avatar_backgroundArchived));
-                    Theme.dialogs_archiveAvatarDrawable.commitApplyLayerColors();
-                    Theme.dialogs_archiveAvatarDrawableRecolored = false;
-                }
+//                if (Theme.dialogs_archiveAvatarDrawableRecolored) {
+//                    Theme.dialogs_archiveAvatarDrawable.beginApplyLayerColors();
+//                    Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow1.**", Theme.getNonAnimatedColor(Theme.key_avatar_backgroundArchived));
+//                    Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow2.**", Theme.getNonAnimatedColor(Theme.key_avatar_backgroundArchived));
+//                    Theme.dialogs_archiveAvatarDrawable.commitApplyLayerColors();
+//                    Theme.dialogs_archiveAvatarDrawableRecolored = false;
+//                }
             } else {
-                if (!Theme.dialogs_archiveAvatarDrawableRecolored) {
-                    Theme.dialogs_archiveAvatarDrawable.beginApplyLayerColors();
-                    Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow1.**", color);
-                    Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow2.**", color);
-                    Theme.dialogs_archiveAvatarDrawable.commitApplyLayerColors();
-                    Theme.dialogs_archiveAvatarDrawableRecolored = true;
-                }
+//                if (!Theme.dialogs_archiveAvatarDrawableRecolored) {
+//                    Theme.dialogs_archiveAvatarDrawable.beginApplyLayerColors();
+//                    Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow1.**", color);
+//                    Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow2.**", color);
+//                    Theme.dialogs_archiveAvatarDrawable.commitApplyLayerColors();
+//                    Theme.dialogs_archiveAvatarDrawableRecolored = true;
+//                }
             }
             int w = Theme.dialogs_archiveAvatarDrawable.getIntrinsicWidth();
             int h = Theme.dialogs_archiveAvatarDrawable.getIntrinsicHeight();

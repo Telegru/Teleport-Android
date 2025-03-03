@@ -609,7 +609,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         this.resourcesProvider = resourcesProvider;
         parentFragment = fragment;
         Theme.createDialogsResources(context);
-        avatarImage.setRoundRadius(dp(6));
+        avatarImage.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
         for (int i = 0; i < thumbImage.length; ++i) {
             thumbImage[i] = new ImageReceiver(this);
             thumbImage[i].ignoreNotifications = true;
@@ -754,6 +754,11 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
     public void setPreloader(DialogsAdapter.DialogsPreloader preloader) {
         this.preloader = preloader;
+    }
+
+    public void setAvatarScale(float scale) {
+//        avatarImage.getParentView().setScaleY(scale);
+//        avatarImage.getParentView().setScaleX(scale);
     }
 
     @Override
@@ -2117,7 +2122,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         int avatarTop;
         int thumbLeft;
         if (useForceThreeLines || SharedConfig.useThreeLinesLayout) {
-            avatarTop = dp(11);
+            avatarTop = dp(15);
             messageNameTop = dp(32);
             timeTop = dp(13);
             errorTop = dp(43);
@@ -2128,19 +2133,19 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
             if (LocaleController.isRTL) {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(16);
-                avatarLeft = getMeasuredWidth() - dp(56 + avatarStart);
+                avatarLeft = getMeasuredWidth() - dp(48 + avatarStart);
                 thumbLeft = avatarLeft - dp(13 + 18);
             } else {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(messagePaddingStart + 6);
                 avatarLeft = dp(avatarStart);
-                thumbLeft = avatarLeft + dp(56 + 13);
+                thumbLeft = avatarLeft + dp(48 + 13);
             }
-            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(56), avatarTop + dp(56));
+            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(48), avatarTop + dp(56));
             for (int i = 0; i < thumbImage.length; ++i) {
                 thumbImage[i].setImageCoords(thumbLeft + (thumbSize + 2) * i, avatarTop + dp(31) + (twoLinesForName ? dp(20) : 0) - (!(useForceThreeLines || SharedConfig.useThreeLinesLayout) && tags != null && !tags.isEmpty() ? dp(9) : 0), dp(18), dp(18));
             }
         } else {
-            avatarTop = dp(9);
+            avatarTop = dp(13);
             messageNameTop = dp(31);
             timeTop = dp(16);
             errorTop = dp(39);
@@ -2151,14 +2156,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
             if (LocaleController.isRTL) {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(22);
-                avatarLeft = getMeasuredWidth() - dp(54 + avatarStart);
+                avatarLeft = getMeasuredWidth() - dp(48 + avatarStart);
                 thumbLeft = avatarLeft - dp(11 + (thumbsCount * (thumbSize + 2) - 2));
             } else {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(messagePaddingStart + 4);
                 avatarLeft = dp(avatarStart);
-                thumbLeft = avatarLeft + dp(56 + 11);
+                thumbLeft = avatarLeft + dp(48 + 11);
             }
-            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(54), avatarTop + dp(54));
+            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(48), avatarTop + dp(48));
             for (int i = 0; i < thumbImage.length; ++i) {
                 thumbImage[i].setImageCoords(thumbLeft + (thumbSize + 2) * i, avatarTop + dp(30) + (twoLinesForName ? dp(20) : 0) - (!(useForceThreeLines || SharedConfig.useThreeLinesLayout) && tags != null && !tags.isEmpty() ? dp(9) : 0), dp(thumbSize), dp(thumbSize));
             }
@@ -4687,16 +4692,16 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         if (counterPath == null) {
                             counterPath = new Path();
                         }
-                        BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, dp(11.5f));
+                        BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, DahlSettings.INSTANCE.getCounterCornerRadius());
                     }
                     canvas.drawPath(counterPath, paint);
                     if (outline) {
                         canvas.drawPath(counterPath, counterPaintOutline);
                     }
                 } else {
-                    canvas.drawRoundRect(rect, dp(11.5f), dp(11.5f), paint);
+                    canvas.drawRoundRect(rect, DahlSettings.INSTANCE.getCounterCornerRadius(), DahlSettings.INSTANCE.getCounterCornerRadius(), paint);
                     if (outline) {
-                        canvas.drawRoundRect(rect, dp(11.5f), dp(11.5f), counterPaintOutline);
+                        canvas.drawRoundRect(rect, DahlSettings.INSTANCE.getCounterCornerRadius(), DahlSettings.INSTANCE.getCounterCornerRadius(), counterPaintOutline);
                     }
                 }
                 if (drawLayout != null) {
@@ -4739,16 +4744,16 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         if (counterPath == null) {
                             counterPath = new Path();
                         }
-                        BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, dp(11.5f));
+                        BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, DahlSettings.INSTANCE.getCounterCornerRadius());
                     }
                     canvas.drawPath(counterPath, paint);
                     if (outline) {
                         canvas.drawPath(counterPath, counterPaintOutline);
                     }
                 } else {
-                    canvas.drawRoundRect(rect, dp(11.5f), dp(11.5f), paint);
+                    canvas.drawRoundRect(rect, DahlSettings.INSTANCE.getCounterCornerRadius(), DahlSettings.INSTANCE.getCounterCornerRadius(), paint);
                     if (outline) {
-                        canvas.drawRoundRect(rect, dp(11.5f), dp(11.5f), counterPaintOutline);
+                        canvas.drawRoundRect(rect, DahlSettings.INSTANCE.getCounterCornerRadius(), DahlSettings.INSTANCE.getCounterCornerRadius(), counterPaintOutline);
                     }
                 }
                 if (countAnimationStableLayout != null) {

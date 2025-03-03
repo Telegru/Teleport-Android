@@ -17,4 +17,5 @@ TMessagesProj_AppStandalone/afat/
 TMessagesProj_AppHuawei/afat/
 /TMessagesProj/src/main/java/ru/tusco/messenger/Extra.kt
 /keystore.properties
-/TMessagesProj/config/release.keystore
+*.keystore
+/.kotlin/

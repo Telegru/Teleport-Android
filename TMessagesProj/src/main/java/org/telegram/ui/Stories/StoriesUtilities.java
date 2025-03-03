@@ -58,6 +58,8 @@ import org.telegram.ui.LaunchActivity;
 import java.io.File;
 import java.util.Collections;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class StoriesUtilities {
 
     private final static int ANIMATION_SEGMENT_COUNT = 16;
@@ -114,7 +116,7 @@ public class StoriesUtilities {
         int state;
         int unreadState = 0;
         boolean showProgress = storiesController.isLoading(dialogId);
-        boolean isForum = true; //ChatObject.isForum(UserConfig.selectedAccount, dialogId) && !params.isDialogStoriesCell;
+        boolean isForum = (ChatObject.isForum(UserConfig.selectedAccount, dialogId) && !params.isDialogStoriesCell) || DahlSettings.getRectangularAvatars();
         if (params.drawHiddenStoriesAsSegments) {
             hasStories = storiesController.hasHiddenStories();
         }
@@ -574,7 +576,8 @@ public class StoriesUtilities {
 
     private static void drawSegment(Canvas canvas, RectF rectTmp, Paint paint, float startAngle, float endAngle, AvatarStoryParams params, boolean isForum) {
         if (isForum) {
-            float r = rectTmp.height() * 0.16f;
+            float value = DahlSettings.getRectangularAvatars() ? 0.16f : 0.32f;
+            float r = rectTmp.height() * value;
             float rotateAngle = (((int)(startAngle)) / 90) * 90 + 90;
             float pathAngleStart = -199 + rotateAngle;
             float percentFrom = (startAngle - pathAngleStart) / 360;
@@ -1181,7 +1184,7 @@ public class StoriesUtilities {
                             }
                             ViewParent parent = view.getParent();
                             if (parent instanceof ViewGroup) {
-                                ((ViewGroup) parent).requestDisallowInterceptTouchEvent(false);
+                                parent.requestDisallowInterceptTouchEvent(false);
                             }
                             pressed = false;
                             onLongPress();
@@ -1210,7 +1213,7 @@ public class StoriesUtilities {
                 }
                 ViewParent parent = view.getParent();
                 if (parent instanceof ViewGroup) {
-                    ((ViewGroup) parent).requestDisallowInterceptTouchEvent(false);
+                    parent.requestDisallowInterceptTouchEvent(false);
                 }
                 pressed = false;
                 if (longPressRunnable != null) {
@@ -1242,14 +1245,12 @@ public class StoriesUtilities {
                     if (user != null && !user.stories_unavailable && user.stories_max_id > 0) {
                         UserStoriesLoadOperation operation = new UserStoriesLoadOperation();
                         operation.load(dialogId, view, this);
-                        return;
                     }
                 } else {
                     TLRPC.Chat chat = messagesController.getChat(-dialogId);
                     if (chat != null && !chat.stories_unavailable && chat.stories_max_id > 0) {
                         UserStoriesLoadOperation operation = new UserStoriesLoadOperation();
                         operation.load(dialogId, view, this);
-                        return;
                     }
                 }
             }
