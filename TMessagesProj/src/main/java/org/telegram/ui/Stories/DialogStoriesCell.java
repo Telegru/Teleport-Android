@@ -19,6 +19,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -713,6 +714,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         super.onAttachedToWindow();
         updateItems(false, false);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.storiesUpdated);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.storiesReadUpdated);
         ellipsizeSpanAnimator.onAttachedToWindow();
     }
 
@@ -720,6 +722,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.storiesUpdated);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.storiesReadUpdated);
         ellipsizeSpanAnimator.onDetachedFromWindow();
         if (globalCancelable != null) {
             globalCancelable.cancel();
@@ -743,6 +746,10 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                 AndroidUtilities.runOnUIThread(() -> {
                     checkLoadMore();
                 });
+            }
+        } else if (id == NotificationCenter.storiesReadUpdated){
+            if(DahlSettings.getHideViewedStories()){
+                updateItems(getVisibility() == View.VISIBLE, false);
             }
         }
     }
