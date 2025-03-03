@@ -628,7 +628,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     }
                     return;
                 }
-                if (id == 2) {
+                if (id == DrawerLayoutAdapter.ID_NEW_GROUP) {
                     Bundle args = new Bundle();
                     presentFragment(new GroupCreateActivity(args));
                     drawerLayoutContainer.closeDrawer(false);
@@ -657,28 +657,28 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     args.putBoolean("needFinishFragment", false);
                     presentFragment(new ContactsActivity(args));
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (id == 7) {
+                } else if (id == DrawerLayoutAdapter.ID_INVITE_FRIENDS) {
                     presentFragment(new InviteContactsActivity());
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (id == 8) {
+                } else if (id == DrawerLayoutAdapter.ID_SETTINGS) {
                     openSettings(false);
                 } else if (id == 9) {
                     Browser.openUrl(LaunchActivity.this, LocaleController.getString(R.string.TelegramFaqUrl));
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (id == 10) {
+                } else if (id == DrawerLayoutAdapter.ID_CALLS) {
                     presentFragment(new CallLogActivity());
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (id == 11) {
+                } else if (id == DrawerLayoutAdapter.ID_SAVED_MESSAGES) {
                     Bundle args = new Bundle();
                     args.putLong("user_id", UserConfig.getInstance(currentAccount).getClientUserId());
                     presentFragment(new ChatActivity(args));
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (id == 13) {
+                } else if (id == DrawerLayoutAdapter.ID_TELEGRAM_FEATURES) {
                     Browser.openUrl(LaunchActivity.this, LocaleController.getString(R.string.TelegramFeaturesUrl));
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (id == 15) {
+                } else if (id == DrawerLayoutAdapter.ID_CHANGE_STATUS) {
                     showSelectStatusDialog();
-                } else if (id == 16) {
+                } else if (id == DrawerLayoutAdapter.ID_PROFILE) {
                     drawerLayoutContainer.closeDrawer(true);
                     Bundle args = new Bundle();
                     args.putLong("user_id", UserConfig.getInstance(currentAccount).getClientUserId());
@@ -690,10 +690,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     args.putLong("dialog_id", UserConfig.getInstance(currentAccount).getClientUserId());
                     args.putInt("type", MediaActivity.TYPE_STORIES);
                     presentFragment(new MediaActivity(args, null));
-                } else if (id == 99) {
+                } else if (id == DrawerLayoutAdapter.ID_DAHL_SETTINGS) {
                     drawerLayoutContainer.closeDrawer(true);
                     presentFragment(new DahlSettingsActivity());
-                } else if(id == 100){
+                } else if(id == DrawerLayoutAdapter.ID_PROXY){
                     drawerLayoutContainer.closeDrawer(false);
                     DahlSettings.setProxyEnabled(!DahlSettings.isProxyEnabled());
                 }

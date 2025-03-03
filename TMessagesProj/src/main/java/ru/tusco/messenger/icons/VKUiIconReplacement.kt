@@ -44,7 +44,7 @@ class VKUiIconReplacement: BaseIconReplacement() {
         R.drawable.attach_send to R.mipmap.outline_send,
         R.drawable.ic_send to R.mipmap.outline_send,
         R.drawable.msg_archive to R.drawable.archive_outline_28,
-        R.drawable.msg_contacts to R.drawable.user_outline_28,
+        R.drawable.msg_contacts to R.drawable.users_3_outline_28,
         R.drawable.msg_calls to R.drawable.phone_outline_28,
         R.drawable.ic_call to R.drawable.phone_outline_24,
         R.drawable.msg_callback to R.drawable.phone_outline_28,
@@ -112,6 +112,9 @@ class VKUiIconReplacement: BaseIconReplacement() {
         R.drawable.msg_view_file to R.drawable.view_outline_28,
         R.drawable.chats_saved to R.drawable.bookmark_outline_28,
         R.drawable.profile_newmsg to R.drawable.comment_outline_28,
-        R.drawable.msg_media to R.drawable.all_categories_outline_28
+        R.drawable.msg_media to R.drawable.all_categories_outline_28,
+        R.drawable.msg_status_edit to R.drawable.smile_add_outline_28,
+        R.drawable.msg_invite to R.drawable.user_add_outline_28,
+        R.drawable.left_status_profile to R.drawable.user_circle_outline_28
     )
 }

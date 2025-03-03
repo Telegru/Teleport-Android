@@ -17,6 +17,7 @@ import ru.tusco.messenger.Extra
 import ru.tusco.messenger.icons.BaseIconReplacement
 import ru.tusco.messenger.icons.IconReplacementNone
 import ru.tusco.messenger.icons.VKUiIconReplacement
+import ru.tusco.messenger.settings.model.NavDrawerSettings
 
 object DahlSettings {
 
@@ -203,14 +204,10 @@ object DahlSettings {
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
-    var navigationDrawerItems: Set<String>?
-        get() = sharedPreferences.getStringSet("navigation_drawer_items", null)
+    var navigationDrawerItems: NavDrawerSettings
+        get() = NavDrawerSettings(sharedPreferences)
         set(value) {
-            if (value != null) {
-                putStringSet("navigation_drawer_items", value)
-            } else {
-                remove("navigation_drawer_items")
-            }
+            value.save(sharedPreferences)
         }
 
     var hidePremium: Boolean

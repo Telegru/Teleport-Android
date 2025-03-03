@@ -97,4 +97,6 @@
     <string name="AppIconTatarstan">Tatarstan</string>
     <string name="AppIconBirch">Birch</string>
     <string name="AppIconWinter">Winter</string>
+
+    <string name="Wallet">Wallet</string>
 </resources>

@@ -112,6 +112,8 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
     public static final int VIEW_TYPE_ROUND_GROUP_CHECKBOX = 41;
     public static final int VIEW_TYPE_ANIMATED_HEADER = 42;
 
+    public static final int VIEW_TYPE_ICON_TEXT_CHECK_2 = 99;
+
     protected final RecyclerListView listView;
     private final Context context;
     private final int currentAccount;
@@ -176,6 +178,7 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
         currentWhiteSection.end = -1;
         whiteSections.add(currentWhiteSection);
     }
+
     public void whiteSectionEnd() {
         if (currentWhiteSection != null) {
             currentWhiteSection.end = Math.max(0, items.size() - 1);
@@ -208,6 +211,7 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
 
     private int orderChangedId;
     private boolean orderChanged;
+
     public void swapElements(int fromPosition, int toPosition) {
         if (onReordered == null) return;
         int fromPositionReorderId = getReorderSectionId(fromPosition);
@@ -339,6 +343,7 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
             case VIEW_TYPE_USER_CHECKBOX:
             case VIEW_TYPE_SWITCH:
             case VIEW_TYPE_EXPANDABLE_SWITCH:
+            case VIEW_TYPE_ICON_TEXT_CHECK_2:
                 return true;
         }
         return false;
@@ -521,6 +526,9 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
             case VIEW_TYPE_SWITCH:
             case VIEW_TYPE_EXPANDABLE_SWITCH:
                 view = new TextCheckCell2(context);
+                break;
+            case VIEW_TYPE_ICON_TEXT_CHECK_2:
+                view = new TextCell(context, 23, false, true, resourcesProvider);
                 break;
         }
         if (shouldApplyBackground(viewType)) {
@@ -940,6 +948,15 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
                     });
                 }
                 break;
+            case VIEW_TYPE_ICON_TEXT_CHECK_2:
+                TextCell iconTextCheckCell = (TextCell) holder.itemView;
+                if (iconTextCheckCell.itemId == item.id) {
+                    iconTextCheckCell.setChecked(item.checked);
+                }
+                iconTextCheckCell.setEnabled(item.enabled);
+                iconTextCheckCell.setTextAndIcon(item.text, item.iconResId, divider);
+                iconTextCheckCell.itemId = item.id;
+                break;
         }
     }
 
@@ -1027,7 +1044,8 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
                 viewType == VIEW_TYPE_ROUND_GROUP_CHECKBOX ||
                 viewType == VIEW_TYPE_SWITCH ||
                 viewType == VIEW_TYPE_EXPANDABLE_SWITCH ||
-                viewType == VIEW_TYPE_SHADOW_COLLAPSE_BUTTON
+                viewType == VIEW_TYPE_SHADOW_COLLAPSE_BUTTON ||
+                viewType == VIEW_TYPE_ICON_TEXT_CHECK_2
             );
         }
         return clickable && (item == null || item.enabled);

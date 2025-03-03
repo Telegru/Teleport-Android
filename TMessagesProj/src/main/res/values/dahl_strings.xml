@@ -99,4 +99,7 @@
     <string name="AppIconTatarstan">Татарстан</string>
     <string name="AppIconBirch">Береза</string>
     <string name="AppIconWinter">Зима</string>
+
+    <string name="Wallet">Кошелек</string>
+
 </resources>
