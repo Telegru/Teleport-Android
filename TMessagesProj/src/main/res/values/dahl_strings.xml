@@ -72,6 +72,7 @@
     <string name="Stories">Истории</string>
     <string name="HideStories">Не показывать</string>
     <string name="HideAddStory">Скрыть кнопку создания</string>
+    <string name="HideViewedStories">Скрывать просмотренные истории</string>
     <string name="RecentChats">Недавние чаты</string>
     <string name="EnablePanel">Включить панель</string>
     <string name="RecentChatsInfo">Над списком чатов появится панель быстрого перехода к недавно посещенным чатам. </string>

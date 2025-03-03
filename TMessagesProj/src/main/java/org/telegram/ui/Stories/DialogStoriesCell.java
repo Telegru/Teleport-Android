@@ -19,6 +19,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -329,6 +330,9 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             return;
         }
         if (cell.isSelf && !storiesController.hasSelfStories()) {
+            if(DahlSettings.getHideAddStory()){
+                return;
+            }
             if (!MessagesController.getInstance(currentAccount).storiesEnabled()) {
                 showPremiumHint();
             } else {
@@ -447,9 +451,12 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         }
 
         ArrayList<TL_stories.PeerStories> allStories = type == TYPE_ARCHIVE ? storiesController.getHiddenList() : storiesController.getDialogListStories();
+
+        boolean hideViewedStories = DahlSettings.getHideViewedStories();
+
         for (int i = 0; i < allStories.size(); i++) {
             long dialogId = DialogObject.getPeerDialogId(allStories.get(i).peer);
-            if (dialogId != UserConfig.getInstance(currentAccount).getClientUserId()) {
+            if (dialogId != UserConfig.getInstance(currentAccount).getClientUserId() && (!hideViewedStories || storiesController.hasUnreadStories(dialogId))) {
                 items.add(new Item(dialogId));
             }
         }
@@ -707,6 +714,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         super.onAttachedToWindow();
         updateItems(false, false);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.storiesUpdated);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.storiesReadUpdated);
         ellipsizeSpanAnimator.onAttachedToWindow();
     }
 
@@ -714,6 +722,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.storiesUpdated);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.storiesReadUpdated);
         ellipsizeSpanAnimator.onDetachedFromWindow();
         if (globalCancelable != null) {
             globalCancelable.cancel();
@@ -737,6 +746,10 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                 AndroidUtilities.runOnUIThread(() -> {
                     checkLoadMore();
                 });
+            }
+        } else if (id == NotificationCenter.storiesReadUpdated){
+            if(DahlSettings.getHideViewedStories()){
+                updateItems(getVisibility() == View.VISIBLE, false);
             }
         }
     }
@@ -1579,7 +1592,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         }
 
         public void drawPlus(Canvas canvas, float cx, float cy, float alpha) {
-            if (!isSelf || storiesController.hasStories(dialogId) || !Utilities.isNullOrEmpty(storiesController.getUploadingStories(dialogId))) {
+            if (!isSelf || DahlSettings.getHideAddStory() || storiesController.hasStories(dialogId) || !Utilities.isNullOrEmpty(storiesController.getUploadingStories(dialogId))) {
                 return;
             }
             float cx2 = cx + AndroidUtilities.dp(16);
