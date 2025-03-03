@@ -66,6 +66,8 @@ class DahlSettingsActivity : BaseFragment() {
         actionBar.setAddToContainer(false)
         actionBar.castShadows = false
         actionBar.backButtonDrawable = BackDrawable(false)
+        actionBar.setTitleColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        actionBar.setItemsColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), false)
         actionBar.backgroundColor = Color.TRANSPARENT
         actionBar.setActionBarMenuOnItemClick(object : ActionBarMenuOnItemClick() {
             override fun onItemClick(id: Int) {
@@ -193,7 +195,7 @@ class DahlSettingsActivity : BaseFragment() {
         textLayoutParams.gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
         header.addView(textLayout, textLayoutParams)
 
-        title.setTextColor(Theme.getColor(Theme.key_actionBarDefaultTitle))
+        title.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText))
         title.typeface = AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM)
         title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20f)
         title.text = String.format("%s %s", getString(R.string.DahlAppName), BuildVars.BUILD_VERSION_STRING)
@@ -208,7 +210,7 @@ class DahlSettingsActivity : BaseFragment() {
         titleLayoutParams.marginEnd = AndroidUtilities.dp(21f)
         textLayout.addView(title, titleLayoutParams)
 
-        info.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubtitle))
+        info.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText))
         info.typeface = AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM)
         info.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
         info.text = AndroidUtilities.replaceTags(getString(R.string.Slide1Message))
