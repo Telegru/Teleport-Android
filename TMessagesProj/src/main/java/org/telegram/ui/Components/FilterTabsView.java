@@ -63,6 +63,8 @@ import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.util.ArrayList;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class FilterTabsView extends FrameLayout {
 
     public int getCurrentTabStableId() {
@@ -1472,12 +1474,18 @@ public class FilterTabsView extends FrameLayout {
         if (!tabs.isEmpty()) {
             int width = MeasureSpec.getSize(widthMeasureSpec) - AndroidUtilities.dp(7) - AndroidUtilities.dp(7);
             Tab firstTab = findDefaultTab();
-            if (firstTab != null) {
-                firstTab.setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
-                int tabWidth = firstTab.getWidth(false);
-                firstTab.setTitle(allTabsWidth > width ? LocaleController.getString(R.string.FilterAllChatsShort) : LocaleController.getString(R.string.FilterAllChats), null, false);
-                int trueTabsWidth = allTabsWidth - tabWidth;
-                trueTabsWidth += firstTab.getWidth(false);
+            boolean hideAllChats = DahlSettings.isHiddenAllChatsFolder();
+            if (firstTab != null || hideAllChats) {
+                int trueTabsWidth;
+                if (!hideAllChats) {
+                    firstTab.setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
+                    int tabWidth = firstTab.getWidth(false);
+                    firstTab.setTitle(allTabsWidth > width ? LocaleController.getString(R.string.FilterAllChatsShort) : LocaleController.getString(R.string.FilterAllChats), null, false);
+                    trueTabsWidth = allTabsWidth - tabWidth;
+                    trueTabsWidth += firstTab.getWidth(false);
+                }else{
+                    trueTabsWidth = allTabsWidth;
+                }
                 int prevWidth = additionalTabWidth;
                 additionalTabWidth = trueTabsWidth < width ? (width - trueTabsWidth) / tabs.size() : 0;
                 if (prevWidth != additionalTabWidth) {
