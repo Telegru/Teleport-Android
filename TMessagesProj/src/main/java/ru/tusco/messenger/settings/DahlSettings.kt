@@ -237,7 +237,7 @@ object DahlSettings {
         }
 
     @JvmStatic
-    var animatedAvatars: Boolean
+    var isAnimatedAvatars: Boolean
         get() = sharedPreferences.getBoolean("animated_avatars", true)
         set(value) {
             putBoolean("animated_avatars", value)

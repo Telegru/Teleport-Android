@@ -25,6 +25,8 @@ import org.telegram.ui.ActionBar.Theme;
 
 import java.util.HashSet;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class VectorAvatarThumbDrawable extends Drawable implements AnimatedEmojiSpan.InvalidateHolder, AttachableDrawable, NotificationCenter.NotificationCenterDelegate {
 
     public static final int TYPE_SMALL = 1;
@@ -47,7 +49,7 @@ public class VectorAvatarThumbDrawable extends Drawable implements AnimatedEmoji
 
     public VectorAvatarThumbDrawable(TLRPC.VideoSize vectorImageMarkup, boolean isPremiumUser, int type) {
         this.type = type;
-        this.isPremium = isPremiumUser;
+        this.isPremium = isPremiumUser && DahlSettings.isAnimatedAvatars();
         int color1 = ColorUtils.setAlphaComponent(vectorImageMarkup.background_colors.get(0), 255);
         int color2 = vectorImageMarkup.background_colors.size() > 1 ? ColorUtils.setAlphaComponent(vectorImageMarkup.background_colors.get(1), 255) : 0;
         int color3 = vectorImageMarkup.background_colors.size() > 2 ? ColorUtils.setAlphaComponent(vectorImageMarkup.background_colors.get(2), 255) : 0;
@@ -56,7 +58,7 @@ public class VectorAvatarThumbDrawable extends Drawable implements AnimatedEmoji
         if (vectorImageMarkup instanceof TLRPC.TL_videoSizeEmojiMarkup) {
             TLRPC.TL_videoSizeEmojiMarkup emojiMarkup = (TLRPC.TL_videoSizeEmojiMarkup) vectorImageMarkup;
             int cacheType = AnimatedEmojiDrawable.STANDARD_LOTTIE_FRAME;
-            if (type == TYPE_SMALL && isPremiumUser) {
+            if (type == TYPE_SMALL && this.isPremium) {
                 cacheType = AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS;
             } else if (type == TYPE_PROFILE) {
                 cacheType = AnimatedEmojiDrawable.CACHE_TYPE_AVATAR_CONSTRUCTOR_PREVIEW2;
