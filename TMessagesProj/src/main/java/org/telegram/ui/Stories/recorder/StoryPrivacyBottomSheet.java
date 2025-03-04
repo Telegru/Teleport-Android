@@ -106,6 +106,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class StoryPrivacyBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
     private ViewPagerFixed viewPager;
@@ -2724,7 +2726,7 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
             super(context);
             this.resourcesProvider = resourcesProvider;
 
-            avatarDrawable.setRoundRadius(AndroidUtilities.dp(8));
+            avatarDrawable.setRoundRadius(DahlSettings.INSTANCE.getAvatarCornerRadius());
 
             imageView = new BackupImageView(context);
             imageView.setRoundRadius(AndroidUtilities.dp(20));

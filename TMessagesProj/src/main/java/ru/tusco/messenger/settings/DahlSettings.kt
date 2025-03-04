@@ -21,9 +21,6 @@ import ru.tusco.messenger.settings.model.NavDrawerSettings
 
 object DahlSettings {
 
-    val isSquaringEnabled = true
-    val avatarCornerRadius = if (isSquaringEnabled) 16 else AndroidUtilities.dp(28f)
-
     private val sharedPreferences: SharedPreferences =
         ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
@@ -70,6 +67,17 @@ object DahlSettings {
             putInt("AP_Icon_Replacements", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
+
+    @JvmStatic
+    var rectangularAvatars: Boolean
+        get() = sharedPreferences.getBoolean("AP_Rectangular_Avatars", true)
+        set(value) {
+            putBoolean("AP_Rectangular_Avatars", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    val avatarCornerRadius = if (rectangularAvatars) 20 else AndroidUtilities.dp(28f)
+    val counterCornerRadius = if (rectangularAvatars) 20 else AndroidUtilities.dp(11.5f)
 
     fun getCurrentIconPack(): BaseIconReplacement {
         return when (iconReplacement) {
