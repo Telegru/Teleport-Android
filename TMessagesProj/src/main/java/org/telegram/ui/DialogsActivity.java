@@ -2971,24 +2971,24 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
     private void showForkNotification() {
         // Check if the user has already confirmed the notice
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-        boolean hasConfirmed = preferences.getBoolean("hasConfirmedForkNotice", false);
-
-        if (!hasConfirmed) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-            builder.setTitle(LocaleController.getString(R.string.ImportantNotice));
-            builder.setMessage(LocaleController.getString(R.string.ImportantMessage));
-            builder.setPositiveButton(LocaleController.getString(R.string.Confirm), (dialog, which) -> {
-                // User clicked confirm button
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("hasConfirmedForkNotice", true);
-                editor.apply();
-                dialog.dismiss();
-            });
-            AlertDialog dialog = builder.create();
-            dialog.setCancelable(false);
-            showDialog(dialog);
-        }
+//        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+//        boolean hasConfirmed = preferences.getBoolean("hasConfirmedForkNotice", false);
+//
+//        if (!hasConfirmed) {
+//            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+//            builder.setTitle(LocaleController.getString(R.string.ImportantNotice));
+//            builder.setMessage(LocaleController.getString(R.string.ImportantMessage));
+//            builder.setPositiveButton(LocaleController.getString(R.string.Confirm), (dialog, which) -> {
+//                // User clicked confirm button
+//                SharedPreferences.Editor editor = preferences.edit();
+//                editor.putBoolean("hasConfirmedForkNotice", true);
+//                editor.apply();
+//                dialog.dismiss();
+//            });
+//            AlertDialog dialog = builder.create();
+//            dialog.setCancelable(false);
+//            showDialog(dialog);
+//        }
     }
 
     @Override
