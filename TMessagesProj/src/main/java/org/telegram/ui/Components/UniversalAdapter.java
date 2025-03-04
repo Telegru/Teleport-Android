@@ -950,12 +950,9 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
                 break;
             case VIEW_TYPE_ICON_TEXT_CHECK_2:
                 TextCell iconTextCheckCell = (TextCell) holder.itemView;
-                if (iconTextCheckCell.itemId == item.id) {
-                    iconTextCheckCell.setChecked(item.checked);
-                }
                 iconTextCheckCell.setEnabled(item.enabled);
                 iconTextCheckCell.setTextAndIcon(item.text, item.iconResId, divider);
-                iconTextCheckCell.itemId = item.id;
+                iconTextCheckCell.setChecked(item.checked);
                 break;
         }
     }

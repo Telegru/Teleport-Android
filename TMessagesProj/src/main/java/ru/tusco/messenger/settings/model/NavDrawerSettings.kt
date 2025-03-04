@@ -61,11 +61,11 @@ data class NavDrawerSettings(
             else -> true
         }
 
-    fun getInfoText(context: Context): String {
+    fun getInfoText(context: Context, isPremium: Boolean): String {
         var count = 0
         if (proxy) count++
         if (profile) count++
-        if (changeStatus) count++
+        if (isPremium && changeStatus) count++
         if (wallet) count++
         if (newGroup) count++
         if (contacts) count++

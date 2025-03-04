@@ -204,10 +204,12 @@ object DahlSettings {
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
+    @JvmStatic
     var navigationDrawerItems: NavDrawerSettings
         get() = NavDrawerSettings(sharedPreferences)
         set(value) {
             value.save(sharedPreferences)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     var hidePremium: Boolean
