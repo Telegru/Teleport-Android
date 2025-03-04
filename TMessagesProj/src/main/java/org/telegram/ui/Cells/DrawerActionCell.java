@@ -15,6 +15,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -38,6 +39,8 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.FilterCreateActivity;
 
 import java.util.Set;
+
+import ru.tusco.messenger.settings.DahlSettings;
 
 public class DrawerActionCell extends FrameLayout {
 
@@ -159,18 +162,23 @@ public class DrawerActionCell extends FrameLayout {
             } else {
                 textView.setText(bot.short_name);
             }
-            TLRPC.TL_attachMenuBotIcon botIcon = MediaDataController.getSideAttachMenuBotIcon(bot);
-            if (botIcon != null) {
-                TLRPC.PhotoSize photoSize = FileLoader.getClosestPhotoSizeWithSize(botIcon.icon.thumbs, 24 * 3);
-                SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(botIcon.icon.thumbs,  Theme.key_emptyListPlaceholder, 0.2f);
-                imageView.setImage(
-                    ImageLocation.getForDocument(botIcon.icon), "24_24",
-                    ImageLocation.getForDocument(photoSize, botIcon.icon), "24_24",
-                    svgThumb != null ? svgThumb : getContext().getResources().getDrawable(R.drawable.msg_bot).mutate(),
-                    bot
-                );
-            } else {
-                imageView.setImageResource(R.drawable.msg_bot);
+
+            if(currentId == 1985737506 && DahlSettings.INSTANCE.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI){ // wallet id = 1985737506
+                imageView.setImageResource(R.drawable.wallet_outline_28);
+            }else {
+                TLRPC.TL_attachMenuBotIcon botIcon = MediaDataController.getSideAttachMenuBotIcon(bot);
+                if (botIcon != null) {
+                    TLRPC.PhotoSize photoSize = FileLoader.getClosestPhotoSizeWithSize(botIcon.icon.thumbs, 24 * 3);
+                    SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(botIcon.icon.thumbs, Theme.key_emptyListPlaceholder, 0.2f);
+                    imageView.setImage(
+                            ImageLocation.getForDocument(botIcon.icon), "24_24",
+                            ImageLocation.getForDocument(photoSize, botIcon.icon), "24_24",
+                            svgThumb != null ? svgThumb : getContext().getResources().getDrawable(R.drawable.msg_bot).mutate(),
+                            bot
+                    );
+                } else {
+                    imageView.setImageResource(R.drawable.msg_bot);
+                }
             }
         } catch (Throwable e) {
             FileLog.e(e);

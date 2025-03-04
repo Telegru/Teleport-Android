@@ -10,6 +10,10 @@ import android.util.SparseLongArray;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.Utilities;
@@ -209,6 +213,22 @@ public class UItem extends AdapterWithDiffUtils.Item {
         UItem i = new UItem(UniversalAdapter.VIEW_TYPE_CHECK, false);
         i.id = id;
         i.text = text;
+        return i;
+    }
+
+    public static UItem asCheck(int id, @NonNull CharSequence text, @Nullable CharSequence subtext) {
+        UItem i = new UItem(UniversalAdapter.VIEW_TYPE_CHECK, false);
+        i.id = id;
+        i.text = text;
+        i.subtext = subtext;
+        return i;
+    }
+
+    public static UItem asIconCheck(int id, @DrawableRes int iconResId, CharSequence text) {
+        UItem i = new UItem(UniversalAdapter.VIEW_TYPE_ICON_TEXT_CHECK_2, false);
+        i.id = id;
+        i.text = text;
+        i.iconResId = iconResId;
         return i;
     }
 

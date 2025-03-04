@@ -65,15 +65,15 @@ class AppearanceSettingsActivity : UniversalFragment() {
         items?.add(UItem.asHeader(getString(R.string.Profile)))
         items?.add(UItem.asButton(WALLPAPERS, getString(R.string.Wallpapers)))
 
-//        items?.add(UItem.asShadow(-3, null))
-//
-//        items?.add(UItem.asHeader(getString(R.string.TgSettingsMenu)))
-//        items?.add(UItem.asCheck(HIDE_HELP, getString(R.string.HideHelpBlock)).setChecked(DahlSettings.isHiddenHelpBlock))
-//
-//        items?.add(UItem.asShadow(-3, null))
-//
-//        items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
-//        items?.add(UItem.asButton(NAVIGATION_DRAWER, getString(R.string.NavigationDrawerItems)))
+        items?.add(UItem.asShadow(-3, null))
+
+        items?.add(UItem.asHeader(getString(R.string.TgSettingsMenu)))
+        items?.add(UItem.asCheck(HIDE_HELP, getString(R.string.HideHelpBlock)).setChecked(DahlSettings.isHiddenHelpBlock))
+
+        items?.add(UItem.asShadow(-3, null))
+
+        items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
+        items?.add(UItem.asButton(NAVIGATION_DRAWER, getString(R.string.NavigationDrawerItems)))
 
         items?.add(UItem.asShadow(-3, null))
 
@@ -93,7 +93,7 @@ class AppearanceSettingsActivity : UniversalFragment() {
             PERSONAL_COLORS -> DahlSettings.isEnabledPersonalColors = !DahlSettings.isEnabledPersonalColors
             WALLPAPERS -> presentFragment(WallpapersListActivity(WallpapersListActivity.TYPE_ALL))
             HIDE_HELP -> DahlSettings.isHiddenHelpBlock = !DahlSettings.isHiddenHelpBlock
-            NAVIGATION_DRAWER -> {}
+            NAVIGATION_DRAWER -> presentFragment(NavigationDrawerSettingsActivity())
             SWITCH_ICONS -> {
                 if (item.checked) {
                     DahlSettings.iconReplacement = NO_REPLACEMENT

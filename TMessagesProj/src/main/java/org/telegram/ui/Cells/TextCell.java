@@ -50,6 +50,8 @@ import org.telegram.ui.Stories.recorder.HintView2;
 
 public class TextCell extends FrameLayout {
 
+    public int itemId;
+
     public final SimpleTextView textView;
     private final SimpleTextView subtitleView;
     public final AnimatedTextView valueTextView;

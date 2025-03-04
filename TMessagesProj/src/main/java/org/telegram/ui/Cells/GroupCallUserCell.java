@@ -54,6 +54,8 @@ import org.telegram.ui.Components.WaveDrawable;
 
 import java.util.ArrayList;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class GroupCallUserCell extends FrameLayout {
 
     private AvatarWavesDrawable avatarWavesDrawable;
@@ -481,9 +483,9 @@ public class GroupCallUserCell extends FrameLayout {
             botVerificationIcon = DialogObject.getBotVerificationIcon(currentUser);
             if (currentUser != null && currentUser.verified) {
                 rightDrawable.set(verifiedDrawable = (verifiedDrawable == null ? new VerifiedDrawable(getContext()) : verifiedDrawable), animated);
-            } else if (currentUser != null && DialogObject.getEmojiStatusDocumentId(currentUser.emoji_status) != 0) {
+            } else if (currentUser != null && DialogObject.getEmojiStatusDocumentId(currentUser.emoji_status) != 0 && DahlSettings.isEmojiStatus()) {
                 rightDrawable.set(DialogObject.getEmojiStatusDocumentId(currentUser.emoji_status), animated);
-            } else if (currentUser != null && currentUser.premium) {
+            } else if (currentUser != null && currentUser.premium && DahlSettings.isEmojiStatus()) {
                 if (premiumDrawable == null) {
                     premiumDrawable = getContext().getResources().getDrawable(R.drawable.msg_premium_liststar).mutate();
                     premiumDrawable = new AnimatedEmojiDrawable.WrapSizeDrawable(premiumDrawable, AndroidUtilities.dp(14), AndroidUtilities.dp(14)) {

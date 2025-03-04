@@ -683,13 +683,13 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
         if (verified) {
             statusDrawable.set(new CombinedDrawable(Theme.dialogs_verifiedDrawable, Theme.dialogs_verifiedCheckDrawable, 0, 0), animated);
             statusDrawable.setColor(null);
-        } else if (user != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(user.emoji_status) != 0) {
+        } else if (user != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(user.emoji_status) != 0 && DahlSettings.isEmojiStatus()) {
             statusDrawable.set(DialogObject.getEmojiStatusDocumentId(user.emoji_status), animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-        } else if (chat != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0) {
+        } else if (chat != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0 && DahlSettings.isEmojiStatus()) {
             statusDrawable.set(DialogObject.getEmojiStatusDocumentId(chat.emoji_status), animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-        } else if (user != null && !savedMessages && MessagesController.getInstance(currentAccount).isPremiumUser(user)) {
+        } else if (user != null && !savedMessages && MessagesController.getInstance(currentAccount).isPremiumUser(user) && DahlSettings.isEmojiStatus()) {
             statusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
         } else {

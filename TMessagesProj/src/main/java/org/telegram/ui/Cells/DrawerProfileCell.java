@@ -37,7 +37,6 @@ import androidx.annotation.NonNull;
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLocation;
@@ -695,7 +694,8 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         drawPremium = false;//user.premium;
         nameTextView.setText(text);
         statusGiftId = null;
-        Long emojiStatusId = UserObject.getEmojiStatusDocumentId(user);
+        boolean showEmojiStatus = DahlSettings.isEmojiStatus();
+        Long emojiStatusId = showEmojiStatus ? UserObject.getEmojiStatusDocumentId(user) : null;
         if (emojiStatusId != null) {
             final boolean isCollectible = user.emoji_status instanceof TLRPC.TL_emojiStatusCollectible;
             animatedStatus.animate().alpha(1).setDuration(200).start();
@@ -705,7 +705,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
                 statusGiftId = ((TLRPC.TL_emojiStatusCollectible) user.emoji_status).collectible_id;
             }
             status.setParticles(isCollectible, true);
-        } else if (user.premium) {
+        } else if (showEmojiStatus && user.premium) {
             animatedStatus.animate().alpha(1).setDuration(200).start();
             nameTextView.setDrawablePadding(AndroidUtilities.dp(4));
             if (premiumStar == null) {

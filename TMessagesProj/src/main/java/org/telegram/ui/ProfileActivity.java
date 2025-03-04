@@ -76,7 +76,6 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.util.Property;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
@@ -315,7 +314,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import ru.tusco.messenger.settings.DahlSettingsActivity;
+import ru.tusco.messenger.settings.DahlSettings;
 
 public class ProfileActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, SharedMediaLayout.SharedMediaPreloaderDelegate, ImageUpdater.ImageUpdaterDelegate, SharedMediaLayout.Delegate {
     private final static int PHONE_OPTION_CALL = 0,
@@ -8994,7 +8993,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 devicesRow = rowCount++;
                 languageRow = rowCount++;
                 devicesSectionRow = rowCount++;
-                if (!getMessagesController().premiumFeaturesBlocked()) {
+                if (!getMessagesController().premiumFeaturesBlocked() && !DahlSettings.isHidePremium()) {
                     premiumRow = rowCount++;
                 }
                 if (getMessagesController().starsPurchaseAvailable()) {
@@ -9009,12 +9008,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (premiumRow >= 0 || starsRow >= 0 || businessRow >= 0 || premiumGiftingRow >= 0) {
                     premiumSectionsRow = rowCount++;
                 }
-                helpHeaderRow = rowCount++;
-                questionRow = rowCount++;
-                faqRow = rowCount++;
-                policyRow = rowCount++;
+                if(!DahlSettings.isHiddenHelpBlock()) {
+                    helpHeaderRow = rowCount++;
+                    questionRow = rowCount++;
+                    faqRow = rowCount++;
+                    policyRow = rowCount++;
+                }
                 if (BuildVars.LOGS_ENABLED || BuildVars.DEBUG_PRIVATE_VERSION) {
-                    helpSectionCell = rowCount++;
+                    if(!DahlSettings.isHiddenHelpBlock()) {
+                        helpSectionCell = rowCount++;
+                    }
                     debugHeaderRow = rowCount++;
                 }
                 if (BuildVars.LOGS_ENABLED) {
@@ -9623,12 +9626,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         nameTextView[a].setRightDrawable2(null);
                         nameTextViewRightDrawable2ContentDescription = null;
                     }
-                    if (user != null && !getMessagesController().premiumFeaturesBlocked() && !MessagesController.isSupportUser(user) && DialogObject.getEmojiStatusDocumentId(user.emoji_status) != 0) {
+                    if (user != null && !getMessagesController().premiumFeaturesBlocked() && !MessagesController.isSupportUser(user) && DialogObject.getEmojiStatusDocumentId(user.emoji_status) != 0 && DahlSettings.isEmojiStatus()) {
                         rightIconIsStatus = true;
                         rightIconIsPremium = false;
                         nameTextView[a].setRightDrawable(getEmojiStatusDrawable(user.emoji_status, false, false, a));
                         nameTextViewRightDrawableContentDescription = LocaleController.getString(R.string.AccDescrPremium);
-                    } else if (getMessagesController().isPremiumUser(user)) {
+                    } else if (getMessagesController().isPremiumUser(user) && DahlSettings.isEmojiStatus()) {
                         rightIconIsStatus = false;
                         rightIconIsPremium = true;
                         nameTextView[a].setRightDrawable(getEmojiStatusDrawable(null, false, false, a));
@@ -9645,11 +9648,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else {
                         nameTextView[a].setRightDrawable2(null);
                     }
-                    if (!getMessagesController().premiumFeaturesBlocked() && user != null && !MessagesController.isSupportUser(user) && DialogObject.getEmojiStatusDocumentId(user.emoji_status) != 0) {
+                    if (!getMessagesController().premiumFeaturesBlocked() && user != null && !MessagesController.isSupportUser(user) && DialogObject.getEmojiStatusDocumentId(user.emoji_status) != 0 && DahlSettings.isEmojiStatus()) {
                         rightIconIsStatus = true;
                         rightIconIsPremium = false;
                         nameTextView[a].setRightDrawable(getEmojiStatusDrawable(user.emoji_status, true, true, a));
-                    } else if (getMessagesController().isPremiumUser(user)) {
+                    } else if (getMessagesController().isPremiumUser(user) && DahlSettings.isEmojiStatus()) {
                         rightIconIsStatus = false;
                         rightIconIsPremium = true;
                         nameTextView[a].setRightDrawable(getEmojiStatusDrawable(null, true, true, a));

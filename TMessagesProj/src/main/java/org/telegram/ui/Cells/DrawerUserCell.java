@@ -39,6 +39,8 @@ import org.telegram.ui.Components.GroupCreateCheckBox;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class DrawerUserCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     private final SimpleTextView textView;
@@ -149,13 +151,14 @@ public class DrawerUserCell extends FrameLayout implements NotificationCenter.No
             text = Emoji.replaceEmoji(text, textView.getPaint().getFontMetricsInt(), false);
         } catch (Exception ignore) {}
         textView.setText(text);
-        final Long emojiStatusId = UserObject.getEmojiStatusDocumentId(user);
+        boolean showEmojiStatus = DahlSettings.isEmojiStatus();
+        final Long emojiStatusId = showEmojiStatus ? UserObject.getEmojiStatusDocumentId(user) : null;
         if (emojiStatusId != null) {
             textView.setDrawablePadding(dp(4));
             status.set(emojiStatusId, true);
             status.setParticles(DialogObject.isEmojiStatusCollectible(user.emoji_status), true);
             textView.setRightDrawableOutside(true);
-        } else if (MessagesController.getInstance(account).isPremiumUser(user)) {
+        } else if (showEmojiStatus && MessagesController.getInstance(account).isPremiumUser(user)) {
             textView.setDrawablePadding(dp(6));
             status.set(PremiumGradient.getInstance().premiumStarDrawableMini, true);
             status.setParticles(false, true);

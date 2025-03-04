@@ -57,6 +57,8 @@ import org.telegram.ui.NotificationsSettingsActivity;
 import org.telegram.ui.Stories.StoriesListPlaceProvider;
 import org.telegram.ui.Stories.StoriesUtilities;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class UserCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     public BackupImageView avatarImageView;
@@ -586,7 +588,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             botVerification.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
             nameTextView.setLeftDrawable(botVerification);
         }
-        if (currentUser != null && MessagesController.getInstance(currentAccount).isPremiumUser(currentUser) && !MessagesController.getInstance(currentAccount).premiumFeaturesBlocked()) {
+        if (currentUser != null && MessagesController.getInstance(currentAccount).isPremiumUser(currentUser) && !MessagesController.getInstance(currentAccount).premiumFeaturesBlocked() && DahlSettings.isEmojiStatus()) {
             if (DialogObject.getEmojiStatusDocumentId(currentUser.emoji_status) != 0) {
                 emojiStatus.set(DialogObject.getEmojiStatusDocumentId(currentUser.emoji_status), false);
                 emojiStatus.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));

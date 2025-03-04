@@ -138,6 +138,7 @@ class VKUiIconReplacement: BaseIconReplacement() {
         R.drawable.list_pin to R.drawable.pin_20,
         R.drawable.play_mini_video to R.drawable.play_20,
         R.drawable.profile_newmsg to R.drawable.comment_outline_28,
-        R.drawable.msg_media to R.drawable.all_categories_outline_28
+        R.drawable.msg_media to R.drawable.all_categories_outline_28,
+        R.drawable.msg_status_edit to R.drawable.smile_add_outline_28,
     )
 }

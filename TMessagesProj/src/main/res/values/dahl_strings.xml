@@ -65,10 +65,11 @@
     <string name="BlockPremium">Блок \"Premium\"</string>
     <string name="HideFromSettings">Скрыть из настроек</string>
     <string name="HidePremiumInfo">Настройка Premium функций будет скрыта из общего раздела \"Настройки\".</string>
-    <string name="StatusIcons">Иконки статусов</string>
+    <string name="StatusIcons">Эмодзи-статусы</string>
+    <string name="StatusIconsInfo">Отключите, чтобы не видеть эмодзи-статусы около имен пользователей</string>
     <string name="AnimatedAvatars">Анимированнные аватары</string>
     <string name="CustomChannelsWallpapers">Кастомные обои в каналах</string>
-    <string name="AnimatedReactions">Анимация реакций</string>
+    <string name="AnimatedReactions">Анимированные реакции</string>
     <string name="AnimatedPremiumStickers">Анимация премиум-стикеров</string>
     <string name="TouchPremiumStickers">Нажатие на премиум-стикеры</string>
     <string name="Stories">Истории</string>
@@ -102,4 +103,7 @@
     <string name="AppIconTatarstan">Татарстан</string>
     <string name="AppIconBirch">Береза</string>
     <string name="AppIconWinter">Зима</string>
+
+    <string name="Wallet">Кошелек</string>
+
 </resources>
