@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.MessageObject;
@@ -211,6 +213,14 @@ public class UItem extends AdapterWithDiffUtils.Item {
         UItem i = new UItem(UniversalAdapter.VIEW_TYPE_CHECK, false);
         i.id = id;
         i.text = text;
+        return i;
+    }
+
+    public static UItem asCheck(int id, @NonNull CharSequence text, @Nullable CharSequence subtext) {
+        UItem i = new UItem(UniversalAdapter.VIEW_TYPE_CHECK, false);
+        i.id = id;
+        i.text = text;
+        i.subtext = subtext;
         return i;
     }
 

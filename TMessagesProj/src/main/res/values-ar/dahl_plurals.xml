@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <plurals name="NavDrawerItems">
+        <item quantity="zero">%d items, Settings, Dahl Settings</item>
+        <item quantity="one">%d item, Settings, Dahl Settings</item>
+        <item quantity="two">%d items, Settings, Dahl Settings</item>
+        <item quantity="few">%d items, Settings, Dahl Settings</item>
+        <item quantity="many">%d items, Settings, Dahl Settings</item>
+        <item quantity="other">%d items, Settings, Dahl Settings</item>
+    </plurals>
+    
+</resources>

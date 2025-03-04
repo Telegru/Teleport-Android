@@ -220,20 +220,23 @@ object DahlSettings {
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
-    var hidePremium: Boolean
+    @JvmStatic
+    var isHidePremium: Boolean
         get() = sharedPreferences.getBoolean("hide_premium", false)
         set(value) {
             putBoolean("hide_premium", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
-    var statusesIcons: Boolean
-        get() = sharedPreferences.getBoolean("statuses_icons", true)
+    @JvmStatic
+    var isEmojiStatus: Boolean
+        get() = sharedPreferences.getBoolean("emoji_status", true)
         set(value) {
-            putBoolean("statuses_icons", value)
+            putBoolean("emoji_status", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
+    @JvmStatic
     var animatedAvatars: Boolean
         get() = sharedPreferences.getBoolean("animated_avatars", true)
         set(value) {

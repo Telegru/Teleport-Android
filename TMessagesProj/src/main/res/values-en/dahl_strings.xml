@@ -65,7 +65,8 @@
     <string name="BlockPremium">Premium block</string>
     <string name="HideFromSettings">Hide from settings</string>
     <string name="HidePremiumInfo">The setup of Premium features will be hidden from the general \"Settings\" section.</string>
-    <string name="StatusIcons">Status icons</string>
+    <string name="StatusIcons">Emoji statuses</string>
+    <string name="StatusIconsInfo">Disable to hide emoji statuses next to usernames</string>
     <string name="AnimatedAvatars">Animated avatars</string>
     <string name="CustomChannelsWallpapers">Custom wallpapers in channels</string>
     <string name="AnimatedReactions">Animated reactions</string>

@@ -246,7 +246,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 
 import ru.tusco.messenger.settings.DahlSettings;
 
@@ -2843,7 +2842,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (statusDrawable == null || actionBar == null) {
             return;
         }
-        Long emojiStatusId = UserObject.getEmojiStatusDocumentId(user);
+        boolean showEmojiStatus = DahlSettings.isEmojiStatus();
+        Long emojiStatusId = showEmojiStatus ? UserObject.getEmojiStatusDocumentId(user) : null;
         statusDrawableGiftId = null;
         if (emojiStatusId != null) {
             final boolean isCollectible = user.emoji_status instanceof TLRPC.TL_emojiStatusCollectible;
@@ -2860,7 +2860,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 showSelectStatusDialog();
             });
             SelectAnimatedEmojiDialog.preload(currentAccount);
-        } else if (user != null && MessagesController.getInstance(currentAccount).isPremiumUser(user)) {
+        } else if (user != null && showEmojiStatus && MessagesController.getInstance(currentAccount).isPremiumUser(user)) {
             if (premiumStar == null) {
                 premiumStar = getContext().getResources().getDrawable(R.drawable.msg_premium_liststar).mutate();
                 premiumStar = new AnimatedEmojiDrawable.WrapSizeDrawable(premiumStar, dp(18), dp(18)) {

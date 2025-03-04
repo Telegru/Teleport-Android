@@ -3,7 +3,6 @@ package ru.tusco.messenger.settings.model
 import android.content.Context
 import android.content.SharedPreferences
 import org.telegram.messenger.R
-import org.telegram.ui.Adapters.DrawerLayoutAdapter
 
 data class NavDrawerSettings(
     val proxy: Boolean = false,
@@ -46,20 +45,6 @@ data class NavDrawerSettings(
             .putBoolean("nav_drawer_telegram_features", telegramFeatures)
             .apply()
     }
-
-    fun isEnabled(itemId: Int): Boolean =
-        when (itemId) {
-            DrawerLayoutAdapter.ID_PROXY -> proxy
-            DrawerLayoutAdapter.ID_PROFILE -> profile
-            DrawerLayoutAdapter.ID_CHANGE_STATUS -> changeStatus
-            DrawerLayoutAdapter.ID_NEW_GROUP -> newGroup
-            DrawerLayoutAdapter.ID_CONTACTS -> contacts
-            DrawerLayoutAdapter.ID_CALLS -> calls
-            DrawerLayoutAdapter.ID_SAVED_MESSAGES -> savedMessages
-            DrawerLayoutAdapter.ID_INVITE_FRIENDS -> inviteFriends
-            DrawerLayoutAdapter.ID_TELEGRAM_FEATURES -> telegramFeatures
-            else -> true
-        }
 
     fun getInfoText(context: Context, isPremium: Boolean): String {
         var count = 0
