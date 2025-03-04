@@ -315,6 +315,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import ru.tusco.messenger.settings.DahlSettings;
 import ru.tusco.messenger.settings.DahlSettingsActivity;
 
 public class ProfileActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, SharedMediaLayout.SharedMediaPreloaderDelegate, ImageUpdater.ImageUpdaterDelegate, SharedMediaLayout.Delegate {
@@ -9009,12 +9010,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (premiumRow >= 0 || starsRow >= 0 || businessRow >= 0 || premiumGiftingRow >= 0) {
                     premiumSectionsRow = rowCount++;
                 }
-                helpHeaderRow = rowCount++;
-                questionRow = rowCount++;
-                faqRow = rowCount++;
-                policyRow = rowCount++;
+                if(!DahlSettings.isHiddenHelpBlock()) {
+                    helpHeaderRow = rowCount++;
+                    questionRow = rowCount++;
+                    faqRow = rowCount++;
+                    policyRow = rowCount++;
+                }
                 if (BuildVars.LOGS_ENABLED || BuildVars.DEBUG_PRIVATE_VERSION) {
-                    helpSectionCell = rowCount++;
+                    if(!DahlSettings.isHiddenHelpBlock()) {
+                        helpSectionCell = rowCount++;
+                    }
                     debugHeaderRow = rowCount++;
                 }
                 if (BuildVars.LOGS_ENABLED) {

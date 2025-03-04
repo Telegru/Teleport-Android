@@ -65,11 +65,11 @@ class AppearanceSettingsActivity : UniversalFragment() {
         items?.add(UItem.asHeader(getString(R.string.Profile)))
         items?.add(UItem.asButton(WALLPAPERS, getString(R.string.Wallpapers)))
 
-//        items?.add(UItem.asShadow(-3, null))
-//
-//        items?.add(UItem.asHeader(getString(R.string.TgSettingsMenu)))
-//        items?.add(UItem.asCheck(HIDE_HELP, getString(R.string.HideHelpBlock)).setChecked(DahlSettings.isHiddenHelpBlock))
-//
+        items?.add(UItem.asShadow(-3, null))
+
+        items?.add(UItem.asHeader(getString(R.string.TgSettingsMenu)))
+        items?.add(UItem.asCheck(HIDE_HELP, getString(R.string.HideHelpBlock)).setChecked(DahlSettings.isHiddenHelpBlock))
+
         items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))

@@ -206,7 +206,7 @@ object DahlSettings {
 
     @JvmStatic
     var isHiddenHelpBlock: Boolean
-        get() = sharedPreferences.getBoolean("hide_help_block", false)
+        get() = sharedPreferences.getBoolean("hide_help_block", true)
         set(value) {
             putBoolean("hide_help_block", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
