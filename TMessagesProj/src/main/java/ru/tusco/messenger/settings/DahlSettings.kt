@@ -70,14 +70,20 @@ object DahlSettings {
 
     @JvmStatic
     var rectangularAvatars: Boolean
-        get() = sharedPreferences.getBoolean("AP_Rectangular_Avatars", true)
+        get() = sharedPreferences.getBoolean("AP_Rectangular_Avatars", false)
         set(value) {
             putBoolean("AP_Rectangular_Avatars", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
-    val avatarCornerRadius = if (rectangularAvatars) 20 else AndroidUtilities.dp(28f)
-    val counterCornerRadius = if (rectangularAvatars) 20 else AndroidUtilities.dp(11.5f)
+    @JvmStatic
+    var ngAvatarFont: Boolean
+        get() = sharedPreferences.getBoolean("AP_NG_Avatars_Font", true)
+        set(value) {
+            putBoolean("AP_NG_Avatars_Font", value)
+        }
+
+    fun getAvatarCornerRadius() = if (rectangularAvatars) 20 else AndroidUtilities.dp(28f)
+    fun getCounterCornerRadius() = if (rectangularAvatars) 20 else AndroidUtilities.dp(11.5f)
 
     fun getCurrentIconPack(): BaseIconReplacement {
         return when (iconReplacement) {
@@ -177,7 +183,6 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("hide_message_read_status", false)
         set(value) {
             putBoolean("hide_message_read_status", value)
-//            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic

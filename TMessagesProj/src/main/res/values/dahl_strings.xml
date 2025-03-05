@@ -2,7 +2,7 @@
 <resources>
     <string name="DahlAppName">Даль</string>
     <string name="DahlAppNameBeta">Даль Beta</string>
-    <string name="DahlVersion">Мессенджер Даль для Android %1$s\n Основан на Telegram %2$s</string>
+    <string name="DahlVersion">Даль — мессенджер для Android %1$s\n Основан на Telegram %2$s</string>
 
     <string name="Slide2Title">Общение</string>
     <string name="Slide3Title">Простота и удобство</string>
@@ -61,6 +61,11 @@
     <string name="HideHelpBlock">Скрыть блок \"Помощь\"</string>
     <string name="NavigationDrawer">Боковое меню</string>
     <string name="NavigationDrawerItems">Пункты бокового меню</string>
+    <string name="ElementsRounding">Закругление элементов (аватары и кнопки)</string>
+    <string name="Squared">Квадратные</string>
+    <string name="AvatarsFont">Шрифт в аватарах</string>
+    <string name="Nizhegorodski">Нижегородский</string>
+    <string name="FontAuthor">Автор шрифта: <![CDATA[<font color="%1$s"><b>Александр Шиманов</b></font>]]></string>
     <string name="Icons">Иконки</string>
     <string name="BlockPremium">Блок \"Premium\"</string>
     <string name="HideFromSettings">Скрыть из настроек</string>

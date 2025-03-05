@@ -61,6 +61,11 @@
     <string name="HideHelpBlock">Hide "Help" block</string>
     <string name="NavigationDrawer">Side menu</string>
     <string name="NavigationDrawerItems">Side menu items</string>
+    <string name="ElementsRounding">Rounding of elements</string>
+    <string name="Squared">Squared</string>
+    <string name="AvatarsFont">Font in avatars</string>
+    <string name="Nizhegorodski">Nizhegorodski</string>
+    <string name="FontAuthor">Font\'s author: <![CDATA[<font color="%1$s"><b>Aleksandr Shimanov</b></font>]]></string>
     <string name="Icons">Icons</string>
     <string name="BlockPremium">Premium block</string>
     <string name="HideFromSettings">Hide from settings</string>
