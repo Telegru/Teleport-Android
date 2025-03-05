@@ -75,9 +75,33 @@
     <string name="Stories">Stories</string>
     <string name="HideStories">Hide stories</string>
     <string name="HideAddStory">Hide create button</string>
+    <string name="HideViewedStories">Hide viewed stories</string>
     <string name="NeedConfirm">Confirm</string>
     <string name="ConfirmCalling">Calling</string>
     <string name="ConfirmAudioMessage">Audio message sending</string>
     <string name="ConfirmVideoMessageCamera">Camera for video messages</string>
     <string name="AlwaysAsk">Always ask</string>
+  
+    <string name="DahlProxyEnable">Enable Dahl proxy</string>
+    <string name="DahlProxyDisable">Disable Dahl proxy</string>
+    <string name="DahlUseYourProxySettings">Use your proxy</string>
+
+
+    <string name="AppIconBlack">Black</string>
+    <string name="AppIconMetallic">Metallic</string>
+    <string name="AppIconSilver">Silver</string>
+    <string name="AppIconInverted">Inverted</string>
+    <string name="AppIconWhite">White</string>
+    <string name="AppIconUnicorn">Unicorn</string>
+    <string name="AppIconOutline">Outline</string>
+    <string name="AppIconTitanium">Titanium</string>
+    <string name="AppIconSparkling">Sparkling</string>
+    <string name="AppIconRussia">Russia</string>
+    <string name="AppIconTriangle">Triangle</string>
+    <string name="AppIconTatarstan">Tatarstan</string>
+    <string name="AppIconBirch">Birch</string>
+    <string name="AppIconWinter">Winter</string>
+
+    <string name="Wallet">Wallet</string>
+    <string name="CustomWallpapers">Custom wallpapers</string>
 </resources>

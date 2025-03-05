@@ -323,4 +323,11 @@ object DahlSettings {
         set(value) {
             putBoolean("recent_chats", value)
         }
+
+    @JvmStatic
+    var isCustomWallpapersEnabled: Boolean
+        get() = sharedPreferences.getBoolean("custom_wallpapers", true)
+        set(value) {
+            putBoolean("custom_wallpapers", value)
+        }
 }
