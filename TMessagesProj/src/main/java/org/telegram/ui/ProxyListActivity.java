@@ -968,7 +968,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                     if (position == useDahlProxyRow) {
                         checkCell.setTextAndCheck(LocaleController.getString(R.string.ProxyDahl), DahlSettings.isProxyEnabled(), true);
                     } else if (position == useProxyRow) {
-                        checkCell.setTextAndCheck(LocaleController.getString(R.string.UseProxySettings), useProxySettings, rotationRow != -1);
+                        checkCell.setTextAndCheck(LocaleController.getString(R.string.DahlUseYourProxySettings), useProxySettings, rotationRow != -1);
                     } else if (position == callsRow) {
                         checkCell.setTextAndCheck(LocaleController.getString(R.string.UseProxyForCalls), useProxyForCalls, false);
                     } else if (position == rotationRow) {

@@ -87,6 +87,7 @@
   
     <string name="DahlProxyEnable">Включить прокси Даль</string>
     <string name="DahlProxyDisable">Выключить прокси Даль</string>
+    <string name="DahlUseYourProxySettings">Использовать свой прокси</string>
 
     <string name="AppIconBlack">Черная</string>
     <string name="AppIconMetallic">Металл</string>
