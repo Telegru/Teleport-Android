@@ -209,7 +209,6 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("hide_help_block", true)
         set(value) {
             putBoolean("hide_help_block", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
@@ -225,7 +224,6 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("premium_hide_block", false)
         set(value) {
             putBoolean("premium_hide_block", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
@@ -248,7 +246,6 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("custom_channels_wallpapers", true)
         set(value) {
             putBoolean("custom_channels_wallpapers", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
@@ -256,7 +253,6 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("premium_show_animated_reactions", true)
         set(value) {
             putBoolean("premium_show_animated_reactions", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
@@ -264,14 +260,6 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("premium_show_animated_stickers", true)
         set(value) {
             putBoolean("premium_show_animated_stickers", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
-        }
-
-    var touchOnPremiumStickers: Boolean
-        get() = sharedPreferences.getBoolean("touch_on_premium_stickers", true)
-        set(value) {
-            putBoolean("touch_on_premium_stickers", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic

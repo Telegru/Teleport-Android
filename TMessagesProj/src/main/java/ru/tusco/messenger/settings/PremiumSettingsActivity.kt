@@ -17,10 +17,9 @@ class PremiumSettingsActivity: UniversalFragment() {
         const val SWITCH_CUSTOM_WALLPAPERS_IN_CHANNELS = 4
         const val SWITCH_ANIMATED_REACTIONS = 5
         const val SWITCH_ANIMATED_PREMIUM_STICKERS = 6
-        const val SWITCH_TOUCH_ON_PREMIUM_STICKER = 7
-        const val SWITCH_HIDE_STORIES = 8
-        const val SWITCH_HIDE_ADD_STORY = 9
-        const val SWITCH_HIDE_VIEWED_STORIES = 10
+        const val SWITCH_HIDE_STORIES = 7
+        const val SWITCH_HIDE_ADD_STORY = 8
+        const val SWITCH_HIDE_VIEWED_STORIES = 9
     }
 
     override fun getTitle(): CharSequence = getString(R.string.PremiumFeatures)
@@ -54,7 +53,6 @@ class PremiumSettingsActivity: UniversalFragment() {
             SWITCH_CUSTOM_WALLPAPERS_IN_CHANNELS -> DahlSettings.customChannelsWallpapers = !DahlSettings.customChannelsWallpapers
             SWITCH_ANIMATED_REACTIONS -> DahlSettings.isAnimatedReactions = !DahlSettings.isAnimatedReactions
             SWITCH_ANIMATED_PREMIUM_STICKERS -> DahlSettings.isAnimatedStickers = !DahlSettings.isAnimatedStickers
-            SWITCH_TOUCH_ON_PREMIUM_STICKER -> DahlSettings.touchOnPremiumStickers = !DahlSettings.touchOnPremiumStickers
             SWITCH_HIDE_STORIES -> DahlSettings.hideStories = !DahlSettings.hideStories
             SWITCH_HIDE_ADD_STORY -> {
                 if(!DahlSettings.hideStories) {

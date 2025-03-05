@@ -9013,7 +9013,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             backDrawable.setRotation(0, true);
         }
         if (filterTabsView != null) {
-            if (Theme.isCurrentThemeDay()) {
+            if (Theme.isCurrentThemeDay() && DahlSettings.isFoldersTabsAtBottom()) {
                 filterTabsView.animateColorsTo(Theme.key_profile_tabSelectedLine, Theme.key_profile_tabSelectedText, Theme.key_profile_tabText, Theme.key_profile_tabSelector, Theme.key_actionBarActionModeDefault);
             } else {
                 filterTabsView.animateColorsTo(Theme.key_actionBarTabLine, Theme.key_actionBarTabActiveText, Theme.key_actionBarTabUnactiveText, Theme.key_actionBarTabSelector, Theme.key_actionBarDefault);
