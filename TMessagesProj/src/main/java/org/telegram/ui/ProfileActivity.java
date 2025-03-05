@@ -10011,7 +10011,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 avatarDrawable.setInfo(currentAccount, chat);
                 imageLocation = ImageLocation.getForUserOrChat(chat, ImageLocation.TYPE_BIG);
                 thumbLocation = ImageLocation.getForUserOrChat(chat, ImageLocation.TYPE_SMALL);
-                videoLocation = avatarsViewPager.getCurrentVideoLocation(thumbLocation, imageLocation);
+                videoLocation = DahlSettings.isAnimatedAvatars() ? avatarsViewPager.getCurrentVideoLocation(thumbLocation, imageLocation) : null;
             }
 
             boolean initied = avatarsViewPager.initIfEmpty(null, imageLocation, thumbLocation, reload);

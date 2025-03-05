@@ -3,6 +3,7 @@ package org.telegram.ui.Components;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
@@ -10,8 +11,6 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
-
-import com.google.android.exoplayer2.util.Log;
 
 import org.telegram.messenger.DocumentObject;
 import org.telegram.messenger.ImageLocation;
@@ -49,7 +48,7 @@ public class VectorAvatarThumbDrawable extends Drawable implements AnimatedEmoji
 
     public VectorAvatarThumbDrawable(TLRPC.VideoSize vectorImageMarkup, boolean isPremiumUser, int type) {
         this.type = type;
-        this.isPremium = isPremiumUser && DahlSettings.isAnimatedAvatars();
+        this.isPremium = isPremiumUser;
         int color1 = ColorUtils.setAlphaComponent(vectorImageMarkup.background_colors.get(0), 255);
         int color2 = vectorImageMarkup.background_colors.size() > 1 ? ColorUtils.setAlphaComponent(vectorImageMarkup.background_colors.get(1), 255) : 0;
         int color3 = vectorImageMarkup.background_colors.size() > 2 ? ColorUtils.setAlphaComponent(vectorImageMarkup.background_colors.get(2), 255) : 0;
@@ -58,12 +57,13 @@ public class VectorAvatarThumbDrawable extends Drawable implements AnimatedEmoji
         if (vectorImageMarkup instanceof TLRPC.TL_videoSizeEmojiMarkup) {
             TLRPC.TL_videoSizeEmojiMarkup emojiMarkup = (TLRPC.TL_videoSizeEmojiMarkup) vectorImageMarkup;
             int cacheType = AnimatedEmojiDrawable.STANDARD_LOTTIE_FRAME;
-            if (type == TYPE_SMALL && this.isPremium) {
-                cacheType = AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS;
-            } else if (type == TYPE_PROFILE) {
-                cacheType = AnimatedEmojiDrawable.CACHE_TYPE_AVATAR_CONSTRUCTOR_PREVIEW2;
+            if(DahlSettings.isAnimatedAvatars()) {
+                if (type == TYPE_SMALL && this.isPremium) {
+                    cacheType = AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS;
+                } else if (type == TYPE_PROFILE) {
+                    cacheType = AnimatedEmojiDrawable.CACHE_TYPE_AVATAR_CONSTRUCTOR_PREVIEW2;
+                }
             }
-
             animatedEmojiDrawable = new AnimatedEmojiDrawable(cacheType, UserConfig.selectedAccount, emojiMarkup.emoji_id);
             animatedEmojiDrawable.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN));
         } else if (vectorImageMarkup instanceof TLRPC.TL_videoSizeStickerMarkup) {
@@ -156,7 +156,7 @@ public class VectorAvatarThumbDrawable extends Drawable implements AnimatedEmoji
 
     @Override
     public int getOpacity() {
-        return 0;
+        return PixelFormat.UNKNOWN;
     }
 
     public void setRoundRadius(float roundRadius) {
