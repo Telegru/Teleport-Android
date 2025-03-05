@@ -11289,7 +11289,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 }
                                 break;
                         }
-                        cell.setText(formatString("DahlVersion", R.string.DahlVersion, String.format(Locale.US, "v.%s", BuildConfig.BUILD_VERSION_STRING), String.format(Locale.US, "v.%s", BuildConfig.TG_BUILD_VERSION_STRING)));
+                        cell.setText(formatString("DahlVersion", R.string.DahlVersion, String.format(Locale.US, "v.%s (%d)", BuildConfig.BUILD_VERSION_STRING, BuildConfig.APP_VERSION_CODE), String.format(Locale.US, "v.%s", BuildConfig.TG_BUILD_VERSION_STRING)));
                     } catch (Exception e) {
                         FileLog.e(e);
                     }

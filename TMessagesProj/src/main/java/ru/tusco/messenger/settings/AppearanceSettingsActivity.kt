@@ -2,17 +2,20 @@ package ru.tusco.messenger.settings
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.text.Html
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.core.util.forEach
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.telegram.messenger.AndroidUtilities.dp
+import org.telegram.messenger.LocaleController.formatString
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.Theme
@@ -35,7 +38,9 @@ class AppearanceSettingsActivity : UniversalFragment() {
         const val HIDE_HELP = 4
         const val NAVIGATION_DRAWER = 5
         const val SWITCH_ICONS = 6
-        const val CUSTOM_WALLPAPERS = 7
+        const val SQUARE_AVATARS = 7
+        const val AVATARS_FONT = 8
+        const val CUSTOM_WALLPAPERS = 9
     }
 
     private val icons: Set<Int> by lazy {
@@ -78,6 +83,22 @@ class AppearanceSettingsActivity : UniversalFragment() {
 
         items?.add(UItem.asShadow(-3, null))
 
+        items?.add(UItem.asHeader(getString(R.string.ElementsRounding)))
+        items?.add(UItem.asCheck(SQUARE_AVATARS, getString(R.string.Squared)).apply {
+            setChecked(DahlSettings.rectangularAvatars)
+        })
+
+        items?.add(UItem.asShadow(-3, null))
+
+        items?.add(UItem.asHeader(getString(R.string.AvatarsFont)))
+        items?.add(UItem.asCheck(AVATARS_FONT, getString(R.string.Nizhegorodski)).apply {
+            setChecked(DahlSettings.ngAvatarFont)
+        })
+
+        items?.add(UItem.asGraySection(Html.fromHtml(formatString(R.string.FontAuthor, "#ffffff"))))
+
+        items?.add(UItem.asShadow(-3, null))
+
         items?.add(UItem.asHeader(getString(R.string.Icons)))
         items?.add(
             UItem.asCheck(SWITCH_ICONS, getString(R.string.IconsVkUI)).apply {
@@ -88,7 +109,6 @@ class AppearanceSettingsActivity : UniversalFragment() {
     }
 
     override fun onClick(item: UItem?, view: View?, position: Int, x: Float, y: Float) {
-//        var showRestartAppMessage = false
         when (item?.id) {
             BOTTOM_PANEL -> DahlSettings.isShowBottomPanelInChannels = !DahlSettings.isShowBottomPanelInChannels
             PERSONAL_COLORS -> DahlSettings.isEnabledPersonalColors = !DahlSettings.isEnabledPersonalColors
@@ -102,14 +122,17 @@ class AppearanceSettingsActivity : UniversalFragment() {
                     DahlSettings.iconReplacement = ICON_REPLACEMENT_VKUI
                 }
                 (context as LaunchActivity).reloadResources()
-//                showRestartAppMessage = true
+
+            }
+            SQUARE_AVATARS -> {
+                DahlSettings.rectangularAvatars = !DahlSettings.rectangularAvatars
+            }
+            AVATARS_FONT -> {
+                DahlSettings.ngAvatarFont = !DahlSettings.ngAvatarFont
             }
             CUSTOM_WALLPAPERS -> DahlSettings.isCustomWallpapersEnabled = !DahlSettings.isCustomWallpapersEnabled
             else -> {}
         }
-//        if (showRestartAppMessage) {
-//            Toast.makeText(context, getString(R.string.RestartToast), Toast.LENGTH_SHORT).show()
-//        }
         listView.adapter.update(true)
     }
 

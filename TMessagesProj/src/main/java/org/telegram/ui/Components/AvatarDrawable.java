@@ -42,6 +42,8 @@ import org.telegram.ui.ActionBar.Theme;
 
 import java.util.ArrayList;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class AvatarDrawable extends Drawable {
 
     private TextPaint namePaint;
@@ -127,8 +129,13 @@ public class AvatarDrawable extends Drawable {
         super();
         this.resourcesProvider = resourcesProvider;
         namePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        namePaint.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_NIZHEGORODSKY));
-        namePaint.setTextSize(dp(27));
+        if (DahlSettings.getNgAvatarFont()) {
+            namePaint.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_NIZHEGORODSKY));
+            namePaint.setTextSize(dp(27));
+        } else {
+            namePaint.setTypeface(AndroidUtilities.bold());
+            namePaint.setTextSize(dp(18));
+        }
     }
 
     public AvatarDrawable(TLRPC.User user) {
