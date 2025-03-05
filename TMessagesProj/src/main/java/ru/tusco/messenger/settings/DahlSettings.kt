@@ -222,25 +222,25 @@ object DahlSettings {
 
     @JvmStatic
     var isHidePremium: Boolean
-        get() = sharedPreferences.getBoolean("hide_premium", false)
+        get() = sharedPreferences.getBoolean("premium_hide_block", false)
         set(value) {
-            putBoolean("hide_premium", value)
+            putBoolean("premium_hide_block", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
     var isEmojiStatus: Boolean
-        get() = sharedPreferences.getBoolean("emoji_status", true)
+        get() = sharedPreferences.getBoolean("premium_show_emoji_status", true)
         set(value) {
-            putBoolean("emoji_status", value)
+            putBoolean("premium_show_emoji_status", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
     var isAnimatedAvatars: Boolean
-        get() = sharedPreferences.getBoolean("animated_avatars", true)
+        get() = sharedPreferences.getBoolean("premium_show_animated_avatars", true)
         set(value) {
-            putBoolean("animated_avatars", value)
+            putBoolean("premium_show_animated_avatars", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
@@ -251,17 +251,19 @@ object DahlSettings {
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
-    var animatedReactions: Boolean
-        get() = sharedPreferences.getBoolean("animated_reactions", true)
+    @JvmStatic
+    var isAnimatedReactions: Boolean
+        get() = sharedPreferences.getBoolean("premium_show_animated_reactions", true)
         set(value) {
-            putBoolean("animated_reactions", value)
+            putBoolean("premium_show_animated_reactions", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
-    var animatedPremiumStickers: Boolean
-        get() = sharedPreferences.getBoolean("animated_premium_stickers", true)
+    @JvmStatic
+    var isAnimatedStickers: Boolean
+        get() = sharedPreferences.getBoolean("premium_show_animated_stickers", true)
         set(value) {
-            putBoolean("animated_premium_stickers", value)
+            putBoolean("premium_show_animated_stickers", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 

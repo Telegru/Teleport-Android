@@ -42,6 +42,8 @@ import org.telegram.ui.SelectAnimatedEmojiDialog;
 import java.util.ArrayList;
 import java.util.Random;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class ReactionsEffectOverlay {
 
     public final static int LONG_ANIMATION = 0;
@@ -744,7 +746,7 @@ public class ReactionsEffectOverlay {
         if (cell == null || visibleReaction == null || baseFragment == null || baseFragment.getParentActivity() == null) {
             return;
         }
-        boolean animationEnabled = MessagesController.getGlobalMainSettings().getBoolean("view_animations", true);
+        boolean animationEnabled = MessagesController.getGlobalMainSettings().getBoolean("view_animations", true) && DahlSettings.isAnimatedReactions();
         if (!animationEnabled) {
             return;
         }
