@@ -209,7 +209,6 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("hide_help_block", true)
         set(value) {
             putBoolean("hide_help_block", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
@@ -222,25 +221,24 @@ object DahlSettings {
 
     @JvmStatic
     var isHidePremium: Boolean
-        get() = sharedPreferences.getBoolean("hide_premium", false)
+        get() = sharedPreferences.getBoolean("premium_hide_block", false)
         set(value) {
-            putBoolean("hide_premium", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+            putBoolean("premium_hide_block", value)
         }
 
     @JvmStatic
     var isEmojiStatus: Boolean
-        get() = sharedPreferences.getBoolean("emoji_status", true)
+        get() = sharedPreferences.getBoolean("premium_show_emoji_status", true)
         set(value) {
-            putBoolean("emoji_status", value)
+            putBoolean("premium_show_emoji_status", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
-    var animatedAvatars: Boolean
-        get() = sharedPreferences.getBoolean("animated_avatars", true)
+    var isAnimatedAvatars: Boolean
+        get() = sharedPreferences.getBoolean("premium_show_animated_avatars", true)
         set(value) {
-            putBoolean("animated_avatars", value)
+            putBoolean("premium_show_animated_avatars", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
@@ -248,28 +246,20 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("custom_channels_wallpapers", true)
         set(value) {
             putBoolean("custom_channels_wallpapers", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
-    var animatedReactions: Boolean
-        get() = sharedPreferences.getBoolean("animated_reactions", true)
+    @JvmStatic
+    var isAnimatedReactions: Boolean
+        get() = sharedPreferences.getBoolean("premium_show_animated_reactions", true)
         set(value) {
-            putBoolean("animated_reactions", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+            putBoolean("premium_show_animated_reactions", value)
         }
 
-    var animatedPremiumStickers: Boolean
-        get() = sharedPreferences.getBoolean("animated_premium_stickers", true)
+    @JvmStatic
+    var isAnimatedStickers: Boolean
+        get() = sharedPreferences.getBoolean("premium_show_animated_stickers", true)
         set(value) {
-            putBoolean("animated_premium_stickers", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
-        }
-
-    var touchOnPremiumStickers: Boolean
-        get() = sharedPreferences.getBoolean("touch_on_premium_stickers", true)
-        set(value) {
-            putBoolean("touch_on_premium_stickers", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+            putBoolean("premium_show_animated_stickers", value)
         }
 
     @JvmStatic
@@ -320,5 +310,12 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("recent_chats", false)
         set(value) {
             putBoolean("recent_chats", value)
+        }
+
+    @JvmStatic
+    var isCustomWallpapersEnabled: Boolean
+        get() = sharedPreferences.getBoolean("custom_wallpapers", true)
+        set(value) {
+            putBoolean("custom_wallpapers", value)
         }
 }

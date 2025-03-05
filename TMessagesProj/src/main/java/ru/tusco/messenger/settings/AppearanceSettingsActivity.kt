@@ -35,6 +35,7 @@ class AppearanceSettingsActivity : UniversalFragment() {
         const val HIDE_HELP = 4
         const val NAVIGATION_DRAWER = 5
         const val SWITCH_ICONS = 6
+        const val CUSTOM_WALLPAPERS = 7
     }
 
     private val icons: Set<Int> by lazy {
@@ -54,13 +55,13 @@ class AppearanceSettingsActivity : UniversalFragment() {
 
     override fun fillItems(items: ArrayList<UItem>?, adapter: UniversalAdapter?) {
 
-//        items?.add(UItem.asHeader(getString(R.string.EnableInChatsAndChannels)))
+        items?.add(UItem.asHeader(getString(R.string.EnableInChatsAndChannels)))
 //        items?.add(
 //            UItem.asCheck(BOTTOM_PANEL, getString(R.string.BottomPanelInChannels)).setChecked(DahlSettings.isShowBottomPanelInChannels)
 //        )
 //        items?.add(UItem.asCheck(PERSONAL_COLORS, getString(R.string.PersonalColors)).setChecked(DahlSettings.isEnabledPersonalColors))
-//
-//        items?.add(UItem.asShadow(-3, null))
+        items?.add(UItem.asCheck(CUSTOM_WALLPAPERS, getString(R.string.CustomWallpapers)).setChecked(DahlSettings.isCustomWallpapersEnabled))
+        items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.Profile)))
         items?.add(UItem.asButton(WALLPAPERS, getString(R.string.Wallpapers)))
@@ -103,7 +104,7 @@ class AppearanceSettingsActivity : UniversalFragment() {
                 (context as LaunchActivity).reloadResources()
 //                showRestartAppMessage = true
             }
-
+            CUSTOM_WALLPAPERS -> DahlSettings.isCustomWallpapersEnabled = !DahlSettings.isCustomWallpapersEnabled
             else -> {}
         }
 //        if (showRestartAppMessage) {

@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class ChatThemeController extends BaseController {
 
     private final long reloadTimeoutMs = 2 * 60 * 60 * 1000;
@@ -298,6 +300,9 @@ public class ChatThemeController extends BaseController {
     }
 
     public TLRPC.WallPaper getDialogWallpaper(long dialogId) {
+        if(dialogId < 0 && !DahlSettings.isCustomWallpapersEnabled()){
+            return null;
+        }
         if (dialogId >= 0) {
             TLRPC.UserFull userFull = getMessagesController().getUserFull(dialogId);
             if (userFull != null) {

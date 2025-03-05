@@ -2790,6 +2790,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
         getNotificationCenter().addObserver(this, NotificationCenter.starBalanceUpdated);
         getNotificationCenter().addObserver(this, NotificationCenter.starSubscriptionsLoaded);
+        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.needSetDayNightTheme);
 
         loadDialogs(getAccountInstance());
         getMessagesController().getStoriesController().loadAllStories();
@@ -2957,6 +2958,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
         getNotificationCenter().removeObserver(this, NotificationCenter.starBalanceUpdated);
         getNotificationCenter().removeObserver(this, NotificationCenter.starSubscriptionsLoaded);
+        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.needSetDayNightTheme);
 
         if (commentView != null) {
             commentView.onDestroy();
@@ -4996,12 +4998,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             contentView.addView(filterTabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 44));
 
             if (DahlSettings.isFoldersTabsAtBottom()) {
-                if (Theme.isCurrentThemeDay()) {
-                    filterTabsView.animateColorsTo(Theme.key_profile_tabSelectedLine, Theme.key_profile_tabSelectedText, Theme.key_profile_tabText, Theme.key_profile_tabSelector, Theme.key_actionBarActionModeDefault);
-                } else {
-                    filterTabsView.animateColorsTo(Theme.key_actionBarTabLine, Theme.key_actionBarTabActiveText, Theme.key_actionBarTabUnactiveText, Theme.key_actionBarTabSelector, Theme.key_actionBarDefault);
-                }
-                filterTabsView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
+                updateFilterTabsColors();
                 filterTabsView.setElevation(dp(20));
             }
         }
@@ -9013,7 +9010,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             backDrawable.setRotation(0, true);
         }
         if (filterTabsView != null) {
-            if (Theme.isCurrentThemeDay()) {
+            if (Theme.isCurrentThemeDay() && DahlSettings.isFoldersTabsAtBottom()) {
                 filterTabsView.animateColorsTo(Theme.key_profile_tabSelectedLine, Theme.key_profile_tabSelectedText, Theme.key_profile_tabText, Theme.key_profile_tabSelector, Theme.key_actionBarActionModeDefault);
             } else {
                 filterTabsView.animateColorsTo(Theme.key_actionBarTabLine, Theme.key_actionBarTabActiveText, Theme.key_actionBarTabUnactiveText, Theme.key_actionBarTabSelector, Theme.key_actionBarDefault);
@@ -10886,6 +10883,19 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             updateDialogsHint();
         } else if (id == NotificationCenter.starBalanceUpdated || id == NotificationCenter.starSubscriptionsLoaded) {
             updateDialogsHint();
+        } else if(id == NotificationCenter.needSetDayNightTheme){
+           updateFilterTabsColors();
+        }
+    }
+
+    private void updateFilterTabsColors(){
+        if(filterTabsView != null && DahlSettings.isFoldersTabsAtBottom()){
+            filterTabsView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
+            if (Theme.isCurrentThemeDay()) {
+                filterTabsView.animateColorsTo(Theme.key_profile_tabSelectedLine, Theme.key_profile_tabSelectedText, Theme.key_profile_tabText, Theme.key_profile_tabSelector, Theme.key_actionBarActionModeDefault);
+            } else {
+                filterTabsView.animateColorsTo(Theme.key_actionBarTabLine, Theme.key_actionBarTabActiveText, Theme.key_actionBarTabUnactiveText, Theme.key_actionBarTabSelector, Theme.key_actionBarDefault);
+            }
         }
     }
 
