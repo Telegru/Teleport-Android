@@ -70,7 +70,7 @@ object DahlSettings {
 
     @JvmStatic
     var rectangularAvatars: Boolean
-        get() = sharedPreferences.getBoolean("AP_Rectangular_Avatars", false)
+        get() = sharedPreferences.getBoolean("AP_Rectangular_Avatars", true)
         set(value) {
             putBoolean("AP_Rectangular_Avatars", value)
         }
@@ -226,7 +226,7 @@ object DahlSettings {
 
     @JvmStatic
     var isHidePremium: Boolean
-        get() = sharedPreferences.getBoolean("premium_hide_block", false)
+        get() = sharedPreferences.getBoolean("premium_hide_block", true)
         set(value) {
             putBoolean("premium_hide_block", value)
         }
