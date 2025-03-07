@@ -37,7 +37,7 @@ class PremiumSettingsActivity: UniversalFragment() {
         items?.add(UItem.asCheck(SWITCH_ANIMATED_PREMIUM_STICKERS, getString(R.string.AnimatedPremiumStickers)).setChecked(DahlSettings.isAnimatedStickers))
 //        items?.add(UItem.asCheck(SWITCH_TOUCH_ON_PREMIUM_STICKER, getString(R.string.TouchPremiumStickers)).setChecked(DahlSettings.touchOnPremiumStickers))
 
-        items?.add(UItem.asShadow(-3, null))
+        items?.add(UItem.asShadow(-3, getString(R.string.PremiumFeaturesEnableInfo)))
 
         items?.add(UItem.asHeader(getString(R.string.Stories)))
         items?.add(UItem.asCheck(SWITCH_HIDE_STORIES, getString(R.string.HideStories)).setChecked(DahlSettings.hideStories))

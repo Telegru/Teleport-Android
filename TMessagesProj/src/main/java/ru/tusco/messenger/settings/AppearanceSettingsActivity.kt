@@ -18,7 +18,9 @@ import org.telegram.messenger.AndroidUtilities.dp
 import org.telegram.messenger.LocaleController.formatString
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
+import org.telegram.messenger.UserConfig
 import org.telegram.ui.ActionBar.Theme
+import org.telegram.ui.Cells.TextDetailSettingsCell
 import org.telegram.ui.Components.LayoutHelper
 import org.telegram.ui.Components.UItem
 import org.telegram.ui.Components.UniversalAdapter
@@ -68,7 +70,7 @@ class AppearanceSettingsActivity : UniversalFragment() {
         items?.add(UItem.asCheck(CUSTOM_WALLPAPERS, getString(R.string.CustomWallpapers)).setChecked(DahlSettings.isCustomWallpapersEnabled))
         items?.add(UItem.asShadow(-3, null))
 
-        items?.add(UItem.asHeader(getString(R.string.Profile)))
+        items?.add(UItem.asHeader(getString(R.string.ChatsSettings)))
         items?.add(UItem.asButton(WALLPAPERS, getString(R.string.Wallpapers)))
 
         items?.add(UItem.asShadow(-3, null))
@@ -78,8 +80,15 @@ class AppearanceSettingsActivity : UniversalFragment() {
 
         items?.add(UItem.asShadow(-3, null))
 
+//        val counterColor = String.format("#%06X", (0xFFFFFF and Theme.getColor(Theme.key_windowBackgroundWhiteGrayText)))
+        val isPremium = UserConfig.getInstance(UserConfig.selectedAccount)?.isPremium == true
+        val settingsCell = TextDetailSettingsCell(context).apply {
+            setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite))
+            setMultilineDetail(true)
+            setTextAndValue(getString(R.string.NavigationDrawerItems), DahlSettings.navigationDrawerItems.getInfoText(context, isPremium), false)
+        }
         items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
-        items?.add(UItem.asButton(NAVIGATION_DRAWER, getString(R.string.NavigationDrawerItems)))
+        items?.add(UItem.asCustom(NAVIGATION_DRAWER, settingsCell))
 
         items?.add(UItem.asShadow(-3, null))
 
@@ -95,7 +104,8 @@ class AppearanceSettingsActivity : UniversalFragment() {
             setChecked(DahlSettings.ngAvatarFont)
         })
 
-        items?.add(UItem.asGraySection(Html.fromHtml(formatString(R.string.FontAuthor, "#ffffff"))))
+        val hexAuthorColor = String.format("#%06X", (0xFFFFFF and Theme.getColor(Theme.key_windowBackgroundWhiteGrayText)))
+        items?.add(UItem.asGraySection(Html.fromHtml(formatString(R.string.FontAuthor, hexAuthorColor))))
 
         items?.add(UItem.asShadow(-3, null))
 

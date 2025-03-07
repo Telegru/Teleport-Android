@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import org.telegram.messenger.R
 
 data class NavDrawerSettings(
-    val proxy: Boolean = false,
+    val proxy: Boolean = true,
     val profile: Boolean = true,
     val changeStatus: Boolean = false,
     val wallet: Boolean = false,

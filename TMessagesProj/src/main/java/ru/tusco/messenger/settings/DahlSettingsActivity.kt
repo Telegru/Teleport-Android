@@ -181,7 +181,8 @@ class DahlSettingsActivity : BaseFragment() {
         val logoSize = EXPANDED_LOGO_SIZE
 
         logo.scaleType = ImageView.ScaleType.FIT_XY
-        val logoDrawable: Drawable = ContextCompat.getDrawable(context, R.drawable.logo_dahl_78)!!.mutate()
+        val logoDrawable: Drawable? = if (DahlSettings.rectangularAvatars)
+            ContextCompat.getDrawable(context, R.drawable.logo_dahl_78)?.mutate() else ContextCompat.getDrawable(context, R.drawable.dahl_rounded_logo)?.mutate()
         logo.setImageDrawable(logoDrawable)
         val logoLayoutParams = FrameLayout.LayoutParams(logoSize, logoSize)
         logoLayoutParams.topMargin = actionBarHeight.toInt()

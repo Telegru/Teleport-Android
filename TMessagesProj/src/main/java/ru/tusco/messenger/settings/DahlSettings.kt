@@ -80,6 +80,7 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("AP_NG_Avatars_Font", true)
         set(value) {
             putBoolean("AP_NG_Avatars_Font", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     fun getAvatarCornerRadius() = if (rectangularAvatars) 20 else AndroidUtilities.dp(28f)
