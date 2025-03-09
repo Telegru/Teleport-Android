@@ -8993,20 +8993,22 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 devicesRow = rowCount++;
                 languageRow = rowCount++;
                 devicesSectionRow = rowCount++;
-                if (!getMessagesController().premiumFeaturesBlocked() && !DahlSettings.isHidePremium()) {
-                    premiumRow = rowCount++;
-                }
-                if (getMessagesController().starsPurchaseAvailable()) {
-                    starsRow = rowCount++;
-                }
-                if (!getMessagesController().premiumFeaturesBlocked()) {
-                    businessRow = rowCount++;
-                }
-                if (!getMessagesController().premiumPurchaseBlocked()) {
-                    premiumGiftingRow = rowCount++;
-                }
-                if (premiumRow >= 0 || starsRow >= 0 || businessRow >= 0 || premiumGiftingRow >= 0) {
-                    premiumSectionsRow = rowCount++;
+                if (!DahlSettings.isHidePremium()) {
+                    if (!getMessagesController().premiumFeaturesBlocked()) {
+                        premiumRow = rowCount++;
+                    }
+                    if (getMessagesController().starsPurchaseAvailable()) {
+                        starsRow = rowCount++;
+                    }
+                    if (!getMessagesController().premiumFeaturesBlocked()) {
+                        businessRow = rowCount++;
+                    }
+                    if (!getMessagesController().premiumPurchaseBlocked()) {
+                        premiumGiftingRow = rowCount++;
+                    }
+                    if (premiumRow >= 0 || starsRow >= 0 || businessRow >= 0 || premiumGiftingRow >= 0) {
+                        premiumSectionsRow = rowCount++;
+                    }
                 }
                 if(!DahlSettings.isHiddenHelpBlock()) {
                     helpHeaderRow = rowCount++;
