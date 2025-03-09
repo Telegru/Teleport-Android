@@ -41,7 +41,7 @@ class NavigationDrawerSettingsActivity : UniversalFragment() {
             items?.add(UItem.asIconCheck(ID_SAVED_MESSAGES, R.drawable.msg_saved, getString(R.string.SavedMessages)).setChecked(savedMessages))
             items?.add(UItem.asIconCheck(ID_INVITE_FRIENDS, R.drawable.msg_invite, getString(R.string.InviteFriends)).setChecked(inviteFriends))
             items?.add(UItem.asIconCheck(ID_TELEGRAM_FEATURES, R.drawable.msg_help, getString(R.string.TelegramFeatures)).setChecked(telegramFeatures))
-            items?.add(UItem.asShadow(getInfoText(context, isPremium)))
+            items?.add(UItem.asShadow(getString(R.string.NavigationDrawerSettingsInfo)))
         }
     }
 

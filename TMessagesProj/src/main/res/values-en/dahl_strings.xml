@@ -62,7 +62,6 @@
     <string name="HideHelpBlock">Hide "Help" block</string>
     <string name="NavigationDrawer">Side menu</string>
     <string name="NavigationDrawerItems">Side menu items</string>
-    <string name="NavigationDrawerItemsCount">%1$s</string>
     <string name="ElementsRounding">Rounding of elements</string>
     <string name="Squared">Squared</string>
     <string name="AvatarsFont">Font in avatars</string>
@@ -111,5 +110,14 @@
 
     <string name="Wallet">Wallet</string>
     <string name="CustomWallpapers">Custom wallpapers</string>
-    <string name="ChatListSingleLine">Single Line</string>
+    <string name="ChatListSingleLine">Single line</string>
+    <string name="NavigationDrawerSettingsInfo">The \"Settings\" and \"Dahl settings\" items cannot be removed from the side menu.</string>
+
+    <string name="NavigationDrawerItems_zero">Settings, Dahl Settings</string>
+    <string name="NavigationDrawerItems_one">%1$d item, Settings, Dahl Settings</string>
+    <string name="NavigationDrawerItems_two">%1$d items, Settings, Dahl Settings</string>
+    <string name="NavigationDrawerItems_few">%1$d items, Settings, Dahl Settings</string>
+    <string name="NavigationDrawerItems_many">%1$d items, Settings, Dahl Settings</string>
+    <string name="NavigationDrawerItems_other">%1$d items, Settings, Dahl Settings</string>
+
 </resources>

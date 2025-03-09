@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-
-    <plurals name="NavDrawerItems" tools:ignore="UnusedQuantity">
-        <item quantity="one">%d item, Settings, Dahl Settings</item>
-        <item quantity="other">%d items, Settings, Dahl Settings</item>
-    </plurals>
-    
-</resources>

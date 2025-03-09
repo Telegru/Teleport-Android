@@ -62,8 +62,6 @@
     <string name="HideHelpBlock">Скрыть блок \"Помощь\"</string>
     <string name="NavigationDrawer">Боковое меню</string>
     <string name="NavigationDrawerItems">Пункты бокового меню</string>
-    <string name="NavigationDrawerItemsCount">Пункты бокового меню \n <![CDATA[<font color="%1$s">%2$s</font>]]></string>
-    <string name="NavigationDrawerItemsCount2">%1$s</string>
     <string name="ElementsRounding">Закругление элементов (аватары и кнопки)</string>
     <string name="Squared">Квадратные</string>
     <string name="AvatarsFont">Шрифт в аватарах</string>
@@ -115,4 +113,13 @@
     <string name="Wallet">Кошелек</string>
     <string name="CustomWallpapers">Кастомные обои</string>
     <string name="ChatListSingleLine">Однострочный</string>
+    <string name="NavigationDrawerSettingsInfo">Нельзя убрать из бокового меню пункты \"Настройки\" и \"Настройки Даль\".</string>
+
+    <string name="NavigationDrawerItems_zero">Настройки, Настройки Даль</string>
+    <string name="NavigationDrawerItems_one">%1$d пункт, Настройки, Настройки Даль</string>
+    <string name="NavigationDrawerItems_two">%1$d пункта, Настройки, Настройки Даль</string>
+    <string name="NavigationDrawerItems_few">%1$d пункта, Настройки, Настройки Даль</string>
+    <string name="NavigationDrawerItems_many">%1$d пунктов, Настройки, Настройки Даль</string>
+    <string name="NavigationDrawerItems_other">%1$d пунктов, Настройки, Настройки Даль</string>
+
 </resources>

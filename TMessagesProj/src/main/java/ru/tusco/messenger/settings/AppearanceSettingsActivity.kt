@@ -85,7 +85,7 @@ class AppearanceSettingsActivity : UniversalFragment() {
         val settingsCell = TextDetailSettingsCell(context).apply {
             setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite))
             setMultilineDetail(true)
-            setTextAndValue(getString(R.string.NavigationDrawerItems), DahlSettings.navigationDrawerItems.getInfoText(context, isPremium), false)
+            setTextAndValue(getString(R.string.NavigationDrawerItems), DahlSettings.navigationDrawerItems.getInfoText(isPremium), false)
         }
         items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
         items?.add(UItem.asCustom(NAVIGATION_DRAWER, settingsCell))
