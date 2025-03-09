@@ -1917,7 +1917,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             int type = holder.getItemViewType();
             return type == 0 || type == TYPE_TEXT_SETTING || type == TYPE_THEME_TYPE || type == TYPE_TEXT_CHECK ||
                     type == TYPE_NIGHT_THEME || type == TYPE_THEME_LIST || type == TYPE_THEME_ACCENT_LIST ||
-                    type == TYPE_TEXT_PREFERENCE || type == 18 || type == TYPE_APP_ICON || type == TYPE_CHOOSE_COLOR;
+                    type == TYPE_TEXT_PREFERENCE || type == 18 || type == TYPE_APP_ICON || type == TYPE_CHOOSE_COLOR || type == TYPE_CHAT_LIST;
         }
 
         private void showOptionsForTheme(Theme.ThemeInfo themeInfo) {
@@ -2113,11 +2113,10 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 case TYPE_CHAT_LIST:
                     view = new ChatListCell(mContext) {
                         @Override
-                        protected void didSelectChatType(boolean threeLines) {
-                            SharedConfig.setUseThreeLinesLayout(threeLines);
+                        protected void didSelectChatType(int lines) {
+                            SharedConfig.setChatListLines(lines);
                         }
                     };
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case TYPE_NIGHT_THEME:
                     view = new NotificationsCheckCell(mContext, 21, 60, true);
@@ -2748,6 +2747,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     ((AppIconsSelectorCell) ch).getAdapter().notifyDataSetChanged();
                 } else if (ch instanceof PeerColorActivity.ChangeNameColorCell) {
                     ((PeerColorActivity.ChangeNameColorCell) ch).updateColors();
+                }else if(ch instanceof ChatListCell){
+                    ((ChatListCell)ch).getAdapter().notifyDataSetChanged();
                 }
             }
             for (int i = 0; i < listView.getCachedChildCount(); i++) {
@@ -2756,6 +2757,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     ((AppIconsSelectorCell) ch).getAdapter().notifyDataSetChanged();
                 } else if (ch instanceof PeerColorActivity.ChangeNameColorCell) {
                     ((PeerColorActivity.ChangeNameColorCell) ch).updateColors();
+                }else if(ch instanceof ChatListCell){
+                    ((ChatListCell)ch).getAdapter().notifyDataSetChanged();
                 }
             }
             for (int i = 0; i < listView.getHiddenChildCount(); i++) {
@@ -2764,6 +2767,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     ((AppIconsSelectorCell) ch).getAdapter().notifyDataSetChanged();
                 } else if (ch instanceof PeerColorActivity.ChangeNameColorCell) {
                     ((PeerColorActivity.ChangeNameColorCell) ch).updateColors();
+                }else if(ch instanceof ChatListCell){
+                    ((ChatListCell)ch).getAdapter().notifyDataSetChanged();
                 }
             }
             for (int i = 0; i < listView.getAttachedScrapChildCount(); i++) {
@@ -2772,6 +2777,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     ((AppIconsSelectorCell) ch).getAdapter().notifyDataSetChanged();
                 } else if (ch instanceof PeerColorActivity.ChangeNameColorCell) {
                     ((PeerColorActivity.ChangeNameColorCell) ch).updateColors();
+                }else if(ch instanceof ChatListCell){
+                    ((ChatListCell)ch).getAdapter().notifyDataSetChanged();
                 }
             }
         }, Theme.key_windowBackgroundWhiteHintText, Theme.key_windowBackgroundWhiteBlackText, Theme.key_windowBackgroundWhiteValueText));

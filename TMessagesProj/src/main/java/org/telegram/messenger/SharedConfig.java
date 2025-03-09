@@ -333,6 +333,7 @@ public class SharedConfig {
 
     public static boolean drawDialogIcons;
     public static boolean useThreeLinesLayout;
+    public static int chatListLines;
     public static boolean archiveHidden;
 
     private static int chatSwipeAction;
@@ -620,7 +621,8 @@ public class SharedConfig {
             sortFilesByName = preferences.getBoolean("sortFilesByName", false);
             noSoundHintShowed = preferences.getBoolean("noSoundHintShowed", false);
             directShareHash = preferences.getString("directShareHash2", null);
-            useThreeLinesLayout = preferences.getBoolean("useThreeLinesLayout", false);
+            chatListLines = preferences.getInt("chatListLines", 3);
+            useThreeLinesLayout = chatListLines == 3;
             archiveHidden = preferences.getBoolean("archiveHidden", false);
             distanceSystemType = preferences.getInt("distanceSystemType", 0);
             keepMedia = preferences.getInt("keep_media", CacheByChatsController.KEEP_MEDIA_ONE_MONTH);
@@ -1145,11 +1147,21 @@ public class SharedConfig {
         LiteMode.toggleFlag(LiteMode.FLAG_AUTOPLAY_GIFS);
     }
 
-    public static void setUseThreeLinesLayout(boolean value) {
-        useThreeLinesLayout = value;
+//    public static void setUseThreeLinesLayout(boolean value) {
+//        useThreeLinesLayout = value;
+//        SharedPreferences preferences = MessagesController.getGlobalMainSettings();
+//        SharedPreferences.Editor editor = preferences.edit();
+//        editor.putBoolean("useThreeLinesLayout", useThreeLinesLayout);
+//        editor.apply();
+//        NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.dialogsNeedReload, true);
+//    }
+
+    public static void setChatListLines(int lines) {
+        useThreeLinesLayout = lines == 3;
+        chatListLines = Math.max(1, Math.min(lines, 3));
         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("useThreeLinesLayout", useThreeLinesLayout);
+        editor.putInt("chatListLines", chatListLines);
         editor.apply();
         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.dialogsNeedReload, true);
     }

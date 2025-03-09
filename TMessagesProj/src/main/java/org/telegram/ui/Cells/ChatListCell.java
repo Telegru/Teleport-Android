@@ -1,5 +1,6 @@
 package org.telegram.ui.Cells;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,10 +8,14 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.text.TextPaint;
 import android.view.Gravity;
-import android.view.accessibility.AccessibilityEvent;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LocaleController;
@@ -19,23 +24,25 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RadioButton;
+import org.telegram.ui.Components.RecyclerListView;
 
-public class ChatListCell extends LinearLayout {
+import ru.tusco.messenger.settings.DahlSettings;
 
-    private class ListView extends FrameLayout {
+public class ChatListCell extends RecyclerListView {
+
+    private static class ListView extends FrameLayout {
 
         private RadioButton button;
-        private boolean isThreeLines;
+        private int lines;
         private RectF rect = new RectF();
         private TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
-        public ListView(Context context, boolean threeLines) {
+        @StringRes
+        private int titleRes;
+
+        public ListView(Context context) {
             super(context);
             setWillNotDraw(false);
-
-            isThreeLines = threeLines;
-            setContentDescription(threeLines ? LocaleController.getString(R.string.ChatListExpanded) : LocaleController.getString(R.string.ChatListDefault));
-
             textPaint.setTextSize(AndroidUtilities.dp(13));
 
             button = new RadioButton(context) {
@@ -47,7 +54,6 @@ public class ChatListCell extends LinearLayout {
             };
             button.setSize(AndroidUtilities.dp(20));
             addView(button, LayoutHelper.createFrame(22, 22, Gravity.RIGHT | Gravity.TOP, 0, 26, 10, 0));
-            button.setChecked(isThreeLines && SharedConfig.useThreeLinesLayout || !isThreeLines && !SharedConfig.useThreeLinesLayout, false);
         }
 
         @Override
@@ -67,25 +73,45 @@ public class ChatListCell extends LinearLayout {
             Theme.dialogs_onlineCirclePaint.setColor(Color.argb((int) (31 * (1.0f - button.getProgress())), r, g, b));
             canvas.drawRoundRect(rect, AndroidUtilities.dp(6), AndroidUtilities.dp(6), Theme.dialogs_onlineCirclePaint);
 
-            String text = isThreeLines ? LocaleController.getString(R.string.ChatListExpanded) : LocaleController.getString(R.string.ChatListDefault);
+            String text = LocaleController.getString(titleRes);
             int width = (int) Math.ceil(textPaint.measureText(text));
 
             textPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             canvas.drawText(text, (getMeasuredWidth() - width) / 2, AndroidUtilities.dp(96), textPaint);
 
-            for (int a = 0; a < 2; a++) {
-                int cy = AndroidUtilities.dp(a == 0 ? 21 : 53);
+            int lineCount = lines == 1 ? 3 : 2;
+            for (int a = 0; a <= lineCount; a++) {
+                int cy;
+                if(lines != 1){
+                    cy = AndroidUtilities.dp(a == 0 ? 21 : 53);
+                }else if (a == 0) {
+                    cy = AndroidUtilities.dp(15);
+                }else if(a == 1){
+                    cy = AndroidUtilities.dp(37);
+                }else{
+                    cy = AndroidUtilities.dp(59);
+                }
                 Theme.dialogs_onlineCirclePaint.setColor(Color.argb(a == 0 ? 204 : 90, r, g, b));
-                canvas.drawCircle(AndroidUtilities.dp(22), cy, AndroidUtilities.dp(11), Theme.dialogs_onlineCirclePaint);
+                float radius = AndroidUtilities.dp(lines == 1 ? 7 : 11);
+                int startMargin = AndroidUtilities.dp(11);
+                if(DahlSettings.getRectangularAvatars()){
+                    rect.set(startMargin, cy - radius, startMargin + radius * 2, cy + radius);
+                    canvas.drawRoundRect(rect, AndroidUtilities.dpf2(3), AndroidUtilities.dpf2(3), Theme.dialogs_onlineCirclePaint);
+                }else {
+                    canvas.drawCircle(startMargin + radius, cy, radius, Theme.dialogs_onlineCirclePaint);
+                }
 
-                for (int i = 0; i < (isThreeLines ? 3 : 2); i++) {
+                for (int i = 0; i < lines; i++) {
                     Theme.dialogs_onlineCirclePaint.setColor(Color.argb(i == 0 ? 204 : 90, r, g, b));
-                    if (isThreeLines) {
+                    if (lines == 3) {
                         rect.set(AndroidUtilities.dp(41), cy - AndroidUtilities.dp(8.3f - i * 7), getMeasuredWidth() - AndroidUtilities.dp(i == 0 ? 72 : 48), cy - AndroidUtilities.dp(8.3f - 3 - i * 7));
                         canvas.drawRoundRect(rect, AndroidUtilities.dpf2(1.5f), AndroidUtilities.dpf2(1.5f), Theme.dialogs_onlineCirclePaint);
-                    } else {
+                    } else if (lines == 2) {
                         rect.set(AndroidUtilities.dp(41), cy - AndroidUtilities.dp(7 - i * 10), getMeasuredWidth() - AndroidUtilities.dp(i == 0 ? 72 : 48), cy - AndroidUtilities.dp(7 - 4 - i * 10));
                         canvas.drawRoundRect(rect, AndroidUtilities.dp(2), AndroidUtilities.dp(2), Theme.dialogs_onlineCirclePaint);
+                    } else {
+                        rect.set(AndroidUtilities.dp(33), cy - AndroidUtilities.dp(2 - i * 10), getMeasuredWidth() - AndroidUtilities.dp(72), cy - AndroidUtilities.dp(2 - 4 - i * 10));
+                        canvas.drawRoundRect(rect, AndroidUtilities.dpf2(1.5f), AndroidUtilities.dpf2(1.5f), Theme.dialogs_onlineCirclePaint);
                     }
                 }
             }
@@ -97,44 +123,147 @@ public class ChatListCell extends LinearLayout {
             info.setClassName(RadioButton.class.getName());
             info.setChecked(button.isChecked());
             info.setCheckable(true);
-            info.setContentDescription(isThreeLines ? LocaleController.getString(R.string.ChatListExpanded) : LocaleController.getString(R.string.ChatListDefault));
+            info.setContentDescription(LocaleController.getString(titleRes));
+        }
+
+        void bind(int lines, boolean checked) {
+            this.lines = lines;
+            switch (lines) {
+                case 1:
+                    titleRes = R.string.ChatListSingleLine;
+                    break;
+                case 2:
+                    titleRes = R.string.ChatListDefault;
+                    break;
+                case 3:
+                    titleRes = R.string.ChatListExpanded;
+                    break;
+                default:
+                    titleRes = R.string.ChatListDefault;
+            }
+            setContentDescription(LocaleController.getString(titleRes));
+            button.setChecked(checked, true);
         }
     }
 
-    private ListView[] listView = new ListView[2];
+//    private ListView[] listView = new ListView[3];
+
+    private ListAdapter adapter;
 
     public ChatListCell(Context context) {
         super(context);
-        setOrientation(HORIZONTAL);
-        setPadding(AndroidUtilities.dp(21), AndroidUtilities.dp(10), AndroidUtilities.dp(21), 0);
+        setFocusable(false);
+        setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+        setItemAnimator(null);
+        setLayoutAnimation(null);
 
-        for (int a = 0; a < listView.length; a++) {
-            boolean isThreeLines = a == 1;
-            listView[a] = new ListView(context, isThreeLines);
-            addView(listView[a], LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, 0.5f, a == 1 ? 10 : 0, 0, 0, 0));
-            listView[a].setOnClickListener(v -> {
-                for (int b = 0; b < 2; b++) {
-                    listView[b].button.setChecked(listView[b] == v, true);
-                }
-                didSelectChatType(isThreeLines);
-            });
-        }
+        setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+
+        adapter = new ListAdapter();
+        setAdapter(adapter);
+        int position = Math.max(0, Math.min(2, SharedConfig.chatListLines - 1));
+        adapter.updateSelection(position);
+
+        scrollToPosition(position);
+
+        setOnItemClickListener((view, pos) -> {
+            adapter.updateSelection(pos);
+            didSelectChatType(pos + 1);
+            postDelayed(() -> smoothScrollToPosition(pos), 100);
+        });
     }
 
-    protected void didSelectChatType(boolean threeLines) {
+    protected void didSelectChatType(int lines) {
 
-    }
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        for (int a = 0; a < listView.length; a++) {
-            listView[a].invalidate();
-        }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(123), MeasureSpec.EXACTLY));
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (getAdapter() != null) {
+            ((ListAdapter) getAdapter()).updateItemSize(w / 2 - AndroidUtilities.dp(28), h);
+        }
+    }
+
+    static class ListAdapter extends RecyclerView.Adapter<ViewHolder> {
+
+        private int selectedPosition = 0;
+        private int itemWidth = 0;
+        private int itemHeight = 0;
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            FrameLayout view = new FrameLayout(parent.getContext());
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            holder.bind(position + 1, position == selectedPosition, itemWidth, itemHeight);
+        }
+
+        @Override
+        public int getItemCount() {
+            return 3;
+        }
+
+        void updateSelection(int position) {
+            int oldPosition = selectedPosition;
+            selectedPosition = position;
+            notifyItemChanged(oldPosition);
+            notifyItemChanged(selectedPosition);
+        }
+
+
+        @SuppressLint("NotifyDataSetChanged")
+        void updateItemSize(int width, int height) {
+            if (itemWidth == width && itemHeight == height) return;
+
+            itemWidth = width;
+            itemHeight = height;
+            notifyDataSetChanged();
+        }
+    }
+
+    static class ViewHolder extends RecyclerListView.ViewHolder {
+
+        ListView view;
+
+        ViewHolder(FrameLayout itemView) {
+            super(itemView);
+            this.view = new ListView(itemView.getContext());
+            itemView.addView(view, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.START));
+        }
+
+        void bind(int lines, boolean checked, int width, int height) {
+            view.bind(lines, checked);
+            int startPadding;
+            int endPadding;
+            if (lines == 1) {
+                startPadding = AndroidUtilities.dp(21);
+                endPadding = 0;
+            } else if (lines == 3) {
+                startPadding = 0;
+                endPadding = AndroidUtilities.dp(21);
+            } else {
+                startPadding = AndroidUtilities.dp(10);
+                endPadding = AndroidUtilities.dp(10);
+            }
+            itemView.setPaddingRelative(startPadding, AndroidUtilities.dp(10), endPadding, 0);
+
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) view.getLayoutParams();
+            if (layoutParams != null && (layoutParams.width != width || layoutParams.height != height)) {
+                layoutParams.width = width;
+                layoutParams.height = height;
+                view.setLayoutParams(layoutParams);
+                view.requestLayout();
+            }
+        }
     }
 }

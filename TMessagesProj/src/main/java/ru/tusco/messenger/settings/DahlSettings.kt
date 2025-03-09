@@ -82,8 +82,14 @@ object DahlSettings {
             putBoolean("AP_NG_Avatars_Font", value)
         }
 
-    fun getAvatarCornerRadius() = if (rectangularAvatars) 20 else AndroidUtilities.dp(28f)
-    fun getCounterCornerRadius() = if (rectangularAvatars) 20 else AndroidUtilities.dp(11.5f)
+    fun getAvatarCornerRadius(): Int {
+        if(SharedConfig.chatListLines == 1){
+           return if (rectangularAvatars) AndroidUtilities.dp(4.5f) else AndroidUtilities.dp(18f)
+        }
+        return if (rectangularAvatars) AndroidUtilities.dp(6f) else AndroidUtilities.dp(28f)
+    }
+
+    fun getCounterCornerRadius() = if (rectangularAvatars) AndroidUtilities.dp(6f) else AndroidUtilities.dp(11.5f)
 
     fun getCurrentIconPack(): BaseIconReplacement {
         return when (iconReplacement) {

@@ -465,7 +465,14 @@ public abstract class RightSlidingDialogContainer extends FrameLayout {
     }
 
     public static int getRightPaddingSize() {
-        return SharedConfig.useThreeLinesLayout ? 74 : 76;
+        switch (SharedConfig.chatListLines) {
+            case 1:
+                return 60;
+            case 3:
+                return 74;
+            default:
+                return 76;
+        }
     }
 
     public View getFragmentView() {
