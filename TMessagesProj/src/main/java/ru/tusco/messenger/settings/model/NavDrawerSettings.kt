@@ -1,8 +1,7 @@
 package ru.tusco.messenger.settings.model
 
-import android.content.Context
 import android.content.SharedPreferences
-import org.telegram.messenger.R
+import org.telegram.messenger.LocaleController
 
 data class NavDrawerSettings(
     val proxy: Boolean = true,
@@ -46,7 +45,7 @@ data class NavDrawerSettings(
             .apply()
     }
 
-    fun getInfoText(context: Context, isPremium: Boolean): String {
+    fun getInfoText(isPremium: Boolean): String {
         var count = 0
         if (proxy) count++
         if (profile) count++
@@ -59,7 +58,7 @@ data class NavDrawerSettings(
         if (inviteFriends) count++
         if (telegramFeatures) count++
 
-        return context.resources.getQuantityString(R.plurals.NavDrawerItems, count, count)
+        return LocaleController.formatPluralString("NavigationDrawerItems", count, count)
 
     }
 
