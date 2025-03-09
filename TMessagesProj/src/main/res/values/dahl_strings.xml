@@ -53,6 +53,7 @@
     <string name="OfflineModeInfo">Для других вы всегда будете в оффлайн режиме</string>
     <string name="PremiumFeatures">Premium функции</string>
     <string name="PremiumFeaturesInfo">Настройте Premium функции под себя.</string>
+    <string name="PremiumFeaturesEnableInfo">Оставьте включенными только нужные вам Premium функции.</string>
     <string name="EnableInChatsAndChannels">Включить в чатах и каналах</string>
     <string name="BottomPanelInChannels">Нижнюю панель в каналах</string>
     <string name="PersonalColors">Персональные цвета</string>
@@ -61,13 +62,15 @@
     <string name="HideHelpBlock">Скрыть блок \"Помощь\"</string>
     <string name="NavigationDrawer">Боковое меню</string>
     <string name="NavigationDrawerItems">Пункты бокового меню</string>
+    <string name="NavigationDrawerItemsCount">Пункты бокового меню \n <![CDATA[<font color="%1$s">%2$s</font>]]></string>
+    <string name="NavigationDrawerItemsCount2">%1$s</string>
     <string name="ElementsRounding">Закругление элементов (аватары и кнопки)</string>
     <string name="Squared">Квадратные</string>
     <string name="AvatarsFont">Шрифт в аватарах</string>
     <string name="Nizhegorodski">Нижегородский</string>
     <string name="FontAuthor">Автор шрифта: <![CDATA[<font color="%1$s"><b>Александр Шиманов</b></font>]]></string>
     <string name="Icons">Иконки</string>
-    <string name="BlockPremium">Блок \"Premium\"</string>
+    <string name="BlockPremium">Блок Premium</string>
     <string name="HideFromSettings">Скрыть из настроек</string>
     <string name="HidePremiumInfo">Настройка Premium функций будет скрыта из общего раздела \"Настройки\".</string>
     <string name="StatusIcons">Эмодзи-статусы</string>

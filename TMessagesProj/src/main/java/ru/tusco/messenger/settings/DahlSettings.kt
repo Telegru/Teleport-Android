@@ -70,7 +70,7 @@ object DahlSettings {
 
     @JvmStatic
     var rectangularAvatars: Boolean
-        get() = sharedPreferences.getBoolean("AP_Rectangular_Avatars", false)
+        get() = sharedPreferences.getBoolean("AP_Rectangular_Avatars", true)
         set(value) {
             putBoolean("AP_Rectangular_Avatars", value)
         }
@@ -80,6 +80,7 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("AP_NG_Avatars_Font", true)
         set(value) {
             putBoolean("AP_NG_Avatars_Font", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     fun getAvatarCornerRadius(): Int {
@@ -232,7 +233,7 @@ object DahlSettings {
 
     @JvmStatic
     var isHidePremium: Boolean
-        get() = sharedPreferences.getBoolean("premium_hide_block", false)
+        get() = sharedPreferences.getBoolean("premium_hide_block", true)
         set(value) {
             putBoolean("premium_hide_block", value)
         }
