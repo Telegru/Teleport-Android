@@ -191,6 +191,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 @SuppressLint("HardwareIds")
 public class LoginActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     public final static boolean ENABLE_PASTED_TEXT_PROCESSING = false;
@@ -8542,7 +8544,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         } else if (getMessagesController().blockedCountry && !SharedConfig.proxyList.isEmpty() || connecting) {
             proxyDrawable.setConnected(true, connected, animated);
             showProxyButtonDelayed();
-        } else {
+        } else if (DahlSettings.getEnableProxyButtonByDefault()) {
+            proxyDrawable.setConnected(false, connected, animated);
+            showProxyButton(true, animated);
+        } else  {
             showProxyButton(false, animated);
         }
     }

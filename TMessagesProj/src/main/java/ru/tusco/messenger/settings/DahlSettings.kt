@@ -127,6 +127,14 @@ object DahlSettings {
         }
 
     @JvmStatic
+    var enableProxyButtonByDefault: Boolean
+        get() = sharedPreferences.getBoolean("enable_proxy_button_by_default", true)
+        set(value) {
+            putBoolean("enable_proxy_button_by_default", value)
+        }
+
+
+    @JvmStatic
     var isProxyEnabled: Boolean
         get() {
             val proxyInfo = ProxyInfo(Extra.PROXY_ADDRESS, Extra.PROXY_PORT, null, null, Extra.PROXY_SECRET)
