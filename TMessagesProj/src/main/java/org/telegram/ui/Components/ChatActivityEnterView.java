@@ -871,7 +871,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         public void run() {
             if (delegate != null) {
                 if(DahlSettings.getVideoMessageCamera() == CameraType.ALWAYS_ASK){
-                    recordVideo();
+                    showCameraSelector();
                 }else {
                     delegate.needStartRecordVideo(0, true, 0, 0, 0);
                 }
@@ -13003,7 +13003,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     private ActionBarPopupWindow.ActionBarPopupWindowLayout videoMessagePopupLayout;
 
     @SuppressLint("ClickableViewAccessibility")
-    private void recordVideo() {
+    private void showCameraSelector() {
         if (parentActivity == null) {
             return;
         }
@@ -13047,12 +13047,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
         videoMessagePopupLayout.setupRadialSelectors(getThemedColor(Theme.key_dialogButtonSelector));
 
-        videoMessagePopupWindow = new ActionBarPopupWindow(videoMessagePopupLayout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT) {
-            @Override
-            public void dismiss() {
-                super.dismiss();
-            }
-        };
+        videoMessagePopupWindow = new ActionBarPopupWindow(videoMessagePopupLayout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT);
         videoMessagePopupWindow.setAnimationEnabled(false);
         videoMessagePopupWindow.setAnimationStyle(R.style.PopupContextAnimation2);
         videoMessagePopupWindow.setOutsideTouchable(true);
