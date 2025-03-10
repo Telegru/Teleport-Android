@@ -136,6 +136,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 
+import ru.tusco.messenger.settings.DahlSettings;
+import ru.tusco.messenger.utils.DahlUtils;
+
 public class TopicsFragment extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ChatActivityInterface, RightSlidingDialogContainer.BaseFragmentWithFullscreen {
 
     private final static int BOTTOM_BUTTON_TYPE_JOIN = 0;
@@ -1042,7 +1045,7 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
                     if (!isDragging) {
                         View view = layoutManager.findViewByPosition(currentPosition);
                         if (view != null) {
-                            int dialogHeight = AndroidUtilities.dp(SharedConfig.useThreeLinesLayout ? 78 : 72) + 1;
+                            int dialogHeight = DahlUtils.getChatCellHeight() + 1;
                             int canScrollDy = -(view.getTop() - pTop) + (currentPosition - 1) * dialogHeight;
                             int positiveDy = Math.abs(dy);
                             if (canScrollDy < positiveDy) {
@@ -1763,7 +1766,7 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
                 if (currentPosition == 0) {
                     int pTop = getPaddingTop();
                     View view = layoutManager.findViewByPosition(currentPosition);
-                    int height = (int) (AndroidUtilities.dp(SharedConfig.useThreeLinesLayout ? 78 : 72) * PullForegroundDrawable.SNAP_HEIGHT);
+                    int height = (int) (DahlUtils.getChatCellHeight() * PullForegroundDrawable.SNAP_HEIGHT);
                     int diff = (view.getTop() - pTop) + view.getMeasuredHeight();
                     if (view != null) {
                         long pullingTime = System.currentTimeMillis() - startArchivePullingTime;
@@ -2994,7 +2997,7 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
         protected void onDraw(Canvas canvas) {
             xOffset = inPreviewMode && checkBox != null ? checkBox.getProgress() * AndroidUtilities.dp(30) : 0;
             canvas.save();
-            canvas.translate(xOffset, translateY = -AndroidUtilities.dp(4));
+            canvas.translate(xOffset, translateY = DahlSettings.getChatListLines() > 1 ? -AndroidUtilities.dp(4) : 0);
             canvas.drawColor(getThemedColor(Theme.key_windowBackgroundWhite));
             super.onDraw(canvas);
             canvas.restore();

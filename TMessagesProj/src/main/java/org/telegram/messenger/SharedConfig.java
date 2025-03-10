@@ -50,6 +50,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class SharedConfig {
     /**
      * V2: Ping and check time serialized
@@ -620,7 +622,8 @@ public class SharedConfig {
             sortFilesByName = preferences.getBoolean("sortFilesByName", false);
             noSoundHintShowed = preferences.getBoolean("noSoundHintShowed", false);
             directShareHash = preferences.getString("directShareHash2", null);
-            useThreeLinesLayout = preferences.getBoolean("useThreeLinesLayout", false);
+//            useThreeLinesLayout = preferences.getBoolean("useThreeLinesLayout", false);
+            useThreeLinesLayout = DahlSettings.getChatListLines() == 3;
             archiveHidden = preferences.getBoolean("archiveHidden", false);
             distanceSystemType = preferences.getInt("distanceSystemType", 0);
             keepMedia = preferences.getInt("keep_media", CacheByChatsController.KEEP_MEDIA_ONE_MONTH);
