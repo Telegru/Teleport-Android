@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <plurals name="NavDrawerItems">
-        <item quantity="one">%d item, Settings, Dahl Settings</item>
-        <item quantity="other">%d items, Settings, Dahl Settings</item>
-    </plurals>
-    
-</resources>
