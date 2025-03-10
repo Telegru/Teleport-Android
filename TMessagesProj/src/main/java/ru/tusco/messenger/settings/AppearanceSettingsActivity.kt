@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.core.util.forEach
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +29,7 @@ import org.telegram.ui.WallpapersListActivity
 import ru.tusco.messenger.icons.VKUiIconReplacement
 import ru.tusco.messenger.settings.DahlSettings.ICON_REPLACEMENT_VKUI
 import ru.tusco.messenger.settings.DahlSettings.NO_REPLACEMENT
+import ru.tusco.messenger.ui.cells.DahlChatListCell
 
 class AppearanceSettingsActivity : UniversalFragment() {
 
@@ -43,6 +43,7 @@ class AppearanceSettingsActivity : UniversalFragment() {
         const val SQUARE_AVATARS = 7
         const val AVATARS_FONT = 8
         const val CUSTOM_WALLPAPERS = 9
+        const val CHAT_LIST_LINES = 10
     }
 
     private val icons: Set<Int> by lazy {
@@ -68,6 +69,17 @@ class AppearanceSettingsActivity : UniversalFragment() {
 //        )
 //        items?.add(UItem.asCheck(PERSONAL_COLORS, getString(R.string.PersonalColors)).setChecked(DahlSettings.isEnabledPersonalColors))
         items?.add(UItem.asCheck(CUSTOM_WALLPAPERS, getString(R.string.CustomWallpapers)).setChecked(DahlSettings.isCustomWallpapersEnabled))
+        items?.add(UItem.asShadow(-3, null))
+
+        items?.add(UItem.asHeader(getString(R.string.ChatList)))
+        items?.add(UItem.asCustom(
+            CHAT_LIST_LINES,
+            object : DahlChatListCell(context){
+                override fun didSelectChatType(lines: Int) {
+                    DahlSettings.chatListLines = lines
+                }
+            }
+        ))
         items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.ChatsSettings)))
@@ -143,7 +155,9 @@ class AppearanceSettingsActivity : UniversalFragment() {
             CUSTOM_WALLPAPERS -> DahlSettings.isCustomWallpapersEnabled = !DahlSettings.isCustomWallpapersEnabled
             else -> {}
         }
-        listView.adapter.update(true)
+        if(item?.id != CHAT_LIST_LINES) {
+            listView.adapter.update(true)
+        }
     }
 
     override fun onLongClick(item: UItem?, view: View?, position: Int, x: Float, y: Float): Boolean = false
