@@ -1,11 +1,17 @@
 package ru.tusco.messenger.settings
 
 import android.view.View
+import android.widget.LinearLayout
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
+import org.telegram.ui.ActionBar.AlertDialog
+import org.telegram.ui.ActionBar.Theme
+import org.telegram.ui.Cells.RadioColorCell
 import org.telegram.ui.Components.UItem
 import org.telegram.ui.Components.UniversalAdapter
 import org.telegram.ui.Components.UniversalFragment
+import ru.tusco.messenger.settings.model.CameraType
 
 class ChatsSettingsActivity : UniversalFragment() {
 
@@ -27,16 +33,16 @@ class ChatsSettingsActivity : UniversalFragment() {
     }
 
     override fun fillItems(items: ArrayList<UItem>?, adapter: UniversalAdapter?) {
-//        items?.add(UItem.asHeader(getString(R.string.NeedConfirm)))
+        items?.add(UItem.asHeader(getString(R.string.NeedConfirm)))
 //        items?.add(UItem.asCheck(SWITCH_CONFIRM_CALL, getString(R.string.ConfirmCalling)).setChecked(DahlSettings.confirmCall))
 //        items?.add(UItem.asCheck(SWITCH_CONFIRM_AUDIO_MESSAGE, getString(R.string.ConfirmAudioMessage)).setChecked(DahlSettings.confirmAudioMessage))
-//        items?.add(
-//            UItem.asButton(
-//                SELECTOR_VIDEO_CAMERA,
-//                getString(R.string.ConfirmVideoMessageCamera),
-//                getString(DahlSettings.videoMessageCamera.title)
-//            )
-//        )
+        items?.add(
+            UItem.asButton(
+                SELECTOR_VIDEO_CAMERA,
+                getString(R.string.ConfirmVideoMessageCamera),
+                getString(DahlSettings.videoMessageCamera.title)
+            )
+        )
 //
 //        items?.add(UItem.asShadow(-3, null))
 //        items?.add(UItem.asHeader(getString(R.string.RecentChats)))
@@ -54,7 +60,7 @@ class ChatsSettingsActivity : UniversalFragment() {
         when (item?.id) {
             SWITCH_CONFIRM_CALL -> DahlSettings.confirmCall = !DahlSettings.confirmCall
             SWITCH_CONFIRM_AUDIO_MESSAGE -> DahlSettings.confirmAudioMessage = !DahlSettings.confirmAudioMessage
-            SELECTOR_VIDEO_CAMERA -> {}
+            SELECTOR_VIDEO_CAMERA -> showCameraSelector()
 
             SWITCH_RECENT_CHATS -> DahlSettings.recentChats = !DahlSettings.recentChats
 
@@ -72,5 +78,32 @@ class ChatsSettingsActivity : UniversalFragment() {
         return false
     }
 
+    private fun showCameraSelector() {
+        val selected = DahlSettings.videoMessageCamera.ordinal
+        val items = CameraType.entries.map { getString(it.title) }.toTypedArray()
+        val linearLayout = LinearLayout(parentActivity)
+        linearLayout.orientation = LinearLayout.VERTICAL
+
+        val builder = AlertDialog.Builder(parentActivity)
+            .setTitle(getString(R.string.ConfirmVideoMessageCamera))
+            .setView(linearLayout)
+            .setNegativeButton(getString(R.string.Cancel), null)
+
+        for (a in items.indices) {
+            val cell = RadioColorCell(parentActivity)
+            cell.setPadding(AndroidUtilities.dp(4f), 0, AndroidUtilities.dp(4f), 0)
+            cell.tag = a
+            cell.setCheckColor(Theme.getColor(Theme.key_radioBackground), Theme.getColor(Theme.key_dialogRadioBackgroundChecked))
+            cell.setTextAndValue(items[a], selected == a)
+            linearLayout.addView(cell)
+            cell.setOnClickListener { v->
+                builder.dismissRunnable.run()
+                val which = v.tag as Int
+                DahlSettings.videoMessageCamera = CameraType.entries.toTypedArray()[which]
+                listView.adapter.update(true)
+            }
+        }
+        showDialog(builder.create())
+    }
 
 }

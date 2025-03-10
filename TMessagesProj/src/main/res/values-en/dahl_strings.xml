@@ -85,8 +85,7 @@
     <string name="NeedConfirm">Confirm</string>
     <string name="ConfirmCalling">Calling</string>
     <string name="ConfirmAudioMessage">Audio message sending</string>
-    <string name="ConfirmVideoMessageCamera">Camera for video messages</string>
-    <string name="AlwaysAsk">Always ask</string>
+    <string name="ConfirmVideoMessageCamera">Camera in video messages</string>
   
     <string name="DahlProxyEnable">Enable Dahl proxy</string>
     <string name="DahlProxyDisable">Disable Dahl proxy</string>
@@ -120,4 +119,7 @@
     <string name="NavigationDrawerItems_many">%1$d items, Settings, Dahl Settings</string>
     <string name="NavigationDrawerItems_other">%1$d items, Settings, Dahl Settings</string>
 
+    <string name="CameraAsk">Ask before recording</string>
+    <string name="CameraFront">Front</string>
+    <string name="CameraRear">Rear</string>
 </resources>

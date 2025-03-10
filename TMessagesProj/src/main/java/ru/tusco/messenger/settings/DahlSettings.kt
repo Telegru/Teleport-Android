@@ -2,12 +2,10 @@ package ru.tusco.messenger.settings
 
 import android.app.Activity
 import android.content.SharedPreferences
-import androidx.annotation.StringRes
 import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.MessagesController
-import org.telegram.messenger.R
 import org.telegram.messenger.SharedConfig
 import org.telegram.messenger.SharedConfig.ProxyInfo
 import org.telegram.messenger.UserConfig
@@ -17,6 +15,7 @@ import ru.tusco.messenger.Extra
 import ru.tusco.messenger.icons.BaseIconReplacement
 import ru.tusco.messenger.icons.IconReplacementNone
 import ru.tusco.messenger.icons.VKUiIconReplacement
+import ru.tusco.messenger.settings.model.CameraType
 import ru.tusco.messenger.settings.model.NavDrawerSettings
 
 object DahlSettings {
@@ -48,18 +47,6 @@ object DahlSettings {
 
     const val NO_REPLACEMENT = 0
     const val ICON_REPLACEMENT_VKUI = 1
-
-    enum class VideoMessageCamera {
-        SELECT, FRONT, BACK;
-
-        @get:StringRes
-        val title: Int
-            get() = when (this) {
-                SELECT -> R.string.AlwaysAsk
-                FRONT -> R.string.VoipFrontCamera
-                BACK -> R.string.VoipBackCamera
-            }
-    }
 
     var iconReplacement
         get() = sharedPreferences.getInt("AP_Icon_Replacements", ICON_REPLACEMENT_VKUI)
@@ -311,10 +298,11 @@ object DahlSettings {
             putBoolean("confirm_audio_message", value)
         }
 
-    var videoMessageCamera: VideoMessageCamera
+    @JvmStatic
+    var videoMessageCamera: CameraType
         get() {
-            val ordinal = sharedPreferences.getInt("video_message_camera", 0)
-            return VideoMessageCamera.entries.getOrNull(ordinal) ?: VideoMessageCamera.SELECT
+            val ordinal = sharedPreferences.getInt("video_message_camera", CameraType.ALWAYS_ASK.ordinal)
+            return CameraType.entries.getOrNull(ordinal) ?: CameraType.ALWAYS_ASK
         }
         set(value) = putInt("video_message_camera", value.ordinal)
 

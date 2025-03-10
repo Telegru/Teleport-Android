@@ -357,6 +357,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         default boolean onceVoiceAvailable() {
             return false;
         }
+
+        default void setFrontface(boolean frontface){};
     }
 
     public final static int RECORD_STATE_ENTER = 0;
