@@ -140,5 +140,6 @@ class VKUiIconReplacement: BaseIconReplacement() {
         R.drawable.profile_newmsg to R.drawable.comment_outline_28,
         R.drawable.msg_media to R.drawable.all_categories_outline_28,
         R.drawable.msg_status_edit to R.drawable.smile_add_outline_28,
+        R.drawable.msg_openprofile to R.drawable.user_square_outline_28,
     )
 }
