@@ -2161,6 +2161,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         int avatarTop;
         int thumbLeft;
         if (useForceThreeLines || SharedConfig.useThreeLinesLayout) {
+            float avatarSize = DahlSettings.getRectangularAvatars() ? 50 : 56;
             avatarTop = dp(11);
             messageNameTop = dp(32);
             timeTop = dp(13);
@@ -2172,14 +2173,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
             if (LocaleController.isRTL) {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(16);
-                avatarLeft = getMeasuredWidth() - dp(56 + avatarStart);
+                avatarLeft = getMeasuredWidth() - dp(avatarSize + avatarStart);
                 thumbLeft = avatarLeft - dp(13 + 18);
             } else {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(messagePaddingStart + 6);
                 avatarLeft = dp(avatarStart);
-                thumbLeft = avatarLeft + dp(56 + 13);
+                thumbLeft = avatarLeft + dp(avatarSize + 13);
             }
-            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(56), avatarTop + dp(56));
+            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(avatarSize), avatarTop + dp(avatarSize));
             for (int i = 0; i < thumbImage.length; ++i) {
                 thumbImage[i].setImageCoords(thumbLeft + (thumbSize + 2) * i, avatarTop + dp(31) + (twoLinesForName ? dp(20) : 0) - (!(useForceThreeLines || SharedConfig.useThreeLinesLayout) && tags != null && !tags.isEmpty() ? dp(9) : 0), dp(18), dp(18));
             }
@@ -2189,7 +2190,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             timeTop = dp(20);
             errorTop = dp(14.5f);
             pinTop = dp(14.5f);
-            countTop = dp(14.5f); // isTopic ? dp(36) : dp(39);
+            countTop = dp(14.5f);
             checkDrawTop = dp(20);
             messageWidth = 0;
 
@@ -2202,6 +2203,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             }
             storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(36), avatarTop + dp(36));
         } else  {
+            float avatarSize = DahlSettings.getRectangularAvatars() ? 48 : 54;
             avatarTop = dp(9);
             messageNameTop = dp(31);
             timeTop = dp(16);
@@ -2213,14 +2215,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
             if (LocaleController.isRTL) {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(22);
-                avatarLeft = getMeasuredWidth() - dp(48 + avatarStart);
+                avatarLeft = getMeasuredWidth() - dp(avatarSize + avatarStart);
                 thumbLeft = avatarLeft - dp(11 + (thumbsCount * (thumbSize + 2) - 2));
             } else {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(messagePaddingStart + 4);
                 avatarLeft = dp(avatarStart);
-                thumbLeft = avatarLeft + dp(48 + 11);
+                thumbLeft = avatarLeft + dp(avatarSize + 11);
             }
-            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(48), avatarTop + dp(48));
+            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(avatarSize), avatarTop + dp(avatarSize));
             for (int i = 0; i < thumbImage.length; ++i) {
                 thumbImage[i].setImageCoords(thumbLeft + (thumbSize + 2) * i, avatarTop + dp(30) + (twoLinesForName ? dp(20) : 0) - (!(useForceThreeLines || SharedConfig.useThreeLinesLayout) && tags != null && !tags.isEmpty() ? dp(9) : 0), dp(thumbSize), dp(thumbSize));
             }
