@@ -31,6 +31,8 @@ import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public abstract class RightSlidingDialogContainer extends FrameLayout {
 
     BaseFragment currentFragment;
@@ -465,7 +467,7 @@ public abstract class RightSlidingDialogContainer extends FrameLayout {
     }
 
     public static int getRightPaddingSize() {
-        switch (SharedConfig.chatListLines) {
+        switch (DahlSettings.getChatListLines()) {
             case 1:
                 return 60;
             case 3:

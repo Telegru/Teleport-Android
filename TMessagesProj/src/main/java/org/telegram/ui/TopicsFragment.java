@@ -136,6 +136,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 
+import ru.tusco.messenger.settings.DahlSettings;
 import ru.tusco.messenger.utils.DahlUtils;
 
 public class TopicsFragment extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ChatActivityInterface, RightSlidingDialogContainer.BaseFragmentWithFullscreen {
@@ -2996,7 +2997,7 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
         protected void onDraw(Canvas canvas) {
             xOffset = inPreviewMode && checkBox != null ? checkBox.getProgress() * AndroidUtilities.dp(30) : 0;
             canvas.save();
-            canvas.translate(xOffset, translateY = SharedConfig.chatListLines > 1 ? -AndroidUtilities.dp(4) : 0);
+            canvas.translate(xOffset, translateY = DahlSettings.getChatListLines() > 1 ? -AndroidUtilities.dp(4) : 0);
             canvas.drawColor(getThemedColor(Theme.key_windowBackgroundWhite));
             super.onDraw(canvas);
             canvas.restore();

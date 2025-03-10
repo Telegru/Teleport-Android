@@ -50,6 +50,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class SharedConfig {
     /**
      * V2: Ping and check time serialized
@@ -333,7 +335,6 @@ public class SharedConfig {
 
     public static boolean drawDialogIcons;
     public static boolean useThreeLinesLayout;
-    public static int chatListLines;
     public static boolean archiveHidden;
 
     private static int chatSwipeAction;
@@ -621,8 +622,8 @@ public class SharedConfig {
             sortFilesByName = preferences.getBoolean("sortFilesByName", false);
             noSoundHintShowed = preferences.getBoolean("noSoundHintShowed", false);
             directShareHash = preferences.getString("directShareHash2", null);
-            chatListLines = preferences.getInt("chatListLines", 3);
-            useThreeLinesLayout = chatListLines == 3;
+//            useThreeLinesLayout = preferences.getBoolean("useThreeLinesLayout", false);
+            useThreeLinesLayout = DahlSettings.getChatListLines() == 3;
             archiveHidden = preferences.getBoolean("archiveHidden", false);
             distanceSystemType = preferences.getInt("distanceSystemType", 0);
             keepMedia = preferences.getInt("keep_media", CacheByChatsController.KEEP_MEDIA_ONE_MONTH);
@@ -1147,21 +1148,11 @@ public class SharedConfig {
         LiteMode.toggleFlag(LiteMode.FLAG_AUTOPLAY_GIFS);
     }
 
-//    public static void setUseThreeLinesLayout(boolean value) {
-//        useThreeLinesLayout = value;
-//        SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-//        SharedPreferences.Editor editor = preferences.edit();
-//        editor.putBoolean("useThreeLinesLayout", useThreeLinesLayout);
-//        editor.apply();
-//        NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.dialogsNeedReload, true);
-//    }
-
-    public static void setChatListLines(int lines) {
-        useThreeLinesLayout = lines == 3;
-        chatListLines = Math.max(1, Math.min(lines, 3));
+    public static void setUseThreeLinesLayout(boolean value) {
+        useThreeLinesLayout = value;
         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("chatListLines", chatListLines);
+        editor.putBoolean("useThreeLinesLayout", useThreeLinesLayout);
         editor.apply();
         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.dialogsNeedReload, true);
     }

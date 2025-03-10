@@ -1538,7 +1538,7 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements
         int cellHeight = DahlUtils.getChatCellHeight();
         if (itemInternals.get(position).viewType == VIEW_TYPE_DIALOG) {
             if (itemInternals.get(position).isForumCell && !collapsedView) {
-                return AndroidUtilities.dp(SharedConfig.chatListLines == 3 ? 86 : 91);
+                return AndroidUtilities.dp(SharedConfig.useThreeLinesLayout ? 86 : 91);
             } else {
                 return cellHeight;
             }

@@ -1,14 +1,14 @@
 package ru.tusco.messenger.utils
 
 import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.SharedConfig
+import ru.tusco.messenger.settings.DahlSettings
 
 object DahlUtils {
 
     @JvmStatic
     val chatCellHeight: Int
         get() {
-            val dps = when (SharedConfig.chatListLines) {
+            val dps = when (DahlSettings.chatListLines) {
                 1 -> 52f
                 3 -> 78f
                 else -> 72f

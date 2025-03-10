@@ -7,6 +7,7 @@ import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.MessagesController
+import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
 import org.telegram.messenger.SharedConfig
 import org.telegram.messenger.SharedConfig.ProxyInfo
@@ -18,6 +19,8 @@ import ru.tusco.messenger.icons.BaseIconReplacement
 import ru.tusco.messenger.icons.IconReplacementNone
 import ru.tusco.messenger.icons.VKUiIconReplacement
 import ru.tusco.messenger.settings.model.NavDrawerSettings
+import kotlin.math.max
+import kotlin.math.min
 
 object DahlSettings {
 
@@ -84,7 +87,7 @@ object DahlSettings {
         }
 
     fun getAvatarCornerRadius(): Int {
-        if(SharedConfig.chatListLines == 1){
+        if(chatListLines == 1){
            return if (rectangularAvatars) AndroidUtilities.dp(4.5f) else AndroidUtilities.dp(18f)
         }
         return if (rectangularAvatars) AndroidUtilities.dp(6f) else AndroidUtilities.dp(28f)
@@ -329,5 +332,14 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("custom_wallpapers", true)
         set(value) {
             putBoolean("custom_wallpapers", value)
+        }
+
+    @JvmStatic
+    var chatListLines: Int
+        get() = sharedPreferences.getInt("chat_list_lines", 3)
+        set(value) {
+            putInt("chat_list_lines", value)
+            SharedConfig.useThreeLinesLayout = value == 3
+            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.dialogsNeedReload, true)
         }
 }
