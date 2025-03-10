@@ -120,6 +120,9 @@
     <string name="NavigationDrawerItems_other">%1$d items, Settings, Dahl Settings</string>
 
     <string name="CameraAsk">Ask before recording</string>
-    <string name="CameraFront">Front</string>
-    <string name="CameraRear">Rear</string>
+    <string name="CameraFront">Front camera</string>
+    <string name="CameraRear">Rear camera</string>
+    <string name="Ask">Ask</string>
+    <string name="Front">Front</string>
+    <string name="Rear">Rear</string>
 </resources>

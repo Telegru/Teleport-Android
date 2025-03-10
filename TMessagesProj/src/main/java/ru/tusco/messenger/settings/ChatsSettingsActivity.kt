@@ -40,7 +40,7 @@ class ChatsSettingsActivity : UniversalFragment() {
             UItem.asButton(
                 SELECTOR_VIDEO_CAMERA,
                 getString(R.string.ConfirmVideoMessageCamera),
-                getString(DahlSettings.videoMessageCamera.title)
+                getString(DahlSettings.videoMessageCamera.titleShort)
             )
         )
 //
@@ -80,7 +80,7 @@ class ChatsSettingsActivity : UniversalFragment() {
 
     private fun showCameraSelector() {
         val selected = DahlSettings.videoMessageCamera.ordinal
-        val items = CameraType.entries.map { getString(it.title) }.toTypedArray()
+        val items = CameraType.entries.map { if(it == CameraType.ALWAYS_ASK) getString(it.titleLong) else getString(it.titleShort) }.toTypedArray()
         val linearLayout = LinearLayout(parentActivity)
         linearLayout.orientation = LinearLayout.VERTICAL
 

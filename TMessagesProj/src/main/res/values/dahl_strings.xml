@@ -122,6 +122,9 @@
     <string name="NavigationDrawerItems_other">%1$d пунктов, Настройки, Настройки Даль</string>
 
     <string name="CameraAsk">Спрашивать перед записью</string>
-    <string name="CameraFront">Фронтальная</string>
-    <string name="CameraRear">Задняя</string>
+    <string name="CameraFront">Фронтальная камера</string>
+    <string name="CameraRear">Задняя камера</string>
+    <string name="Ask">Спрашивать</string>
+    <string name="Front">Фронтальная</string>
+    <string name="Rear">Задняя</string>
 </resources>

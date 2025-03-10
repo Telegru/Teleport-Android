@@ -195,6 +195,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
+import ru.tusco.messenger.settings.DahlSettings;
+import ru.tusco.messenger.settings.model.CameraType;
+
 public class ChatActivityEnterView extends BlurredFrameLayout implements NotificationCenter.NotificationCenterDelegate, SizeNotifierFrameLayout.SizeNotifierFrameLayoutDelegate, StickersAlert.StickersAlertDelegate, SuggestEmojiView.AnchorViewDelegate {
 
     private int commonInputType;
@@ -867,7 +870,11 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         @Override
         public void run() {
             if (delegate != null) {
-                delegate.needStartRecordVideo(0, true, 0, 0, 0);
+                if(DahlSettings.getVideoMessageCamera() == CameraType.ALWAYS_ASK){
+                    recordVideo();
+                }else {
+                    delegate.needStartRecordVideo(0, true, 0, 0, 0);
+                }
             }
         }
     };
@@ -912,14 +919,16 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 } else {
                     onFinishInitCameraRunnable.run();
                 }
-                if (!recordingAudioVideo) {
-                    recordingAudioVideo = true;
-                    updateRecordInterface(RECORD_STATE_ENTER, true);
-                    if (recordCircle != null) {
-                        recordCircle.showWaves(false, false);
-                    }
-                    if (recordTimerView != null) {
-                        recordTimerView.reset();
+                if(DahlSettings.getVideoMessageCamera() != CameraType.ALWAYS_ASK) {
+                    if (!recordingAudioVideo) {
+                        recordingAudioVideo = true;
+                        updateRecordInterface(RECORD_STATE_ENTER, false);
+                        if (recordCircle != null) {
+                            recordCircle.showWaves(false, false);
+                        }
+                        if (recordTimerView != null) {
+                            recordTimerView.reset();
+                        }
                     }
                 }
             } else {
@@ -1997,6 +2006,20 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 return 2;
             }
             return 1;
+        }
+
+        void setLocked() {
+            sendButtonVisible = true;
+            lockAnimatedTranslation = 1;
+            startTranslation = 1;
+            invalidate();
+            snapAnimationProgress = 1;
+            progressToSendButton = 1f;
+            if (slideText != null) {
+                slideText.setCancelToProgress(1);
+            }
+            slideToCancelProgress = 1f;
+            slideToCancelLockProgress = 1f;
         }
 
         @SuppressLint("DrawAllocation")
@@ -12974,5 +12997,104 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         canvas.restore();
         canvas.restore();
         return result;
+    }
+
+    private ActionBarPopupWindow videoMessagePopupWindow;
+    private ActionBarPopupWindow.ActionBarPopupWindowLayout videoMessagePopupLayout;
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void recordVideo() {
+        if (parentActivity == null) {
+            return;
+        }
+        videoMessagePopupLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(parentActivity, resourcesProvider);
+        videoMessagePopupLayout.setAnimationEnabled(false);
+        videoMessagePopupLayout.setOnTouchListener(new View.OnTouchListener() {
+
+            private final Rect popupRect = new Rect();
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    if (videoMessagePopupWindow != null && videoMessagePopupWindow.isShowing()) {
+                        v.getHitRect(popupRect);
+                        if (!popupRect.contains((int) event.getX(), (int) event.getY())) {
+                            videoMessagePopupWindow.dismiss();
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+        videoMessagePopupLayout.setDispatchKeyEventListener(keyEvent -> {
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0 && videoMessagePopupWindow != null && videoMessagePopupWindow.isShowing()) {
+                videoMessagePopupWindow.dismiss();
+            }
+        });
+        videoMessagePopupLayout.setShownFromBottom(false);
+
+        ActionBarMenuSubItem frontCameraButton = new ActionBarMenuSubItem(getContext(), true, false, resourcesProvider);
+        frontCameraButton.setTextAndIcon(LocaleController.getString(R.string.CameraFront), R.drawable.msg_openprofile);
+        frontCameraButton.setMinimumWidth(AndroidUtilities.dp(196));
+        frontCameraButton.setOnClickListener(v -> openCamera(true));
+        videoMessagePopupLayout.addView(frontCameraButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+
+        ActionBarMenuSubItem rearCameraButton = new ActionBarMenuSubItem(getContext(), false, true, resourcesProvider);
+        rearCameraButton.setTextAndIcon(LocaleController.getString(R.string.CameraRear), DahlSettings.INSTANCE.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI ? R.drawable.back_camera_outline_28 : R.drawable.input_video);
+        rearCameraButton.setMinimumWidth(AndroidUtilities.dp(196));
+        rearCameraButton.setOnClickListener(v -> openCamera(false));
+        videoMessagePopupLayout.addView(rearCameraButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+
+        videoMessagePopupLayout.setupRadialSelectors(getThemedColor(Theme.key_dialogButtonSelector));
+
+        videoMessagePopupWindow = new ActionBarPopupWindow(videoMessagePopupLayout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT) {
+            @Override
+            public void dismiss() {
+                super.dismiss();
+            }
+        };
+        videoMessagePopupWindow.setAnimationEnabled(false);
+        videoMessagePopupWindow.setAnimationStyle(R.style.PopupContextAnimation2);
+        videoMessagePopupWindow.setOutsideTouchable(true);
+        videoMessagePopupWindow.setClippingEnabled(true);
+        videoMessagePopupWindow.setInputMethodMode(ActionBarPopupWindow.INPUT_METHOD_NOT_NEEDED);
+        videoMessagePopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
+        videoMessagePopupWindow.getContentView().setFocusableInTouchMode(true);
+
+        videoMessagePopupLayout.measure(View.MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(1000), View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(1000), View.MeasureSpec.AT_MOST));
+        videoMessagePopupWindow.setFocusable(true);
+        int[] location = new int[2];
+        View view = getAudioVideoButtonContainer();
+        view.getLocationInWindow(location);
+        int y;
+        if (keyboardVisible && getMeasuredHeight() > AndroidUtilities.dp(isTopViewVisible() ? 48 + 58 : 58)) {
+            y = location[1] + view.getMeasuredHeight();
+        } else {
+            y = location[1] - videoMessagePopupLayout.getMeasuredHeight() - AndroidUtilities.dp(2);
+        }
+        videoMessagePopupWindow.showAtLocation(view, Gravity.LEFT | Gravity.TOP, location[0] + view.getMeasuredWidth() - videoMessagePopupLayout.getMeasuredWidth() + AndroidUtilities.dp(8), y);
+        videoMessagePopupWindow.dimBehind();
+
+        try {
+            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+        } catch (Exception ignore) {}
+    }
+
+    private void openCamera(boolean frontface) {
+        if (videoMessagePopupWindow != null && videoMessagePopupWindow.isShowing())
+            videoMessagePopupWindow.dismiss();
+        delegate.setFrontface(frontface);
+        delegate.needStartRecordVideo(0, true, 0, 0, 0);
+        if (!recordingAudioVideo) {
+            recordingAudioVideo = true;
+            updateRecordInterface(RECORD_STATE_ENTER, true);
+            if (recordCircle != null) {
+                recordCircle.showWaves(false, false);
+                recordCircle.setLocked();
+            }
+            if (recordTimerView != null) {
+                recordTimerView.reset();
+            }
+        }
     }
 }
