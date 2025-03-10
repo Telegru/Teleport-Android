@@ -6948,11 +6948,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             floatingButton2Container.requestLayout();
         }
 
-        if(writeButtonContainer != null) {
+        if(writeButton != null) {
             int writeBottomMargin = tabsAtBottom ? (10 + 44) : 10;
             FrameLayout.LayoutParams writeParams = LayoutHelper.createFrame(60, 60, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 6, writeBottomMargin);
-            writeButtonContainer.setLayoutParams(writeParams);
-            writeButtonContainer.requestLayout();
+            writeButton.setLayoutParams(writeParams);
+            writeButton.requestLayout();
         }
 
         if(commentView != null){

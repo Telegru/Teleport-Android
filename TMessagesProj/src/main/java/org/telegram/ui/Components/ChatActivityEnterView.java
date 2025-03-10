@@ -403,7 +403,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     private String botMenuWebViewTitle;
     private String botMenuWebViewUrl;
 
-    //    public BotWebViewMenuContainer botWebViewMenuContainer;
+//    public BotWebViewMenuContainer botWebViewMenuContainer;
     private ChatActivityBotWebViewButton botWebViewButton;
 
     @Nullable
@@ -1306,8 +1306,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 //                h += tooltipLayout.getHeight() - tooltipLayout.getLineBottom(0);
 //            }
             super.onMeasure(
-                    widthMeasureSpec,
-                    MeasureSpec.makeMeasureSpec(h, MeasureSpec.EXACTLY)
+                widthMeasureSpec,
+                MeasureSpec.makeMeasureSpec(h, MeasureSpec.EXACTLY)
             );
         }
 
@@ -1358,7 +1358,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 lockY = dp(60) + multilinTooltipOffset + dpf2(30) * (1.0f - sc) - yAdd + dpf2(14f) * moveProgress;
 
                 lockMiddleY = lockY + lockSize / 2f - dpf2(8) + dpf2(2);
-                lockTopY = lockY + lockSize / 2f - dpf2(16) + dpf2(2);
+                lockTopY =    lockY + lockSize / 2f - dpf2(16) + dpf2(2);
                 float snapRotateBackProgress = moveProgress > 0.4f ? 1f : moveProgress / 0.4f;
 
                 lockRotation = 9 * (1f - moveProgress) * (1f - snapAnimationProgress) - 15 * snapAnimationProgress * (1f - snapRotateBackProgress);
@@ -1368,7 +1368,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 lockSize = dp(36) + (int) (dp(14) * moveProgress);
                 lockY = dp(60) + multilinTooltipOffset + (int) (dp(30) * (1.0f - sc)) - (int) yAdd + (moveProgress) * idleProgress * -dp(8);
                 lockMiddleY = lockY + lockSize / 2f - dpf2(8) + dpf2(2) + dpf2(2) * moveProgress;
-                lockTopY = lockY + lockSize / 2f - dpf2(16) + dpf2(2) + dpf2(2) * moveProgress;
+                lockTopY =    lockY + lockSize / 2f - dpf2(16) + dpf2(2) + dpf2(2) * moveProgress;
                 lockRotation = 9 * (1f - moveProgress);
                 snapAnimationProgress = 0;
             }
@@ -1506,9 +1506,9 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
             float maxTranslationDy = dpf2(72);
             float dy = (
-                    maxTranslationDy * translation
-                            + dpf2(24) * (progressToSeekbarStep1) * (1f - translation)
-                            + maxTranslationDy * (1f - slideToCancelLockProgress)
+                maxTranslationDy * translation
+                + dpf2(24) * (progressToSeekbarStep1) * (1f - translation)
+                + maxTranslationDy * (1f - slideToCancelLockProgress)
             );
             if (dy > maxTranslationDy) {
                 dy = maxTranslationDy;
@@ -1589,10 +1589,10 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             if (resumeDrawable != null) {
                 final float _s = 0.9285f;
                 AndroidUtilities.rectTmp2.set(
-                        (int) (rectF.centerX() - resumeDrawable.getIntrinsicWidth() / 2 * _s),
-                        (int) (rectF.centerY() - resumeDrawable.getIntrinsicHeight() / 2 * _s),
-                        (int) (rectF.centerX() + resumeDrawable.getIntrinsicWidth() / 2 * _s),
-                        (int) (rectF.centerY() + resumeDrawable.getIntrinsicHeight() / 2 * _s)
+                    (int) (rectF.centerX() - resumeDrawable.getIntrinsicWidth() / 2 * _s),
+                    (int) (rectF.centerY() - resumeDrawable.getIntrinsicHeight() / 2 * _s),
+                    (int) (rectF.centerX() + resumeDrawable.getIntrinsicWidth() / 2 * _s),
+                    (int) (rectF.centerY() + resumeDrawable.getIntrinsicHeight() / 2 * _s)
                 );
                 resumeDrawable.setBounds(AndroidUtilities.rectTmp2);
                 resumeDrawable.setAlpha((int) (0xFF * transformToResume));
@@ -1611,7 +1611,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             if (onceVisible) {
                 final float onceOffset = dpf2(12);
                 rectF.set(
-                        rectF.left, rectF.top - dpf2(36) - onceOffset, rectF.right, rectF.top - onceOffset
+                    rectF.left, rectF.top - dpf2(36) - onceOffset, rectF.right, rectF.top - onceOffset
                 );
                 if (hintView != null) {
                     hintView.setJointPx(0, rectF.centerY());
@@ -1622,8 +1622,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 final float s2 = controlsScale * (1f - exitTransition) * slideToCancelLockProgress * snapAnimationProgress;
                 canvas.scale(s2, s2, rectF.centerX(), rectF.centerY());
                 lockShadowDrawable.setBounds(
-                        (int) (rectF.left - dpf2(3)), (int) (rectF.top - dpf2(3)),
-                        (int) (rectF.right + dpf2(3)), (int) (rectF.bottom + dpf2(3))
+                    (int) (rectF.left - dpf2(3)), (int) (rectF.top - dpf2(3)),
+                    (int) (rectF.right + dpf2(3)), (int) (rectF.bottom + dpf2(3))
                 );
                 lockShadowDrawable.draw(canvas);
                 canvas.drawRoundRect(rectF, dpf2(18), dpf2(18), lockBackgroundPaint);
@@ -1640,9 +1640,9 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
         public void updateColors() {
             periodDrawable.updateColors(
-                    getThemedColor(Theme.key_chat_messagePanelVoiceLock),
-                    getThemedColor(Theme.key_chat_messagePanelVoiceBackground),
-                    0xFFFFFFFF
+                getThemedColor(Theme.key_chat_messagePanelVoiceLock),
+                getThemedColor(Theme.key_chat_messagePanelVoiceBackground),
+                0xFFFFFFFF
             );
             lockBackgroundPaint.setColor(getThemedColor(Theme.key_chat_messagePanelVoiceLockBackground));
 
@@ -1823,7 +1823,6 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     public float getLockAnimatedTranslation() {
         return lockAnimatedTranslation;
     }
-
     @Keep
     public void setLockAnimatedTranslation(float value) {
         lockAnimatedTranslation = value;
@@ -2772,7 +2771,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                                     showConfirmAudioAlert();
                                 }
                                 if(!DahlSettings.isConfirmAudioMessage()) {
-                                    MediaController.getInstance().stopRecording((isInScheduleMode()) ? 3 : 1, true, 0, voiceOnce);
+                                    MediaController.getInstance().stopRecording((isInScheduleMode()) ? 3 : 1, true, 0, voiceOnce, 0);
                                 }
                                 if (AlertsCreator.needsPaidMessageAlert(currentAccount, dialog_id)) {
                                     if (isInVideoMode()) {
@@ -9619,23 +9618,25 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     public void updateGiftButton(boolean animated) {
 
         final boolean visible =
-                !MessagesController.getInstance(currentAccount).premiumPurchaseBlocked() &&
-                        getParentFragment() != null && getParentFragment().getCurrentUser() != null &&
-                        !BuildVars.IS_BILLING_UNAVAILABLE && !getParentFragment().getCurrentUser().self &&
-                        getParentFragment().getCurrentUserInfo() != null &&
-                        (
-                                (
-
-                                                !getParentFragment().getCurrentUser().premium &&
-                                                MessagesController.getInstance(currentAccount).giftAttachMenuIcon &&
-                                                MessagesController.getInstance(currentAccount).giftTextFieldIcon &&
-                                                MessagesController.getInstance(currentAccount).getMainSettings().getBoolean("show_gift_for_" + parentFragment.getDialogId(), true)
-                                ) || (
-                                        BirthdayController.isToday(getParentFragment().getCurrentUserInfo().birthday) &&
-                                                MessagesController.getInstance(currentAccount).getMainSettings().getBoolean(Calendar.getInstance().get(Calendar.YEAR) + "show_gift_for_" + parentFragment.getDialogId(), true)
-                                )
-                        ) &&
-                        parentFragment != null && parentFragment.getChatMode() == 0;
+            !MessagesController.getInstance(currentAccount).premiumPurchaseBlocked() &&
+            getParentFragment() != null && getParentFragment().getCurrentUser() != null &&
+            !BuildVars.IS_BILLING_UNAVAILABLE &&
+            !UserObject.isUserSelf(getParentFragment().getCurrentUser()) &&
+            !UserObject.isBot(getParentFragment().getCurrentUser()) &&
+            !MessagesController.isSupportUser(getParentFragment().getCurrentUser()) &&
+            getParentFragment().getCurrentUserInfo() != null &&
+            (
+                (
+                    !getParentFragment().getCurrentUser().premium &&
+                    MessagesController.getInstance(currentAccount).giftAttachMenuIcon &&
+                    MessagesController.getInstance(currentAccount).giftTextFieldIcon &&
+                    MessagesController.getInstance(currentAccount).getMainSettings().getBoolean("show_gift_for_" + parentFragment.getDialogId(), true)
+                ) || (
+                    BirthdayController.isToday(getParentFragment().getCurrentUserInfo().birthday) &&
+                    MessagesController.getInstance(currentAccount).getMainSettings().getBoolean(Calendar.getInstance().get(Calendar.YEAR) + "show_gift_for_" + parentFragment.getDialogId(), true)
+                )
+            ) &&
+            parentFragment != null && parentFragment.getChatMode() == 0;
 
         if (!visible && birthdayHint != null) {
             birthdayHint.hide();
@@ -13424,7 +13425,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         if (videoMessagePopupWindow != null && videoMessagePopupWindow.isShowing())
             videoMessagePopupWindow.dismiss();
         delegate.setFrontface(frontface);
-        delegate.needStartRecordVideo(0, true, 0, 0, 0);
+        delegate.needStartRecordVideo(0, true, 0, 0, 0, 0);
         if (!recordingAudioVideo) {
             recordingAudioVideo = true;
             updateRecordInterface(RECORD_STATE_ENTER, true);
@@ -13450,7 +13451,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         new AlertDialog.Builder(getContext(), resourcesProvider)
                 .setTitle(getString(R.string.SendAudioMessage))
                 .setMessage(getString(R.string.SendAudioMessageInfo))
-                .setPositiveButton(getString(R.string.Send), (dialogInterface, i) -> sendMessageInternal(true, 0, false))
+                .setPositiveButton(getString(R.string.Send), (dialogInterface, i) -> sendMessageInternal(true, 0, 0, false))
                 .setNegativeButton(getString(R.string.Cancel), null)
                 .create()
                 .show();
