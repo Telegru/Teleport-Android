@@ -2122,7 +2122,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         int avatarTop;
         int thumbLeft;
         if (useForceThreeLines || SharedConfig.useThreeLinesLayout) {
-            avatarTop = dp(15);
+            avatarTop = dp(11);
             messageNameTop = dp(32);
             timeTop = dp(13);
             errorTop = dp(43);
@@ -2133,19 +2133,19 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
             if (LocaleController.isRTL) {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(16);
-                avatarLeft = getMeasuredWidth() - dp(48 + avatarStart);
+                avatarLeft = getMeasuredWidth() - dp(56 + avatarStart);
                 thumbLeft = avatarLeft - dp(13 + 18);
             } else {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(messagePaddingStart + 6);
                 avatarLeft = dp(avatarStart);
-                thumbLeft = avatarLeft + dp(48 + 13);
+                thumbLeft = avatarLeft + dp(56 + 13);
             }
-            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(48), avatarTop + dp(56));
+            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(56), avatarTop + dp(56));
             for (int i = 0; i < thumbImage.length; ++i) {
                 thumbImage[i].setImageCoords(thumbLeft + (thumbSize + 2) * i, avatarTop + dp(31) + (twoLinesForName ? dp(20) : 0) - (!(useForceThreeLines || SharedConfig.useThreeLinesLayout) && tags != null && !tags.isEmpty() ? dp(9) : 0), dp(18), dp(18));
             }
         } else {
-            avatarTop = dp(13);
+            avatarTop = dp(9);
             messageNameTop = dp(31);
             timeTop = dp(16);
             errorTop = dp(39);
@@ -2156,14 +2156,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
             if (LocaleController.isRTL) {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(22);
-                avatarLeft = getMeasuredWidth() - dp(48 + avatarStart);
+                avatarLeft = getMeasuredWidth() - dp(54 + avatarStart);
                 thumbLeft = avatarLeft - dp(11 + (thumbsCount * (thumbSize + 2) - 2));
             } else {
                 buttonLeft = typingLeft = messageLeft = messageNameLeft = dp(messagePaddingStart + 4);
                 avatarLeft = dp(avatarStart);
-                thumbLeft = avatarLeft + dp(48 + 11);
+                thumbLeft = avatarLeft + dp(56 + 11);
             }
-            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(48), avatarTop + dp(48));
+            storyParams.originalAvatarRect.set(avatarLeft, avatarTop, avatarLeft + dp(54), avatarTop + dp(54));
             for (int i = 0; i < thumbImage.length; ++i) {
                 thumbImage[i].setImageCoords(thumbLeft + (thumbSize + 2) * i, avatarTop + dp(30) + (twoLinesForName ? dp(20) : 0) - (!(useForceThreeLines || SharedConfig.useThreeLinesLayout) && tags != null && !tags.isEmpty() ? dp(9) : 0), dp(thumbSize), dp(thumbSize));
             }
