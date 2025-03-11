@@ -248,6 +248,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ru.tusco.messenger.settings.DahlSettings;
+import ru.tusco.messenger.ui.components.RecentChatsPanel;
 import ru.tusco.messenger.utils.DahlUtils;
 
 public class DialogsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, FloatingDebugProvider {
@@ -658,6 +659,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private DrawerProfileCell.AnimatedStatusView animatedStatusView;
     public RightSlidingDialogContainer rightSlidingDialogContainer;
 
+    @Nullable
+    private RecentChatsPanel recentChatsPanel;
+
     public final Property<DialogsActivity, Float> SCROLL_Y = new AnimationProperties.FloatProperty<DialogsActivity>("animationValue") {
         @Override
         public void setValue(DialogsActivity object, float value) {
@@ -779,6 +783,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 h += storiesHeight * (1f - searchAnimationProgress) * (1f - rightSlidingProgress) * (1f - progressToActionMode);
             }
             h += storiesOverscroll;
+
+            float recentChatsHeight = 0;
+            if(recentChatsPanel != null && recentChatsPanel.getVisibility() != GONE){
+                recentChatsHeight = recentChatsPanel.getMeasuredHeight() * filterTabsProgress;
+            }
+            h += recentChatsHeight;
 
             return (int) h;
         }
@@ -913,6 +923,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE && !DahlSettings.isFoldersTabsAtBottom()) {
                         filterTabsView.setTranslationY(scrollYOffset);
                     }
+                    if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+                        recentChatsPanel.setTranslationY(scrollYOffset);
+                    }
                 }
                 blurBounds.set(0, top, getMeasuredWidth(), top + actionBarHeight);
                 drawBlurRect(canvas, 0, blurBounds, searchAnimationProgress == 1f ? actionBarSearchPaint : actionBarDefaultPaint, true);
@@ -932,6 +945,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     }
                     if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE && !DahlSettings.isFoldersTabsAtBottom()) {
                         filterTabsView.setTranslationY(actionBarHeight - (actionBar.getHeight() + filterTabsView.getMeasuredHeight()));
+                    }
+                    if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+                        recentChatsPanel.setTranslationY(actionBarHeight - (actionBar.getHeight() + recentChatsPanel.getMeasuredHeight()));
                     }
                     if (searchTabsView != null) {
                         float y = top + actionBarHeight - searchTabsView.getMeasuredHeight() - searchTabsView.getTop();
@@ -978,10 +994,16 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 if (dialogStoriesCellVisible) {
                     storiesAlpha = 1f - Utilities.clamp(rightSlidingProgress / 0.5f, 1f, 0f);
                 }
-                if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE && !DahlSettings.isFoldersTabsAtBottom()) {
-                    tabsYOffset -= (1f - filterTabsProgress) * filterTabsView.getMeasuredHeight();
-                    filterTabsView.setTranslationY(scrollYOffset + tabsYOffset);
+                if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE) {
+                    if(!DahlSettings.isFoldersTabsAtBottom()) {
+                        tabsYOffset -= (1f - filterTabsProgress) * filterTabsView.getMeasuredHeight();
+                        filterTabsView.setTranslationY(scrollYOffset + tabsYOffset);
+                    }
                     filterTabsView.setAlpha(filterTabsProgress);
+                }
+                if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+                    recentChatsPanel.setTranslationY(scrollYOffset + tabsYOffset);
+                    recentChatsPanel.setAlpha(filterTabsProgress);
                 }
                 if (rightSlidingDialogContainer.hasFragment()) {
                     float rightFragmentOffset = 0;
@@ -993,9 +1015,17 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 } else {
                     viewPages[0].setTranslationY(getActionBarMoveFrom(false) - AndroidUtilities.lerp(getActionBarMoveFrom(false), filterTabsMoveFrom, (1f - filterTabsProgress)));
                 }
-            } else if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE && !DahlSettings.isFoldersTabsAtBottom()) {
-                filterTabsView.setTranslationY(scrollYOffset + tabsYOffset + storiesOverscroll);
-                filterTabsView.setAlpha(1f);
+            } else{
+                if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE) {
+                    if(!DahlSettings.isFoldersTabsAtBottom()) {
+                        filterTabsView.setTranslationY(scrollYOffset + tabsYOffset + storiesOverscroll);
+                    }
+                    filterTabsView.setAlpha(1f);
+                }
+                if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+                    recentChatsPanel.setTranslationY(scrollYOffset + tabsYOffset + storiesOverscroll);
+                    recentChatsPanel.setAlpha(1f);
+                }
             }
             updateContextViewPosition();
             updateStoriesViewAlpha(storiesAlpha);
@@ -1278,13 +1308,16 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     }
                 } else if (child == filterTabsView && DahlSettings.isFoldersTabsAtBottom()) {
                     childTop = fragmentView.getMeasuredHeight() - height;
-                } else if (child == filterTabsView || child == searchTabsView || child == filtersView || child == dialogStoriesCell) {
+                } else if (child == filterTabsView || child == searchTabsView || child == filtersView || child == dialogStoriesCell || child == recentChatsPanel) {
                     childTop = actionBar.getMeasuredHeight();
-                    if (hasStories && child == filterTabsView) {
+                    if (hasStories && (child == filterTabsView || child == recentChatsPanel)) {
                         childTop += dp(DialogStoriesCell.HEIGHT_IN_DP);
                     }
                     if (child == dialogStoriesCell && dialogStoriesCell.getPremiumHint() != null) {
                         dialogStoriesCell.getPremiumHint().layout(childLeft, childTop - dp(24 + 8 + 22) + height, childLeft + width, childTop - dp(24 + 8 + 22) + height + dialogStoriesCell.getPremiumHint().getMeasuredHeight());
+                    }
+                    if(filterTabsView != null && child == recentChatsPanel && !DahlSettings.isFoldersTabsAtBottom()){
+                        childTop += filterTabsView.getMeasuredHeight();
                     }
                 } else if (child == searchViewPager) {
                     childTop = (onlySelect && initialDialogsType != DIALOGS_TYPE_FORWARD ? 0 : actionBar.getMeasuredHeight()) + topPadding + (searchTabsView == null ? 0 : dp(44));
@@ -3220,7 +3253,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             floatingButton2Container.setVisibility(storiesEnabled ? View.VISIBLE : View.GONE);
                         }
                         floatingHidden = true;
-                        floatingButtonTranslation = dp(100);
+                        floatingButtonTranslation = DahlSettings.isFoldersTabsAtBottom() ? dp(144) : dp(100);
                         floatingButtonHideProgress = 1f;
                         updateFloatingButtonOffset();
                     }
@@ -5002,6 +5035,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 filterTabsView.setElevation(dp(20));
             }
         }
+        if(DahlSettings.isRecentChatsEnabled()){
+            recentChatsPanel = new RecentChatsPanel(context);
+            contentView.addView(recentChatsPanel, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 56));
+        }
 
         dialogStoriesCell = new DialogStoriesCell(context, this, currentAccount, isArchive() ? DialogStoriesCell.TYPE_ARCHIVE : DialogStoriesCell.TYPE_DIALOGS) {
             @Override
@@ -5541,7 +5578,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (hasStories) {
             h += dp(DialogStoriesCell.HEIGHT_IN_DP);
         }
-        if (showFilterTabs) {
+        if (showFilterTabs && !DahlSettings.isFoldersTabsAtBottom()) {
             h += dp(44);
         }
         if (dialogsHintCell != null && dialogsHintCell.getVisibility() == View.VISIBLE) {
@@ -5550,6 +5587,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (authHintCell != null && authHintCellVisible) {
             h += authHintCell.getMeasuredHeight();
         }
+//        if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+//            h += recentChatsPanel.getMeasuredHeight();
+//        }
         return h;
     }
 
@@ -7620,6 +7660,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         if (rightSlidingDialogContainer != null) {
                             rightSlidingDialogContainer.setVisibility(View.GONE);
                         }
+                        if(recentChatsPanel != null){
+                            recentChatsPanel.setVisibility(View.GONE);
+                        }
                     } else {
                         searchItem.collapseSearchFilters();
                         whiteActionBar = false;
@@ -7641,6 +7684,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         searchWasFullyShowed = false;
                         if (rightSlidingDialogContainer != null) {
                             rightSlidingDialogContainer.setVisibility(View.VISIBLE);
+                        }
+                        if(recentChatsPanel != null){
+                            recentChatsPanel.setVisibility(View.VISIBLE);
                         }
                     }
 
@@ -7722,6 +7768,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     dialogStoriesCell.setVisibility(View.VISIBLE);
                 } else {
                     dialogStoriesCell.setVisibility(View.GONE);
+                }
+            }
+            if(recentChatsPanel != null){
+                if( !isInPreviewMode() && !show) {
+                    recentChatsPanel.setVisibility(View.VISIBLE);
+                }else {
+                    recentChatsPanel.setVisibility(View.GONE);
                 }
             }
             setSearchAnimationProgress(show ? 1f : 0, false);
@@ -7896,6 +7949,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
             if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE) {
                 filterTabsView.getTabsContainer().setAlpha(1f - progress);
+            }
+            if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+                recentChatsPanel.setAlpha(1f - progress);
             }
         }
         updateContextViewPosition();
@@ -10462,7 +10518,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             floatingButtonContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    floatingButtonTranslation = floatingHidden ? dp(100) : 0;
+                    floatingButtonTranslation = floatingHidden ? (DahlSettings.isFoldersTabsAtBottom() ? dp(144): dp(100)) : 0;
                     updateFloatingButtonOffset();
                     floatingButtonContainer.setClickable(!floatingHidden);
                     if (floatingButtonContainer != null) {
@@ -11325,7 +11381,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(floatingButtonHideProgress, floatingHidden ? 1f : 0f);
         valueAnimator.addUpdateListener(animation -> {
             floatingButtonHideProgress = (float) animation.getAnimatedValue();
-            floatingButtonTranslation = dp(100) * floatingButtonHideProgress;
+            floatingButtonTranslation = (DahlSettings.isFoldersTabsAtBottom() ? dp(144) : dp(100)) * floatingButtonHideProgress;
             updateFloatingButtonOffset();
         });
         animatorSet.playTogether(valueAnimator);

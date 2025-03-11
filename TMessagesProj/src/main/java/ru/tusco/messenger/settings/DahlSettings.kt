@@ -2,10 +2,13 @@ package ru.tusco.messenger.settings
 
 import android.app.Activity
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.annotation.StringRes
+import org.json.JSONArray
 import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.BuildVars
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
@@ -13,14 +16,15 @@ import org.telegram.messenger.SharedConfig
 import org.telegram.messenger.SharedConfig.ProxyInfo
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
+import org.telegram.tgnet.TLRPC
 import org.telegram.ui.LaunchActivity
 import ru.tusco.messenger.Extra
 import ru.tusco.messenger.icons.BaseIconReplacement
 import ru.tusco.messenger.icons.IconReplacementNone
 import ru.tusco.messenger.icons.VKUiIconReplacement
 import ru.tusco.messenger.settings.model.NavDrawerSettings
-import kotlin.math.max
-import kotlin.math.min
+import java.util.LinkedList
+
 
 object DahlSettings {
 
@@ -39,9 +43,9 @@ object DahlSettings {
         editor.apply()
     }
 
-    fun putStringSet(key: String, value: Set<String>) {
+    fun putString(key: String, value: String) {
         val editor = sharedPreferences.edit()
-        editor.putStringSet(key, value)
+        editor.putString(key, value)
         editor.apply()
     }
 
@@ -51,6 +55,8 @@ object DahlSettings {
 
     const val NO_REPLACEMENT = 0
     const val ICON_REPLACEMENT_VKUI = 1
+
+    private val recentChatsIds = mutableMapOf<Int, MutableList<Long>>()
 
     enum class VideoMessageCamera {
         SELECT, FRONT, BACK;
@@ -87,8 +93,8 @@ object DahlSettings {
         }
 
     fun getAvatarCornerRadius(): Int {
-        if(chatListLines == 1){
-           return if (rectangularAvatars) AndroidUtilities.dp(4.5f) else AndroidUtilities.dp(18f)
+        if (chatListLines == 1) {
+            return if (rectangularAvatars) AndroidUtilities.dp(4.5f) else AndroidUtilities.dp(18f)
         }
         return if (rectangularAvatars) AndroidUtilities.dp(6f) else AndroidUtilities.dp(28f)
     }
@@ -329,12 +335,6 @@ object DahlSettings {
         }
         set(value) = putInt("video_message_camera", value.ordinal)
 
-    @JvmStatic
-    var recentChats: Boolean
-        get() = sharedPreferences.getBoolean("recent_chats", false)
-        set(value) {
-            putBoolean("recent_chats", value)
-        }
 
     @JvmStatic
     var isCustomWallpapersEnabled: Boolean
@@ -351,4 +351,58 @@ object DahlSettings {
             SharedConfig.useThreeLinesLayout = value == 3
             NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.dialogsNeedReload, true)
         }
+
+    @JvmStatic
+    var isRecentChatsEnabled: Boolean
+        get() = sharedPreferences.getBoolean("recent_chats_enabled", false)
+        set(value) {
+            putBoolean("recent_chats_enabled", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    fun putToRecentChats(dialogId: Long, currentAccount: Int) {
+        if (!sharedPreferences.contains("recent_chats_enabled")) {
+            return
+        }
+        val list = getRecentChatsIds(currentAccount).take(100).toMutableList()
+        list.removeIf { it == dialogId }
+        list.add(0, dialogId)
+        recentChatsIds[currentAccount] = list
+        putString("recent_chats_list_$currentAccount", JSONArray(list).toString())
+    }
+
+    @JvmStatic
+    fun getRecentChats(currentAccount: Int): List<TLRPC.Dialog> {
+        val messagesController = MessagesController.getInstance(currentAccount)
+        return getRecentChatsIds(currentAccount).mapNotNull { messagesController.getDialog(it) }
+    }
+
+    @JvmStatic
+    fun clearRecentChats(currentAccount: Int){
+        recentChatsIds.remove(currentAccount)
+        putString("recent_chats_list_$currentAccount", "")
+    }
+
+    private fun getRecentChatsIds(currentAccount: Int): List<Long> {
+        val cached = recentChatsIds[currentAccount]
+        if(!cached.isNullOrEmpty()){
+            return cached
+        }
+        try {
+            val json = sharedPreferences.getString("recent_chats_list_$currentAccount", null) ?: return emptyList()
+            val jsonArray = JSONArray(json)
+            val list = mutableListOf<Long>()
+            for (i in 0 until jsonArray.length()) {
+                list.add(jsonArray.getLong(i))
+            }
+            recentChatsIds[currentAccount] = list
+            return list
+        } catch (e: Exception) {
+            if (BuildVars.LOGS_ENABLED) {
+                Log.e("DahlSettings", "Error parsing recent chats", e)
+            }
+            return emptyList()
+        }
+    }
 }
