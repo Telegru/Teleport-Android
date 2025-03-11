@@ -329,6 +329,7 @@ object DahlSettings {
         }
         set(value) = putInt("video_message_camera", value.ordinal)
 
+    @JvmStatic
     var recentChats: Boolean
         get() = sharedPreferences.getBoolean("recent_chats", false)
         set(value) {

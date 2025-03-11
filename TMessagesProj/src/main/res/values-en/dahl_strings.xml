@@ -120,4 +120,5 @@
     <string name="NavigationDrawerItems_many">%1$d items, Settings, Dahl Settings</string>
     <string name="NavigationDrawerItems_other">%1$d items, Settings, Dahl Settings</string>
 
+    <string name="EmptyRecentChats">Here will be recent chats</string>
 </resources>

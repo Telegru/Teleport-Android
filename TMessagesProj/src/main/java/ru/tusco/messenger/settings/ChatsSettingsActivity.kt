@@ -39,9 +39,12 @@ class ChatsSettingsActivity : UniversalFragment() {
 //        )
 //
 //        items?.add(UItem.asShadow(-3, null))
-//        items?.add(UItem.asHeader(getString(R.string.RecentChats)))
-//        items?.add(UItem.asCheck(SWITCH_RECENT_CHATS, getString(R.string.EnablePanel)).setChecked(DahlSettings.recentChats))
-//        items?.add(UItem.asShadow(getString(R.string.RecentChatsInfo)))
+
+        items?.add(UItem.asHeader(getString(R.string.RecentChats)))
+        items?.add(UItem.asCheck(SWITCH_RECENT_CHATS, getString(R.string.EnablePanel)).setChecked(DahlSettings.recentChats))
+        items?.add(UItem.asShadow(getString(R.string.RecentChatsInfo)))
+
+        items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.ChatsFolders)))
         items?.add(UItem.asCheck(SWITCH_FOLDERS_AT_BOTTOM, getString(R.string.FoldersAtBottom)).setChecked(DahlSettings.isFoldersTabsAtBottom))
