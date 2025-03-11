@@ -9521,7 +9521,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     vectorAvatarThumbDrawable = new VectorAvatarThumbDrawable(vectorAvatar, user.premium, VectorAvatarThumbDrawable.TYPE_PROFILE);
                 }
             }
-            final ImageLocation videoLocation = avatarsViewPager.getCurrentVideoLocation(thumbLocation, imageLocation);
+            final ImageLocation videoLocation = DahlSettings.isAnimatedAvatars() ? avatarsViewPager.getCurrentVideoLocation(thumbLocation, imageLocation) : null;
             if (avatar == null) {
                 avatarsViewPager.initIfEmpty(vectorAvatarThumbDrawable, imageLocation, thumbLocation, reload);
             }
