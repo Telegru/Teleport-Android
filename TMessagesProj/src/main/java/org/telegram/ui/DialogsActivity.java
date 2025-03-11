@@ -978,9 +978,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 if (dialogStoriesCellVisible) {
                     storiesAlpha = 1f - Utilities.clamp(rightSlidingProgress / 0.5f, 1f, 0f);
                 }
-                if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE && !DahlSettings.isFoldersTabsAtBottom()) {
-                    tabsYOffset -= (1f - filterTabsProgress) * filterTabsView.getMeasuredHeight();
-                    filterTabsView.setTranslationY(scrollYOffset + tabsYOffset);
+                if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE) {
+                    if(!DahlSettings.isFoldersTabsAtBottom()) {
+                        tabsYOffset -= (1f - filterTabsProgress) * filterTabsView.getMeasuredHeight();
+                        filterTabsView.setTranslationY(scrollYOffset + tabsYOffset);
+                    }
                     filterTabsView.setAlpha(filterTabsProgress);
                 }
                 if (rightSlidingDialogContainer.hasFragment()) {
@@ -993,8 +995,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 } else {
                     viewPages[0].setTranslationY(getActionBarMoveFrom(false) - AndroidUtilities.lerp(getActionBarMoveFrom(false), filterTabsMoveFrom, (1f - filterTabsProgress)));
                 }
-            } else if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE && !DahlSettings.isFoldersTabsAtBottom()) {
-                filterTabsView.setTranslationY(scrollYOffset + tabsYOffset + storiesOverscroll);
+            } else if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE) {
+                if(!DahlSettings.isFoldersTabsAtBottom()) {
+                    filterTabsView.setTranslationY(scrollYOffset + tabsYOffset + storiesOverscroll);
+                }
                 filterTabsView.setAlpha(1f);
             }
             updateContextViewPosition();
@@ -3220,7 +3224,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             floatingButton2Container.setVisibility(storiesEnabled ? View.VISIBLE : View.GONE);
                         }
                         floatingHidden = true;
-                        floatingButtonTranslation = dp(100);
+                        floatingButtonTranslation = dp(DahlSettings.isFoldersTabsAtBottom() ? 144 : 100);
                         floatingButtonHideProgress = 1f;
                         updateFloatingButtonOffset();
                     }
@@ -5541,7 +5545,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (hasStories) {
             h += dp(DialogStoriesCell.HEIGHT_IN_DP);
         }
-        if (showFilterTabs) {
+        if (showFilterTabs && !DahlSettings.isFoldersTabsAtBottom()) {
             h += dp(44);
         }
         if (dialogsHintCell != null && dialogsHintCell.getVisibility() == View.VISIBLE) {
@@ -10462,7 +10466,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             floatingButtonContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    floatingButtonTranslation = floatingHidden ? dp(100) : 0;
+                    floatingButtonTranslation = floatingHidden ? dp(DahlSettings.isFoldersTabsAtBottom() ? 144 : 100) : 0;
                     updateFloatingButtonOffset();
                     floatingButtonContainer.setClickable(!floatingHidden);
                     if (floatingButtonContainer != null) {
@@ -11325,7 +11329,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(floatingButtonHideProgress, floatingHidden ? 1f : 0f);
         valueAnimator.addUpdateListener(animation -> {
             floatingButtonHideProgress = (float) animation.getAnimatedValue();
-            floatingButtonTranslation = dp(100) * floatingButtonHideProgress;
+            floatingButtonTranslation = dp(DahlSettings.isFoldersTabsAtBottom() ? 144 : 100) * floatingButtonHideProgress;
             updateFloatingButtonOffset();
         });
         animatorSet.playTogether(valueAnimator);
