@@ -18,7 +18,7 @@ data class NavDrawerSettings(
 
     constructor(sharedPreferences: SharedPreferences) :
             this(
-                proxy = sharedPreferences.getBoolean("nav_drawer_proxy", false),
+                proxy = sharedPreferences.getBoolean("nav_drawer_proxy", true),
                 profile = sharedPreferences.getBoolean("nav_drawer_profile", true),
                 changeStatus = sharedPreferences.getBoolean("nav_drawer_change_status", false),
                 wallet = sharedPreferences.getBoolean("nav_drawer_wallet", false),

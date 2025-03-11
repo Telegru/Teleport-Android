@@ -17,6 +17,7 @@ import org.telegram.messenger.R
 import org.telegram.messenger.SvgHelper
 import org.telegram.tgnet.TLRPC
 import org.telegram.tgnet.TLRPC.TL_documentEmpty
+import org.telegram.ui.ActionBar.Theme
 import java.io.File
 import java.io.FileOutputStream
 
@@ -31,7 +32,7 @@ object DefaultWallpapersHelper {
                 wallpaper.svg,
                 AndroidUtilities.dp(360f),
                 AndroidUtilities.dp(640f),
-                Color.BLACK
+                Color.WHITE
             )
             patternBitmap = createTiledBitmap(patternBitmap, AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y)
             val stream= FileOutputStream(wallpaper.path)
@@ -101,35 +102,45 @@ object DefaultWallpapersHelper {
     }
 }
 
-sealed class DahlWallpaper(val slug: String, @RawRes val svg: Int, val colors: IntArray, val darkColors: IntArray) {
+sealed class DahlWallpaper(
+    val slug: String,
+    @RawRes val svg: Int,
+    val intensity: Float,
+    val colors: IntArray,
+    val darkColors: IntArray,
+    val isDefault: Boolean = false
+) {
 
     data object Russia : DahlWallpaper(
-        "dahl_russia",
-        R.raw.dahl_wallpaper_russia,
-        intArrayOf(
+        slug = "dahl_russia",
+        svg = R.raw.dahl_wallpaper_russia,
+        intensity = 0.57f,
+        colors = intArrayOf(
             0xFFEAA36E.toInt(),
             0xFFF0E486.toInt(),
             0xFFF29EBF.toInt(),
             0xFFE8C06E.toInt()
         ),
-        intArrayOf(
-            0xFF8ADBF2.toInt(),
-            0xFF888DEC.toInt(),
-            0xFFE39FEA.toInt(),
-            0xFF679CED.toInt()
-        )
+        darkColors = intArrayOf(
+            0x1A1A20,
+            0x1A1A20,
+            0x1A1A20,
+            0x1A1A20
+        ),
+        isDefault = true
     )
 
     data object Kazan : DahlWallpaper(
-        "dahl_kazan",
-        R.raw.dahl_wallpaper_kazan,
-        intArrayOf(
+        slug = "dahl_kazan",
+        svg = R.raw.dahl_wallpaper_kazan,
+        intensity = -0.57f,
+        colors = intArrayOf(
             0xFF7FC289.toInt(),
             0xFFE4D573.toInt(),
             0xFFAFD677.toInt(),
             0xFFF0C07A.toInt()
         ),
-        intArrayOf(
+        darkColors = intArrayOf(
             0xFF7FA381.toInt(),
             0xFFFFF5C5.toInt(),
             0xFF336F55.toInt(),
@@ -138,15 +149,16 @@ sealed class DahlWallpaper(val slug: String, @RawRes val svg: Int, val colors: I
     )
 
     data object Piter : DahlWallpaper(
-        "dahl_piter",
-        R.raw.dahl_wallpaper_piter,
-        intArrayOf(
+        slug = "dahl_piter",
+        svg = R.raw.dahl_wallpaper_piter,
+        intensity = -0.57f,
+        colors = intArrayOf(
             0xFFDAEACB.toInt(),
             0xFFECCBFF.toInt(),
             0xFFECCBFF.toInt(),
             0xFFB9E2FF.toInt()
         ),
-        intArrayOf(
+        darkColors = intArrayOf(
             0xFFFEC496.toInt(),
             0xFF962FBF.toInt(),
             0xFF4F5BD5.toInt(),
@@ -156,16 +168,17 @@ sealed class DahlWallpaper(val slug: String, @RawRes val svg: Int, val colors: I
     )
 
     data object Moscow : DahlWallpaper(
-        "dahl_moscow",
-        R.raw.dahl_wallpaper_moscow,
-        intArrayOf(
+        slug = "dahl_moscow",
+        svg = R.raw.dahl_wallpaper_moscow,
+        intensity = -0.57f,
+        colors = intArrayOf(
             0xFF7FC289.toInt(),
             0xFFECCBFF.toInt(),
             0xFFF29EBF.toInt(),
             0xFFF0C07A.toInt()
         ),
 
-        intArrayOf(
+        darkColors = intArrayOf(
             0xFF7FA381.toInt(),
             0xFF888DEC.toInt(),
             0xFFE39FEA.toInt(),
@@ -174,6 +187,8 @@ sealed class DahlWallpaper(val slug: String, @RawRes val svg: Int, val colors: I
     )
 
     fun getColors(isDarkTheme: Boolean): IntArray = if (isDarkTheme) darkColors else colors
+
+    fun getIntensity(isDarkTheme: Boolean): Float = if (isDefault || isDarkTheme) intensity else -intensity
 
     val path: String = "${ApplicationLoader.getFilesDirFixed().path}/${slug}.png"
 

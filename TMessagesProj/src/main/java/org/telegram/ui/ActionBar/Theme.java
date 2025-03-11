@@ -2637,7 +2637,7 @@ public class Theme {
                     themeAccent.myMessagesGradientAccentColor3 = 0xffa751a8;
 //                    if (name.equals("Night")) {
                         int[] colors = DahlWallpaper.Russia.INSTANCE.getDarkColors();
-                        themeAccent.patternIntensity = -0.57f;
+                        themeAccent.patternIntensity = 0.57f;
                         themeAccent.backgroundOverrideColor = colors[0];
                         themeAccent.backgroundGradientOverrideColor1 = colors[1];
                         themeAccent.backgroundGradientOverrideColor2 = colors[2];
@@ -4600,7 +4600,7 @@ public class Theme {
                 new int[]    {          0,                             52,                            46,                            57,                            45,                            64,                            52,                            35,                            36,                            41,                            50,                            50,                            35,                            38,                            37,                            30 }
                 );
         sortAccents(themeInfo);
-        themes.add(currentDayTheme = defaultTheme = themeInfo);
+        themes.add(themeInfo);
         themesDict.put("Blue", themeInfo);
 
         themeInfo = new ThemeInfo();
@@ -4625,7 +4625,7 @@ public class Theme {
                 );
         sortAccents(themeInfo);
         themes.add(themeInfo);
-        themesDict.put("Dark Blue", currentNightTheme = themeInfo);
+        themesDict.put("Dark Blue", themeInfo);
 
         themeInfo = new ThemeInfo();
         themeInfo.name = "Arctic Blue";
@@ -4651,53 +4651,76 @@ public class Theme {
         themes.add(themeInfo);
         themesDict.put("Arctic Blue", themeInfo);
 
+//        themeInfo = new ThemeInfo();
+//        themeInfo.name = "Day";
+//        themeInfo.assetName = "day.attheme";
+//        themeInfo.previewBackgroundColor = 0xffffffff;
+//        themeInfo.previewInColor = 0xffebeef4;
+//        themeInfo.previewOutColor = 0xff7cb2fe;
+//        themeInfo.sortIndex = 2;
+//        themeInfo.setAccentColorOptions(
+//                new int[]    { 0xFF56A2C9, 0xFFCC6E83, 0xFFD08E47, 0xFFCC6462, 0xFF867CD2, 0xFF4C91DF, 0xFF57B4D9, 0xFF54B169, 0xFFD9BF3F, 0xFFCC6462, 0xFFCC6E83, 0xFF9B7BD2, 0xFFD79144, 0xFF7B88AB },
+//                new int[]    { 0xFF6580DC, 0xFF6C6DD2, 0xFFCB5481, 0xFFC34A4A, 0xFF5C8EDF, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 },
+//                new int[]    { 0xFF3EC1D6, 0xFFC86994, 0xFFDBA12F, 0xFFD08E3B, 0xFF51B5CB, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 },
+//                new int[]    { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 },
+//                new int[]    { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 },
+//                null,
+//                null,
+//                new int[]    {          9,         10,         11,         12,         13,          0,          1,          2,          3,          4,          5,          6,          7,          8 },
+//                new String[] {         "",         "",         "",         "",         "",         "",         "",         "",         "",         "",         "",         "",         "",         "" },
+//                new int[]    {          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0 },
+//                new int[]    {          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0 }
+//                );
+//        sortAccents(themeInfo);
+//        themes.add(themeInfo);
+//        themesDict.put("Day", themeInfo);
+
+//        themeInfo = new ThemeInfo();
+//        themeInfo.name = "Night";
+//        themeInfo.assetName = "night.attheme";
+//        themeInfo.previewBackgroundColor = 0xff535659;
+//        themeInfo.previewInColor = 0xff747A84;
+//        themeInfo.previewOutColor = 0xff75A2E6;
+//        themeInfo.sortIndex = 4;
+//        themeInfo.setAccentColorOptions(
+//                new int[]    {                    0xFF6ABE3F,                    0xFF8D78E3,                    0xFFDE5E7E,                    0xFF5977E8,                    0xFFDBC11A,                    0xff3e88f7,                    0xff4ab5d3,                    0xff4ab841,                    0xffd95576,                    0xffe27d2b,                    0xff936cda,                    0xffd04336,                    0xffe8ae1c,                    0xff7988a3 },
+//                new int[]    {                    0xFF8A5294,                    0xFFB46C1B,                    0xFFAF4F6F,                    0xFF266E8D,                    0xFF744EB7,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000 },
+//                new int[]    {                    0xFF6855BB,                    0xFFA53B4A,                    0xFF62499C,                    0xFF2F919D,                    0xFF298B95,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000 },
+//                new int[]    {                    0xFF16131c,                    0xFF1e1118,                    0xFF0f0b10,                    0xFF090c0c,                    0xFF071519,                    0xff0d0e17,                    0xff111b1c,                    0xff0c110c,                    0xff0e0b0d,                    0xff1d160f,                    0xff09090a,                    0xff1c1210,                    0xff1d1b18,                    0xff0e1012 },
+//                new int[]    {                    0xFF201827,                    0xFF100f13,                    0xFF1b151a,                    0xFF141f22,                    0xFF0c0c0f,                    0xff090a0c,                    0xff0a0e0e,                    0xff080908,                    0xff1a1618,                    0xff13100d,                    0xff1e1a21,                    0xff0f0d0c,                    0xff0c0b08,                    0xff070707 },
+//                new int[]    {                    0xFF0e0b13,                    0xFF211623,                    0xFF130e12,                    0xFF0d0f11,                    0xFF10191f,                    0xff181c28,                    0xff142121,                    0xff121812,                    0xff130e11,                    0xff1a130f,                    0xff0b0a0b,                    0xff120d0b,                    0xff15140f,                    0xff101214 },
+//                new int[]    {                    0xFF1e192a,                    0xFF111016,                    0xFF21141a,                    0xFF111a1b,                    0xFF0a0d13,                    0xff0e0f12,                    0xff070c0b,                    0xff0b0d0b,                    0xff22121e,                    0xff0f0c0c,                    0xff110f17,                    0xff070606,                    0xff0c0a0a,                    0xff09090b },
+//                new int[]    {                             9,                            10,                            11,                            12,                            13,                             0,                             1,                             2,                             3,                             4,                             5,                             6,                             7,                             8 },
+//                new String[] { "YIxYGEALQVADAAAAA3QbEH0AowY", "9LW_RcoOSVACAAAAFTk3DTyXN-M", "O-wmAfBPSFADAAAA4zINVfD_bro", "F5oWoCs7QFACAAAAgf2bD_mg8Bw", "-Xc-np9y2VMCAAAARKr0yNNPYW0", "fqv01SQemVIBAAAApND8LDRUhRU", "F5oWoCs7QFACAAAAgf2bD_mg8Bw", "ptuUd96JSFACAAAATobI23sPpz0", "p-pXcflrmFIBAAAAvXYQk-mCwZU", "Nl8Pg2rBQVACAAAA25Lxtb8SDp0", "dhf9pceaQVACAAAAbzdVo4SCiZA", "9GcNVISdSVADAAAAUcw5BYjELW4", "9LW_RcoOSVACAAAAFTk3DTyXN-M", "dk_wwlghOFACAAAAfz9xrxi6euw" },
+//                new int[]    {                            45,                           135,                             0,                           180,                             0,                             0,                             0,                             0,                             0,                             0,                             0,                             0,                             0,                             0 },
+//                new int[]    {                            34,                            47,                            52,                            48,                            54,                            50,                            37,                            56,                            48,                            49,                            40,                            64,                            38,                            48 }
+//                );
+//        sortAccents(themeInfo);
+//        themes.add(themeInfo);
+//        themesDict.put("Night", themeInfo);
+
         themeInfo = new ThemeInfo();
         themeInfo.name = "Day";
-        themeInfo.assetName = "day.attheme";
-        themeInfo.previewBackgroundColor = 0xffffffff;
-        themeInfo.previewInColor = 0xffebeef4;
-        themeInfo.previewOutColor = 0xff7cb2fe;
+        themeInfo.assetName = "dahl_day_theme.attheme";
+        themeInfo.previewBackgroundColor = Color.parseColor("#EAA36E");
+        themeInfo.previewBackgroundGradientColor1 = Color.parseColor("#F0E486");
+        themeInfo.previewBackgroundGradientColor2 = Color.parseColor("#F29EBF");
+        themeInfo.previewBackgroundGradientColor3 = Color.parseColor("#E8C06E");
+        themeInfo.previewInColor = Color.parseColor("#ffffff");
+        themeInfo.previewOutColor = Color.parseColor("#7B86C3");
         themeInfo.sortIndex = 2;
-        themeInfo.setAccentColorOptions(
-                new int[]    { 0xFF56A2C9, 0xFFCC6E83, 0xFFD08E47, 0xFFCC6462, 0xFF867CD2, 0xFF4C91DF, 0xFF57B4D9, 0xFF54B169, 0xFFD9BF3F, 0xFFCC6462, 0xFFCC6E83, 0xFF9B7BD2, 0xFFD79144, 0xFF7B88AB },
-                new int[]    { 0xFF6580DC, 0xFF6C6DD2, 0xFFCB5481, 0xFFC34A4A, 0xFF5C8EDF, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 },
-                new int[]    { 0xFF3EC1D6, 0xFFC86994, 0xFFDBA12F, 0xFFD08E3B, 0xFF51B5CB, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 },
-                new int[]    { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 },
-                new int[]    { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 },
-                null,
-                null,
-                new int[]    {          9,         10,         11,         12,         13,          0,          1,          2,          3,          4,          5,          6,          7,          8 },
-                new String[] {         "",         "",         "",         "",         "",         "",         "",         "",         "",         "",         "",         "",         "",         "" },
-                new int[]    {          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0 },
-                new int[]    {          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0,          0 }
-                );
-        sortAccents(themeInfo);
-        themes.add(themeInfo);
+        themes.add(currentDayTheme = defaultTheme = themeInfo);
         themesDict.put("Day", themeInfo);
 
         themeInfo = new ThemeInfo();
         themeInfo.name = "Night";
-        themeInfo.assetName = "night.attheme";
-        themeInfo.previewBackgroundColor = 0xff535659;
-        themeInfo.previewInColor = 0xff747A84;
-        themeInfo.previewOutColor = 0xff75A2E6;
+        themeInfo.assetName = "dahl_night_theme.attheme";
+        themeInfo.previewBackgroundColor = Color.parseColor("#1A1A20");
+        themeInfo.previewOutColor = Color.parseColor("#7B86C3");
+        themeInfo.previewInColor = Color.parseColor("#37374A");
         themeInfo.sortIndex = 4;
-        themeInfo.setAccentColorOptions(
-                new int[]    {                    0xFF6ABE3F,                    0xFF8D78E3,                    0xFFDE5E7E,                    0xFF5977E8,                    0xFFDBC11A,                    0xff3e88f7,                    0xff4ab5d3,                    0xff4ab841,                    0xffd95576,                    0xffe27d2b,                    0xff936cda,                    0xffd04336,                    0xffe8ae1c,                    0xff7988a3 },
-                new int[]    {                    0xFF8A5294,                    0xFFB46C1B,                    0xFFAF4F6F,                    0xFF266E8D,                    0xFF744EB7,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000 },
-                new int[]    {                    0xFF6855BB,                    0xFFA53B4A,                    0xFF62499C,                    0xFF2F919D,                    0xFF298B95,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000,                    0x00000000 },
-                new int[]    {                    0xFF16131c,                    0xFF1e1118,                    0xFF0f0b10,                    0xFF090c0c,                    0xFF071519,                    0xff0d0e17,                    0xff111b1c,                    0xff0c110c,                    0xff0e0b0d,                    0xff1d160f,                    0xff09090a,                    0xff1c1210,                    0xff1d1b18,                    0xff0e1012 },
-                new int[]    {                    0xFF201827,                    0xFF100f13,                    0xFF1b151a,                    0xFF141f22,                    0xFF0c0c0f,                    0xff090a0c,                    0xff0a0e0e,                    0xff080908,                    0xff1a1618,                    0xff13100d,                    0xff1e1a21,                    0xff0f0d0c,                    0xff0c0b08,                    0xff070707 },
-                new int[]    {                    0xFF0e0b13,                    0xFF211623,                    0xFF130e12,                    0xFF0d0f11,                    0xFF10191f,                    0xff181c28,                    0xff142121,                    0xff121812,                    0xff130e11,                    0xff1a130f,                    0xff0b0a0b,                    0xff120d0b,                    0xff15140f,                    0xff101214 },
-                new int[]    {                    0xFF1e192a,                    0xFF111016,                    0xFF21141a,                    0xFF111a1b,                    0xFF0a0d13,                    0xff0e0f12,                    0xff070c0b,                    0xff0b0d0b,                    0xff22121e,                    0xff0f0c0c,                    0xff110f17,                    0xff070606,                    0xff0c0a0a,                    0xff09090b },
-                new int[]    {                             9,                            10,                            11,                            12,                            13,                             0,                             1,                             2,                             3,                             4,                             5,                             6,                             7,                             8 },
-                new String[] { "YIxYGEALQVADAAAAA3QbEH0AowY", "9LW_RcoOSVACAAAAFTk3DTyXN-M", "O-wmAfBPSFADAAAA4zINVfD_bro", "F5oWoCs7QFACAAAAgf2bD_mg8Bw", "-Xc-np9y2VMCAAAARKr0yNNPYW0", "fqv01SQemVIBAAAApND8LDRUhRU", "F5oWoCs7QFACAAAAgf2bD_mg8Bw", "ptuUd96JSFACAAAATobI23sPpz0", "p-pXcflrmFIBAAAAvXYQk-mCwZU", "Nl8Pg2rBQVACAAAA25Lxtb8SDp0", "dhf9pceaQVACAAAAbzdVo4SCiZA", "9GcNVISdSVADAAAAUcw5BYjELW4", "9LW_RcoOSVACAAAAFTk3DTyXN-M", "dk_wwlghOFACAAAAfz9xrxi6euw" },
-                new int[]    {                            45,                           135,                             0,                           180,                             0,                             0,                             0,                             0,                             0,                             0,                             0,                             0,                             0,                             0 },
-                new int[]    {                            34,                            47,                            52,                            48,                            54,                            50,                            37,                            56,                            48,                            49,                            40,                            64,                            38,                            48 }
-                );
-        sortAccents(themeInfo);
         themes.add(themeInfo);
-        themesDict.put("Night", themeInfo);
+        themesDict.put("Night", currentNightTheme = themeInfo);
 
         String themesString = themeConfig.getString("themes2", null);
 
@@ -10214,7 +10237,7 @@ public class Theme {
 
     public static Drawable createDefaultWallpaper(int w, int h) {
 //        MotionBackgroundDrawable motionBackgroundDrawable = new MotionBackgroundDrawable(0xffdbddbb, 0xff6ba587, 0xffd5d88d, 0xff88b884, w != 0);
-        int[] colors = DahlWallpaper.Russia.INSTANCE.getColors();
+        int[] colors = DahlWallpaper.Russia.INSTANCE.getColors(isCurrentThemeNight());
         MotionBackgroundDrawable motionBackgroundDrawable = new MotionBackgroundDrawable(colors[0], colors[1], colors[2], colors[3], w != 0);
         Bitmap bitmap = null;
         if (w <= 0 || h <= 0) {
@@ -10226,8 +10249,8 @@ public class Theme {
             bitmap = SvgHelper.getBitmap(R.raw.dahl_wallpaper_russia, w, h, Color.BLACK);
         }
         //motionBackgroundDrawable.setPatternBitmap(34, SvgHelper.getBitmap(R.raw.default_pattern, w, h, Color.BLACK));
-        motionBackgroundDrawable.setPatternBitmap(50, bitmap);
-        motionBackgroundDrawable.setPatternColorFilter(motionBackgroundDrawable.getPatternColor());
+        motionBackgroundDrawable.setPatternBitmap(57, bitmap);
+        motionBackgroundDrawable.setPatternColorFilter(isCurrentThemeNight() ? Color.WHITE : motionBackgroundDrawable.getPatternColor());
         return motionBackgroundDrawable;
     }
 
