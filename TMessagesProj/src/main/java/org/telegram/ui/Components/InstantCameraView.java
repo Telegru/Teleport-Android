@@ -124,6 +124,9 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
+import ru.tusco.messenger.settings.DahlSettings;
+import ru.tusco.messenger.settings.model.CameraType;
+
 @TargetApi(18)
 public class InstantCameraView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
@@ -745,8 +748,8 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         cameraReady = false;
         selectedCamera = null;
         if (!fromPaused) {
-            if (!useCamera2) {
-                isFrontface = true;
+            if (!useCamera2 && DahlSettings.getVideoMessageCamera() != CameraType.ALWAYS_ASK) {
+                isFrontface = DahlSettings.getVideoMessageCamera() == CameraType.FRONT;
             }
             updateFlash();
             recordedTime = 0;
@@ -3843,6 +3846,10 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             finishZoomTransition.setInterpolator(CubicBezierInterpolator.DEFAULT);
             finishZoomTransition.start();
         }
+    }
+
+    public void setFrontface(boolean frontface) {
+        this.isFrontface = frontface;
     }
 
     public interface Delegate {
