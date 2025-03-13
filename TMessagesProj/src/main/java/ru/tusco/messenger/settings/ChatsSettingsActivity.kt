@@ -45,10 +45,11 @@ class ChatsSettingsActivity : UniversalFragment() {
         )
 
         items?.add(UItem.asShadow(-3, null))
-//        items?.add(UItem.asHeader(getString(R.string.RecentChats)))
-//        items?.add(UItem.asCheck(SWITCH_RECENT_CHATS, getString(R.string.EnablePanel)).setChecked(DahlSettings.recentChats))
-//        items?.add(UItem.asShadow(getString(R.string.RecentChatsInfo)))
-//        items?.add(UItem.asShadow(-3, null))
+        items?.add(UItem.asHeader(getString(R.string.RecentChats)))
+        items?.add(UItem.asCheck(SWITCH_RECENT_CHATS, getString(R.string.EnablePanel)).setChecked(DahlSettings.isRecentChatsEnabled))
+        items?.add(UItem.asShadow(getString(R.string.RecentChatsInfo)))
+
+        items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.ChatsFolders)))
         items?.add(UItem.asCheck(SWITCH_FOLDERS_AT_BOTTOM, getString(R.string.FoldersAtBottom)).setChecked(DahlSettings.isFoldersTabsAtBottom))
@@ -63,7 +64,7 @@ class ChatsSettingsActivity : UniversalFragment() {
             SWITCH_CONFIRM_AUDIO_MESSAGE -> DahlSettings.isConfirmAudioMessage = !DahlSettings.isConfirmAudioMessage
             SELECTOR_VIDEO_CAMERA -> showCameraSelector()
 
-            SWITCH_RECENT_CHATS -> DahlSettings.recentChats = !DahlSettings.recentChats
+            SWITCH_RECENT_CHATS -> DahlSettings.isRecentChatsEnabled = !DahlSettings.isRecentChatsEnabled
 
             SWITCH_FOLDERS_AT_BOTTOM -> DahlSettings.isFoldersTabsAtBottom = !DahlSettings.isFoldersTabsAtBottom
             SWITCH_HIDE_ALL_CHATS_FOLDER -> DahlSettings.isHiddenAllChatsFolder = !DahlSettings.isHiddenAllChatsFolder

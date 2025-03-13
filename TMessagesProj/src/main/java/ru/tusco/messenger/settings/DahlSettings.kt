@@ -2,9 +2,14 @@ package ru.tusco.messenger.settings
 
 import android.app.Activity
 import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.util.Log
+import androidx.annotation.StringRes
+import org.json.JSONArray
 import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.BuildVars
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.SharedConfig
@@ -36,9 +41,9 @@ object DahlSettings {
         editor.apply()
     }
 
-    fun putStringSet(key: String, value: Set<String>) {
+    fun putString(key: String, value: String) {
         val editor = sharedPreferences.edit()
-        editor.putStringSet(key, value)
+        editor.putString(key, value)
         editor.apply()
     }
 
@@ -48,6 +53,14 @@ object DahlSettings {
 
     const val NO_REPLACEMENT = 0
     const val ICON_REPLACEMENT_VKUI = 1
+
+    fun addListener(listener: OnSharedPreferenceChangeListener){
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    fun removeListener(listener: OnSharedPreferenceChangeListener){
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
+    }
 
     var iconReplacement
         get() = sharedPreferences.getInt("AP_Icon_Replacements", ICON_REPLACEMENT_VKUI)
@@ -72,8 +85,8 @@ object DahlSettings {
         }
 
     fun getAvatarCornerRadius(): Int {
-        if(chatListLines == 1){
-           return if (rectangularAvatars) AndroidUtilities.dp(4.5f) else AndroidUtilities.dp(18f)
+        if (chatListLines == 1) {
+            return if (rectangularAvatars) AndroidUtilities.dp(4.5f) else AndroidUtilities.dp(18f)
         }
         return if (rectangularAvatars) AndroidUtilities.dp(6f) else AndroidUtilities.dp(if(chatListLines == 3) 28f else 27f)
     }
@@ -317,11 +330,6 @@ object DahlSettings {
         }
         set(value) = putInt("video_message_camera", value.ordinal)
 
-    var recentChats: Boolean
-        get() = sharedPreferences.getBoolean("recent_chats", false)
-        set(value) {
-            putBoolean("recent_chats", value)
-        }
 
     @JvmStatic
     var isCustomWallpapersEnabled: Boolean
@@ -338,4 +346,56 @@ object DahlSettings {
             SharedConfig.useThreeLinesLayout = value == 3
             NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.dialogsNeedReload, true)
         }
+
+    @JvmStatic
+    var isRecentChatsEnabled: Boolean
+        get() = sharedPreferences.getBoolean(DahlSettingsKeys.RECENT_CHATS_ENABLED, false)
+        set(value) {
+            putBoolean(DahlSettingsKeys.RECENT_CHATS_ENABLED, value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    fun putToRecentChats(dialogId: Long, currentAccount: Int) {
+        if (!sharedPreferences.contains(DahlSettingsKeys.RECENT_CHATS_ENABLED)) {
+            return
+        }
+        val set = getRecentChats(currentAccount)
+        set.remove(dialogId)
+        set.add(dialogId)
+        val list = set.drop(if(set.size <= 100) 0 else set.size - 100)
+        putString(DahlSettingsKeys.recentChatsKey(currentAccount), JSONArray(list).toString())
+    }
+
+    @JvmStatic
+    fun removeFromRecentChats(dialogId: Long, currentAccount: Int) {
+        if (!sharedPreferences.contains(DahlSettingsKeys.RECENT_CHATS_ENABLED)) {
+            return
+        }
+        val set = getRecentChats(currentAccount)
+        set.remove(dialogId)
+        set.remove(-dialogId)
+        putString(DahlSettingsKeys.recentChatsKey(currentAccount), JSONArray(set).toString())
+    }
+
+    @JvmStatic
+    fun clearRecentChats(currentAccount: Int){
+        putString(DahlSettingsKeys.recentChatsKey(currentAccount), "")
+    }
+
+    fun getRecentChats(currentAccount: Int): LinkedHashSet<Long> {
+        val set = LinkedHashSet<Long>()
+        try {
+            val json = sharedPreferences.getString(DahlSettingsKeys.recentChatsKey(currentAccount), null) ?: return set
+            val jsonArray = JSONArray(json)
+            for (i in 0 until jsonArray.length()) {
+                set.add(jsonArray.getLong(i))
+            }
+        } catch (e: Exception) {
+            if (BuildVars.LOGS_ENABLED) {
+                Log.e("DahlSettings", "Error parsing recent chats", e)
+            }
+        }
+        return set
+    }
 }

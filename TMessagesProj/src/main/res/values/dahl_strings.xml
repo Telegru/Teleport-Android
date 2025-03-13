@@ -127,7 +127,10 @@
     <string name="Ask">Спрашивать</string>
     <string name="Front">Фронтальная</string>
     <string name="Rear">Задняя</string>
-    
+    <string name="EmptyRecentChats">Здесь будут недавние чаты</string>
+    <string name="DisableRecentChats">Выключить панель</string>
+    <string name="ClearRecentChatsAlert">Вы точно хотите очистить историю недавних чатов? Данные чатов сохранятся.</string>
+
     <string name="SendAudioMessage">Отправить аудиосообщение</string>
     <string name="SendAudioMessageInfo">Вы точно хотите отправить это аудиосообщение?</string>
 </resources>

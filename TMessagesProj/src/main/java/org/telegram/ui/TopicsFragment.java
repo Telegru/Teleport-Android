@@ -68,6 +68,7 @@ import org.telegram.messenger.NotificationsController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.TopicsController;
+import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
@@ -3820,6 +3821,8 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
         if (inPreviewMode && !getMessagesController().isForum(-chatId)) {
             finishFragment();
         }
+
+        DahlSettings.putToRecentChats(chatId, UserConfig.selectedAccount);
     }
 
     @Override
