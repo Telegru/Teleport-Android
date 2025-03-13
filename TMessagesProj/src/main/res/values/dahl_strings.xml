@@ -123,5 +123,6 @@
     <string name="NavigationDrawerItems_other">%1$d пунктов, Настройки, Настройки Даль</string>
 
     <string name="EmptyRecentChats">Здесь будут недавние чаты</string>
-
+    <string name="DisableRecentChats">Выключить панель</string>
+    <string name="ClearRecentChatsAlert">Вы точно хотите очистить историю недавних чатов? Данные чатов сохранятся.</string>
 </resources>

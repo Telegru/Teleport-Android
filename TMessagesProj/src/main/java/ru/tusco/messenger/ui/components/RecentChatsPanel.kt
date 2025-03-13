@@ -1,9 +1,20 @@
 package ru.tusco.messenger.ui.components
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.util.AttributeSet
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.RectF
+import android.text.Layout
+import android.text.StaticLayout
+import android.text.TextPaint
 import android.view.Gravity
+import android.view.HapticFeedbackConstants
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
@@ -19,82 +30,138 @@ import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.Theme
+import org.telegram.ui.Cells.BaseCell
 import org.telegram.ui.Components.AvatarDrawable
+import org.telegram.ui.Components.ButtonBounce
 import org.telegram.ui.Components.LayoutHelper
 import org.telegram.ui.Components.RecyclerListView
 import org.telegram.ui.Components.VectorAvatarThumbDrawable
-import org.telegram.ui.Stories.StoriesUtilities.AvatarStoryParams
 import ru.tusco.messenger.settings.DahlSettings
+import ru.tusco.messenger.settings.DahlSettingsKeys
+import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.max
 
-class RecentChatsPanel @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null
-) : FrameLayout(context, attrs), RecentChatViewHolder.Delegate {
+@SuppressLint("ViewConstructor")
+class RecentChatsPanel(
+    context: Context,
+    delegate: RecentChatCell.Delegate
+) : FrameLayout(context), OnSharedPreferenceChangeListener {
 
-    private val emptyView: AppCompatTextView
-    private val listView: RecyclerListView
+    companion object {
+        const val HEIGHT_IN_DP = 56f
+    }
+
+    private val topDivider = View(context)
+    private val bottomDivider = View(context)
+    private val emptyView: AppCompatTextView = AppCompatTextView(context)
+    val listView: RecyclerListView
     private val adapter: RecentChatAdapter
 
-    init {
-        setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray))
+    private val paint = Paint()
+    private val rect = RectF()
 
-        emptyView = AppCompatTextView(context)
+    init {
+        setBackgroundColor(Theme.getColor(if(Theme.isCurrentThemeDark()) Theme.key_actionBarDefault else Theme.key_windowBackgroundGray))
+
         emptyView.text = LocaleController.getString(R.string.EmptyRecentChats)
-        emptyView.setTextColor(Theme.getColor(Theme.key_dialogTextGray))
+        emptyView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText))
         emptyView.textAlignment = View.TEXT_ALIGNMENT_CENTER
         val margin = AndroidUtilities.dp(16f)
         emptyView.setPadding(margin, 0, margin, 0)
         addView(emptyView, LayoutHelper.createFrame(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER))
-//        emptyView.visibility = View.GONE
+        emptyView.visibility = View.GONE
 
-        adapter = RecentChatAdapter(UserConfig.selectedAccount, this)
+        adapter = RecentChatAdapter(UserConfig.selectedAccount, delegate)
+        adapter.setHasStableIds(true)
         listView = RecyclerListView(context)
-        listView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        listView.setHasFixedSize(true)
+        listView.itemAnimator = null
+        listView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, LocaleController.isRTL)
         listView.adapter = adapter
 
         addView(listView, LayoutHelper.createFrame(ViewGroup.LayoutParams.MATCH_PARENT, 48f, Gravity.START, 4f, 4f, 4f, 4f))
 
+        topDivider.setBackgroundColor(Theme.getColor(Theme.key_divider))
+        addView(topDivider, LayoutHelper.createFrame(ViewGroup.LayoutParams.MATCH_PARENT.toFloat(), 0.5f, Gravity.TOP))
+        bottomDivider.setBackgroundColor(Theme.getColor(Theme.key_divider))
+        addView(bottomDivider, LayoutHelper.createFrame(ViewGroup.LayoutParams.MATCH_PARENT.toFloat(), 0.5f, Gravity.BOTTOM))
     }
 
-    override fun openChat(dialogId: Long) {
-
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        DahlSettings.addListener(this)
     }
 
-    override fun showContextMenu(dialogId: Long) {
-
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        DahlSettings.removeListener(this)
     }
 
-    fun updateList(){
-        val chats = DahlSettings.getRecentChats(UserConfig.selectedAccount)
+    fun reloadData() {
+        val messagesController = MessagesController.getInstance(UserConfig.selectedAccount)
+        val chats = DahlSettings
+            .getRecentChats(UserConfig.selectedAccount)
+            .reversed()
+            .mapNotNull { messagesController.getDialog(it) ?: messagesController.getDialog(-it) }
+
         adapter.update(chats)
-        emptyView.visibility = if(chats.isEmpty()) VISIBLE else GONE
+        if (chats.isNotEmpty()) {
+            listView.scrollToPosition(0)
+        }
+        emptyView.visibility = if (chats.isEmpty()) VISIBLE else GONE
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun reload(){
+        adapter.notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateColors(){
+        setBackgroundColor(Theme.getColor(if(Theme.isCurrentThemeDark()) Theme.key_actionBarDefault else Theme.key_windowBackgroundGray))
+        topDivider.setBackgroundColor(Theme.getColor(Theme.key_divider))
+        bottomDivider.setBackgroundColor(Theme.getColor(Theme.key_divider))
+        reload()
+    }
+
+    override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String?) {
+        if(key == DahlSettingsKeys.recentChatsKey(UserConfig.selectedAccount)){
+            reloadData()
+        }
+    }
 }
 
-internal class RecentChatAdapter(private val currentAccount: Int, private val delegate: RecentChatViewHolder.Delegate) : RecyclerListView.SelectionAdapter() {
+internal class RecentChatAdapter(private val currentAccount: Int, private val delegate: RecentChatCell.Delegate) :
+    RecyclerListView.SelectionAdapter() {
 
-    private val items = mutableListOf<TLRPC.Dialog>()
+    val items = mutableListOf<TLRPC.Dialog>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val container = FrameLayout(parent.context)
-        return RecentChatViewHolder(container, currentAccount, delegate)
+        val cell = RecentChatCell(parent.context, currentAccount, delegate)
+        return RecyclerListView.Holder(cell)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val dialog = items[position]
-        (holder as RecentChatViewHolder).bind(dialog)
+        val cell = holder.itemView as RecentChatCell
+        cell.bind(dialog)
     }
 
     override fun getItemCount(): Int = items.size
 
     override fun isEnabled(holder: RecyclerView.ViewHolder?): Boolean = true
 
-    fun update(items: List<TLRPC.Dialog>){
-        val callback = DialogsCallback(this.items, items)
-        val result = DiffUtil.calculateDiff(callback)
+    override fun getItemId(position: Int): Long = items[position].id
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun update(items: List<TLRPC.Dialog>) {
+//        val callback = DialogsCallback(this.items, items)
+//        val result = DiffUtil.calculateDiff(callback)
         this.items.clear()
         this.items.addAll(items)
-        result.dispatchUpdatesTo(this)
+//        result.dispatchUpdatesTo(this)
+        notifyDataSetChanged()
     }
 
     private class DialogsCallback(val oldItems: List<TLRPC.Dialog>, val newItems: List<TLRPC.Dialog>): DiffUtil.Callback(){
@@ -106,48 +173,161 @@ internal class RecentChatAdapter(private val currentAccount: Int, private val de
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldItems[oldItemPosition] == newItems[newItemPosition]
     }
-
 }
 
-internal class RecentChatViewHolder(private val container: FrameLayout, private val currentAccount: Int, private val delegate: Delegate) :
-    RecyclerListView.Holder(container) {
+@SuppressLint("ViewConstructor")
+class RecentChatCell(context: Context, private val currentAccount: Int, private val delegate: Delegate) : BaseCell(context) {
 
-    interface Delegate {
+    companion object {
 
-        fun openChat(dialogId: Long)
-        fun showContextMenu(dialogId: Long)
+        private val counterTextPaint = TextPaint().apply {
+            isAntiAlias = true
+            textSize = AndroidUtilities.dpf2(12f)
+            typeface = AndroidUtilities.bold()
+        }
+
+        private val counterPaintOutline = Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.STROKE
+            strokeWidth = AndroidUtilities.dp(1.5f).toFloat()
+            strokeJoin = Paint.Join.ROUND
+            strokeCap = Paint.Cap.ROUND
+        }
     }
 
     private var dialog: TLRPC.Dialog? = null
-    private val avatarImage: ImageReceiver
+    private val avatarImage = ImageReceiver(this)
     private val avatarDrawable = AvatarDrawable()
+    private var countLayout: StaticLayout? = null
 
-    private val avatarParams: AvatarStoryParams = object : AvatarStoryParams(false) {
-        override fun openStory(dialogId: Long, onDone: Runnable) {
-            delegate.openChat(dialogId)
-        }
+    private var longPressRunnable: Runnable? = null
+    private var buttonBounce: ButtonBounce? = null
+    private var pressed = false
+    private var startX = 0f
+    private var startY = 0f
 
-        override fun onLongPress() {
-            dialog?.let { delegate.showContextMenu(it.id) }
-        }
-    }
+
+    private val counterRect = RectF()
+    private var countLeft = 0f
+    private var countTop = 0f
+
+    private var isMuted = true
 
     init {
-        val frame = FrameLayout(itemView.context)
-        container.addView(frame, LayoutHelper.createFrame(56, 48f))
-
-        avatarImage = ImageReceiver(frame)
-        avatarImage.setRoundRadius(AndroidUtilities.dp(if (DahlSettings.rectangularAvatars) 3f else 16f))
         avatarImage.setAllowLoadingOnAttachedOnly(true)
         val avatarSize = AndroidUtilities.dp(32f)
         val avatarLeft = AndroidUtilities.dp(12f)
         val avatarTop = AndroidUtilities.dp(8f)
-        avatarParams.originalAvatarRect.set(
-            avatarLeft.toFloat(),
-            avatarTop.toFloat(),
-            (avatarLeft + avatarSize).toFloat(),
-            (avatarTop + avatarSize).toFloat()
+        avatarImage.setImageCoords(
+            RectF(
+                avatarLeft.toFloat(),
+                avatarTop.toFloat(),
+                (avatarLeft + avatarSize).toFloat(),
+                (avatarTop + avatarSize).toFloat()
+            )
         )
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        avatarImage.onAttachedToWindow()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        avatarImage.onDetachedFromWindow()
+    }
+
+    override fun onLayout(p0: Boolean, p1: Int, p2: Int, p3: Int, p4: Int) {
+
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        setMeasuredDimension(AndroidUtilities.dp(56f), AndroidUtilities.dp(48f))
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        avatarImage.setRoundRadius(AndroidUtilities.dp(if (DahlSettings.rectangularAvatars) 3f else 16f))
+        avatarImage.draw(canvas)
+
+        countLayout?.let { layout ->
+            val paint = if(isMuted) Theme.dialogs_countGrayPaint else Theme.dialogs_countPaint
+            val corner = if (DahlSettings.rectangularAvatars) AndroidUtilities.dpf2(4f) else AndroidUtilities.dpf2(10f)
+            canvas.drawRoundRect(counterRect, corner, corner, paint)
+
+            val outlineColor = if (Theme.isCurrentThemeDark()) Theme.getColor(Theme.key_actionBarDefault) else Theme.getColor(Theme.key_windowBackgroundGray)
+            counterPaintOutline.color = outlineColor
+            canvas.drawRoundRect(counterRect, corner, corner, counterPaintOutline)
+
+            val textColor = Theme.getColor(Theme.key_chats_unreadCounterText)
+            counterTextPaint.color = textColor
+            canvas.save()
+            canvas.translate(countLeft, countTop)
+            layout.draw(canvas)
+            canvas.restore()
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val dialogId = dialog?.id ?: return false
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                if (buttonBounce == null) {
+                    buttonBounce = ButtonBounce(this, 1.5f, 5f)
+                }
+                parent.requestDisallowInterceptTouchEvent(true)
+                buttonBounce!!.isPressed = true
+                pressed = true
+                startX = event.x
+                startY = event.y
+                if (longPressRunnable != null) {
+                    AndroidUtilities.cancelRunOnUIThread(longPressRunnable)
+                }
+                AndroidUtilities.runOnUIThread(Runnable {
+                    try {
+                        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    } catch (ignored: Exception) {
+                    }
+
+                    buttonBounce?.isPressed = false
+
+                    if (parent is ViewGroup) {
+                        parent.requestDisallowInterceptTouchEvent(false)
+                    }
+                    pressed = false
+                    delegate.showContextMenu(dialogId)
+                }.also { longPressRunnable = it }, ViewConfiguration.getLongPressTimeout().toLong())
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                if (abs((startX - event.x).toDouble()) > AndroidUtilities.touchSlop || abs((startY - event.y).toDouble()) > AndroidUtilities.touchSlop) {
+                    buttonBounce?.isPressed = false
+
+                    if (longPressRunnable != null) {
+                        AndroidUtilities.cancelRunOnUIThread(longPressRunnable)
+                    }
+                    parent.requestDisallowInterceptTouchEvent(false)
+                    pressed = false
+                }
+            }
+
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                buttonBounce?.isPressed = false
+
+                if (pressed && event.action == MotionEvent.ACTION_UP) {
+                    delegate.openChat(dialogId)
+                }
+                parent.requestDisallowInterceptTouchEvent(false)
+
+                pressed = false
+                if (longPressRunnable != null) {
+                    AndroidUtilities.cancelRunOnUIThread(longPressRunnable)
+                }
+            }
+        }
+        return pressed
     }
 
     fun bind(dialog: TLRPC.Dialog) {
@@ -156,22 +336,62 @@ internal class RecentChatViewHolder(private val container: FrameLayout, private 
         var user: TLRPC.User? = null
         var chat: TLRPC.Chat? = null
         if (dialog.id != 0L) {
-            if (DialogObject.isEncryptedDialog(dialog.id )) {
-                messagesController.getEncryptedChat(DialogObject.getEncryptedChatId(dialog.id ))?.let { encryptedChat ->
+            if (DialogObject.isEncryptedDialog(dialog.id)) {
+                messagesController.getEncryptedChat(DialogObject.getEncryptedChatId(dialog.id))?.let { encryptedChat ->
                     user = messagesController.getUser(encryptedChat.user_id)
                 }
-            } else if(DialogObject.isUserDialog(dialog.id )){
-                user = messagesController.getUser(dialog.id )
-            } else{
-                chat = messagesController.getChat(-dialog.id )
+            } else if (DialogObject.isUserDialog(dialog.id)) {
+                user = messagesController.getUser(dialog.id)
+            } else {
+                chat = messagesController.getChat(-dialog.id)
             }
         }
-        if(user != null){
+        if (user != null) {
             avatarDrawable.setInfo(currentAccount, user)
             avatarImage.setForUserOrChat(user, avatarDrawable, null, true, VectorAvatarThumbDrawable.TYPE_SMALL, false)
-        }else if(chat != null){
+        } else if (chat != null) {
             avatarDrawable.setInfo(currentAccount, chat)
             avatarImage.setForUserOrChat(chat, avatarDrawable)
         }
+        val count: Int
+        if(chat != null && chat.forum){
+            val counts = MessagesController.getInstance(currentAccount).topicsController.getForumUnreadCount(chat.id)
+            count = counts[0]
+        }else{
+            count = dialog.unread_count ?: 0
+        }
+        val countString = if (count > 0) {
+           "$count"
+        } else {
+            null
+        }
+        if (countString != null) {
+            val countWidth = max(
+                AndroidUtilities.dpf2(12f),
+                (ceil(counterTextPaint.measureText(countString)))
+            )
+            @Suppress("DEPRECATION")
+            countLayout =
+                StaticLayout(countString, counterTextPaint, countWidth.toInt(), Layout.Alignment.ALIGN_CENTER, 1.0f, 0.0f, false)
+
+            countLeft = if (!LocaleController.isRTL) {
+                measuredWidth - countWidth - AndroidUtilities.dp(9f)
+            } else {
+                AndroidUtilities.dpf2(9f)
+            }
+            val x = countLeft - AndroidUtilities.dpf2(4f)
+            val y = AndroidUtilities.dpf2(26f)
+            counterRect.set(x, y, x + countWidth + AndroidUtilities.dp(8f), y + AndroidUtilities.dp(20f))
+            countTop = y + AndroidUtilities.dp(3f)
+        } else {
+            countLayout = null
+        }
+        isMuted = messagesController.isDialogMuted(dialog.id, 0)
+        invalidate()
+    }
+
+    interface Delegate {
+        fun openChat(dialogId: Long)
+        fun showContextMenu(dialogId: Long)
     }
 }

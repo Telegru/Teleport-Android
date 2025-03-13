@@ -2,6 +2,7 @@ package ru.tusco.messenger.settings
 
 import android.app.Activity
 import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.util.Log
 import androidx.annotation.StringRes
 import org.json.JSONArray
@@ -16,14 +17,12 @@ import org.telegram.messenger.SharedConfig
 import org.telegram.messenger.SharedConfig.ProxyInfo
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
-import org.telegram.tgnet.TLRPC
 import org.telegram.ui.LaunchActivity
 import ru.tusco.messenger.Extra
 import ru.tusco.messenger.icons.BaseIconReplacement
 import ru.tusco.messenger.icons.IconReplacementNone
 import ru.tusco.messenger.icons.VKUiIconReplacement
 import ru.tusco.messenger.settings.model.NavDrawerSettings
-import java.util.LinkedList
 
 
 object DahlSettings {
@@ -56,7 +55,13 @@ object DahlSettings {
     const val NO_REPLACEMENT = 0
     const val ICON_REPLACEMENT_VKUI = 1
 
-    private val recentChatsIds = mutableMapOf<Int, MutableList<Long>>()
+    fun addListener(listener: OnSharedPreferenceChangeListener){
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    fun removeListener(listener: OnSharedPreferenceChangeListener){
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
+    }
 
     enum class VideoMessageCamera {
         SELECT, FRONT, BACK;
@@ -354,55 +359,53 @@ object DahlSettings {
 
     @JvmStatic
     var isRecentChatsEnabled: Boolean
-        get() = sharedPreferences.getBoolean("recent_chats_enabled", false)
+        get() = sharedPreferences.getBoolean(DahlSettingsKeys.RECENT_CHATS_ENABLED, false)
         set(value) {
-            putBoolean("recent_chats_enabled", value)
+            putBoolean(DahlSettingsKeys.RECENT_CHATS_ENABLED, value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
     fun putToRecentChats(dialogId: Long, currentAccount: Int) {
-        if (!sharedPreferences.contains("recent_chats_enabled")) {
+        if (!sharedPreferences.contains(DahlSettingsKeys.RECENT_CHATS_ENABLED)) {
             return
         }
-        val list = getRecentChatsIds(currentAccount).take(100).toMutableList()
-        list.removeIf { it == dialogId }
-        list.add(0, dialogId)
-        recentChatsIds[currentAccount] = list
-        putString("recent_chats_list_$currentAccount", JSONArray(list).toString())
+        val set = getRecentChats(currentAccount)
+        set.remove(dialogId)
+        set.add(dialogId)
+        val list = set.drop(if(set.size <= 100) 0 else set.size - 100)
+        putString(DahlSettingsKeys.recentChatsKey(currentAccount), JSONArray(list).toString())
     }
 
     @JvmStatic
-    fun getRecentChats(currentAccount: Int): List<TLRPC.Dialog> {
-        val messagesController = MessagesController.getInstance(currentAccount)
-        return getRecentChatsIds(currentAccount).mapNotNull { messagesController.getDialog(it) }
+    fun removeFromRecentChats(dialogId: Long, currentAccount: Int) {
+        if (!sharedPreferences.contains(DahlSettingsKeys.RECENT_CHATS_ENABLED)) {
+            return
+        }
+        val set = getRecentChats(currentAccount)
+        set.remove(dialogId)
+        set.remove(-dialogId)
+        putString(DahlSettingsKeys.recentChatsKey(currentAccount), JSONArray(set).toString())
     }
 
     @JvmStatic
     fun clearRecentChats(currentAccount: Int){
-        recentChatsIds.remove(currentAccount)
-        putString("recent_chats_list_$currentAccount", "")
+        putString(DahlSettingsKeys.recentChatsKey(currentAccount), "")
     }
 
-    private fun getRecentChatsIds(currentAccount: Int): List<Long> {
-        val cached = recentChatsIds[currentAccount]
-        if(!cached.isNullOrEmpty()){
-            return cached
-        }
+    fun getRecentChats(currentAccount: Int): LinkedHashSet<Long> {
+        val set = LinkedHashSet<Long>()
         try {
-            val json = sharedPreferences.getString("recent_chats_list_$currentAccount", null) ?: return emptyList()
+            val json = sharedPreferences.getString(DahlSettingsKeys.recentChatsKey(currentAccount), null) ?: return set
             val jsonArray = JSONArray(json)
-            val list = mutableListOf<Long>()
             for (i in 0 until jsonArray.length()) {
-                list.add(jsonArray.getLong(i))
+                set.add(jsonArray.getLong(i))
             }
-            recentChatsIds[currentAccount] = list
-            return list
         } catch (e: Exception) {
             if (BuildVars.LOGS_ENABLED) {
                 Log.e("DahlSettings", "Error parsing recent chats", e)
             }
-            return emptyList()
         }
+        return set
     }
 }

@@ -1143,6 +1143,14 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private ValueAnimator searchExpandAnimator;
     private float searchExpandProgress;
 
+    private Runnable putToRecentChatsRunnable = new Runnable() {
+        @Override
+        public void run() {
+
+            DahlSettings.putToRecentChats(dialog_id, UserConfig.selectedAccount);
+        }
+    };
+
     public static ChatActivity of(long dialogId) {
         Bundle bundle = new Bundle();
         if (dialogId >= 0) {
@@ -3161,6 +3169,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             AndroidUtilities.removeFromParent(starReactionsOverlay);
             starReactionsOverlay = null;
         }
+
+        AndroidUtilities.cancelRunOnUIThread(putToRecentChatsRunnable);
     }
 
     private static class ChatActivityTextSelectionHelper extends TextSelectionHelper.ChatListTextSelectionHelper {
@@ -27999,6 +28009,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
         if (starReactionsOverlay != null) {
             starReactionsOverlay.bringToFront();
+        }
+
+        if(!isTopic && !inPreviewMode && !isReport()) {
+            AndroidUtilities.runOnUIThread(putToRecentChatsRunnable, 200);
         }
     }
 

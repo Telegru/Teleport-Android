@@ -120,5 +120,7 @@
     <string name="NavigationDrawerItems_many">%1$d items, Settings, Dahl Settings</string>
     <string name="NavigationDrawerItems_other">%1$d items, Settings, Dahl Settings</string>
 
-    <string name="EmptyRecentChats">Here will be recent chats</string>
+    <string name="EmptyRecentChats">Recent chats will appear here</string>
+    <string name="DisableRecentChats">Disable panel</string>
+    <string name="ClearRecentChatsAlert">Are you sure you want to clear the recent chats history? The chats data will be saved.</string>
 </resources>
