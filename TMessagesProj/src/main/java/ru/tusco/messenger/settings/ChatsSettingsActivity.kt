@@ -35,7 +35,7 @@ class ChatsSettingsActivity : UniversalFragment() {
     override fun fillItems(items: ArrayList<UItem>?, adapter: UniversalAdapter?) {
         items?.add(UItem.asHeader(getString(R.string.NeedConfirm)))
 //        items?.add(UItem.asCheck(SWITCH_CONFIRM_CALL, getString(R.string.ConfirmCalling)).setChecked(DahlSettings.confirmCall))
-//        items?.add(UItem.asCheck(SWITCH_CONFIRM_AUDIO_MESSAGE, getString(R.string.ConfirmAudioMessage)).setChecked(DahlSettings.confirmAudioMessage))
+        items?.add(UItem.asCheck(SWITCH_CONFIRM_AUDIO_MESSAGE, getString(R.string.ConfirmAudioMessage)).setChecked(DahlSettings.isConfirmAudioMessage))
         items?.add(
             UItem.asButton(
                 SELECTOR_VIDEO_CAMERA,
@@ -43,9 +43,8 @@ class ChatsSettingsActivity : UniversalFragment() {
                 getString(DahlSettings.videoMessageCamera.titleShort)
             )
         )
-//
-//        items?.add(UItem.asShadow(-3, null))
 
+        items?.add(UItem.asShadow(-3, null))
         items?.add(UItem.asHeader(getString(R.string.RecentChats)))
         items?.add(UItem.asCheck(SWITCH_RECENT_CHATS, getString(R.string.EnablePanel)).setChecked(DahlSettings.isRecentChatsEnabled))
         items?.add(UItem.asShadow(getString(R.string.RecentChatsInfo)))
@@ -62,7 +61,7 @@ class ChatsSettingsActivity : UniversalFragment() {
     override fun onClick(item: UItem?, view: View?, position: Int, x: Float, y: Float) {
         when (item?.id) {
             SWITCH_CONFIRM_CALL -> DahlSettings.confirmCall = !DahlSettings.confirmCall
-            SWITCH_CONFIRM_AUDIO_MESSAGE -> DahlSettings.confirmAudioMessage = !DahlSettings.confirmAudioMessage
+            SWITCH_CONFIRM_AUDIO_MESSAGE -> DahlSettings.isConfirmAudioMessage = !DahlSettings.isConfirmAudioMessage
             SELECTOR_VIDEO_CAMERA -> showCameraSelector()
 
             SWITCH_RECENT_CHATS -> DahlSettings.isRecentChatsEnabled = !DahlSettings.isRecentChatsEnabled
