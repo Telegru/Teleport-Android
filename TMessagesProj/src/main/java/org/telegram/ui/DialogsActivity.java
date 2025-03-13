@@ -5045,7 +5045,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 filterTabsView.setElevation(dp(20));
             }
         }
-        if(DahlSettings.isRecentChatsEnabled()){
+        if((initialDialogsType == DIALOGS_TYPE_DEFAULT && !onlySelect || initialDialogsType == DIALOGS_TYPE_FORWARD) &&
+                folderId == 0 && TextUtils.isEmpty(searchString) && DahlSettings.isRecentChatsEnabled()){
             recentChatsPanel = new RecentChatsPanel(context, new RecentChatCell.Delegate() {
                 @Override
                 public void openChat(long dialogId) {
