@@ -125,4 +125,7 @@
     <string name="Ask">Ask</string>
     <string name="Front">Front</string>
     <string name="Rear">Rear</string>
+    <string name="EmptyRecentChats">Recent chats will appear here</string>
+    <string name="DisableRecentChats">Disable panel</string>
+    <string name="ClearRecentChatsAlert">Are you sure you want to clear the recent chats history? The chats data will be saved.</string>
 </resources>
