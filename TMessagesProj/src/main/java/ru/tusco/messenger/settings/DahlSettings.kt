@@ -64,18 +64,6 @@ object DahlSettings {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
-    enum class VideoMessageCamera {
-        SELECT, FRONT, BACK;
-
-        @get:StringRes
-        val title: Int
-            get() = when (this) {
-                SELECT -> R.string.AlwaysAsk
-                FRONT -> R.string.VoipFrontCamera
-                BACK -> R.string.VoipBackCamera
-            }
-    }
-
     var iconReplacement
         get() = sharedPreferences.getInt("AP_Icon_Replacements", ICON_REPLACEMENT_VKUI)
         set(value) {
