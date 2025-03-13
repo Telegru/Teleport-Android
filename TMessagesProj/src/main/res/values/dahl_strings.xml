@@ -127,4 +127,7 @@
     <string name="Ask">Спрашивать</string>
     <string name="Front">Фронтальная</string>
     <string name="Rear">Задняя</string>
+    
+    <string name="SendAudioMessage">Отправить аудиосообщение</string>
+    <string name="SendAudioMessageInfo">Вы точно хотите отправить это аудиосообщение?</string>
 </resources>

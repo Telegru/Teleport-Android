@@ -7,7 +7,6 @@ import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.NotificationCenter
-import org.telegram.messenger.R
 import org.telegram.messenger.SharedConfig
 import org.telegram.messenger.SharedConfig.ProxyInfo
 import org.telegram.messenger.UserConfig
@@ -19,8 +18,6 @@ import ru.tusco.messenger.icons.IconReplacementNone
 import ru.tusco.messenger.icons.VKUiIconReplacement
 import ru.tusco.messenger.settings.model.CameraType
 import ru.tusco.messenger.settings.model.NavDrawerSettings
-import kotlin.math.max
-import kotlin.math.min
 
 object DahlSettings {
 
@@ -298,13 +295,15 @@ object DahlSettings {
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
+    @JvmStatic
     var confirmCall: Boolean
         get() = sharedPreferences.getBoolean("confirm_call", false)
         set(value) {
             putBoolean("confirm_call", value)
         }
 
-    var confirmAudioMessage: Boolean
+    @JvmStatic
+    var isConfirmAudioMessage: Boolean
         get() = sharedPreferences.getBoolean("confirm_audio_message", false)
         set(value) {
             putBoolean("confirm_audio_message", value)
