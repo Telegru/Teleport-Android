@@ -22,6 +22,7 @@ import ru.tusco.messenger.Extra
 import ru.tusco.messenger.icons.BaseIconReplacement
 import ru.tusco.messenger.icons.IconReplacementNone
 import ru.tusco.messenger.icons.VKUiIconReplacement
+import ru.tusco.messenger.settings.model.CameraType
 import ru.tusco.messenger.settings.model.NavDrawerSettings
 
 
@@ -101,7 +102,7 @@ object DahlSettings {
         if (chatListLines == 1) {
             return if (rectangularAvatars) AndroidUtilities.dp(4.5f) else AndroidUtilities.dp(18f)
         }
-        return if (rectangularAvatars) AndroidUtilities.dp(6f) else AndroidUtilities.dp(28f)
+        return if (rectangularAvatars) AndroidUtilities.dp(6f) else AndroidUtilities.dp(if(chatListLines == 3) 28f else 27f)
     }
 
     fun getCounterCornerRadius() = if (rectangularAvatars) AndroidUtilities.dp(6f) else AndroidUtilities.dp(11.5f)
@@ -333,10 +334,11 @@ object DahlSettings {
             putBoolean("confirm_audio_message", value)
         }
 
-    var videoMessageCamera: VideoMessageCamera
+    @JvmStatic
+    var videoMessageCamera: CameraType
         get() {
-            val ordinal = sharedPreferences.getInt("video_message_camera", 0)
-            return VideoMessageCamera.entries.getOrNull(ordinal) ?: VideoMessageCamera.SELECT
+            val ordinal = sharedPreferences.getInt("video_message_camera", CameraType.ALWAYS_ASK.ordinal)
+            return CameraType.entries.getOrNull(ordinal) ?: CameraType.ALWAYS_ASK
         }
         set(value) = putInt("video_message_camera", value.ordinal)
 

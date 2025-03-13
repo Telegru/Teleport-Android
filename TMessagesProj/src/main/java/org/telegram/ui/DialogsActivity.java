@@ -5193,9 +5193,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 toggleArciveForStory(dialogId);
                             }).makeMultiline(false);
                 }
-//                filterOptions.setGravity(Gravity.LEFT)
-//                        .translate(dp(-8), dp(-10))
-//                        .show();
+                filterOptions.setGravity(Gravity.LEFT)
+                        .translate(dp(-8), dp(-10))
+                        .show();
             }
 
             @Override
@@ -10574,7 +10574,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             floatingButtonContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    floatingButtonTranslation = floatingHidden ? (DahlSettings.isFoldersTabsAtBottom() ? dp(144): dp(100)) : 0;
+                    floatingButtonTranslation = floatingHidden ? dp(DahlSettings.isFoldersTabsAtBottom() ? 144 : 100) : 0;
                     updateFloatingButtonOffset();
                     floatingButtonContainer.setClickable(!floatingHidden);
                     if (floatingButtonContainer != null) {
@@ -11447,7 +11447,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(floatingButtonHideProgress, floatingHidden ? 1f : 0f);
         valueAnimator.addUpdateListener(animation -> {
             floatingButtonHideProgress = (float) animation.getAnimatedValue();
-            floatingButtonTranslation = (DahlSettings.isFoldersTabsAtBottom() ? dp(144) : dp(100)) * floatingButtonHideProgress;
+            floatingButtonTranslation = dp(DahlSettings.isFoldersTabsAtBottom() ? 144 : 100) * floatingButtonHideProgress;
             updateFloatingButtonOffset();
         });
         animatorSet.playTogether(valueAnimator);

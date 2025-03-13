@@ -85,8 +85,7 @@
     <string name="NeedConfirm">Confirm</string>
     <string name="ConfirmCalling">Calling</string>
     <string name="ConfirmAudioMessage">Audio message sending</string>
-    <string name="ConfirmVideoMessageCamera">Camera for video messages</string>
-    <string name="AlwaysAsk">Always ask</string>
+    <string name="ConfirmVideoMessageCamera">Camera in video messages</string>
   
     <string name="DahlProxyEnable">Enable Dahl proxy</string>
     <string name="DahlProxyDisable">Disable Dahl proxy</string>
@@ -120,6 +119,12 @@
     <string name="NavigationDrawerItems_many">%1$d items, Settings, Dahl Settings</string>
     <string name="NavigationDrawerItems_other">%1$d items, Settings, Dahl Settings</string>
 
+    <string name="CameraAsk">Ask before recording</string>
+    <string name="CameraFront">Front camera</string>
+    <string name="CameraRear">Rear camera</string>
+    <string name="Ask">Ask</string>
+    <string name="Front">Front</string>
+    <string name="Rear">Rear</string>
     <string name="EmptyRecentChats">Recent chats will appear here</string>
     <string name="DisableRecentChats">Disable panel</string>
     <string name="ClearRecentChatsAlert">Are you sure you want to clear the recent chats history? The chats data will be saved.</string>

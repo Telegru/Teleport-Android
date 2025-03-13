@@ -2321,6 +2321,14 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         public ReplyQuote getReplyQuote() {
             return replyingQuote;
         }
+
+        @Override
+        public void setFrontface(boolean frontface) {
+            checkInstantCameraView();
+            if (instantCameraView != null) {
+                instantCameraView.setFrontface(frontface);
+            }
+        }
     }
 
     private final ChatScrollCallback chatScrollHelperCallback = new ChatScrollCallback();
