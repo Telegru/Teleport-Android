@@ -4229,7 +4229,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 }
             }
 
-            if (tags != null && !tags.isEmpty()) {
+            if (tags != null && !tags.isEmpty() && DahlSettings.getChatListLines() > 1) {
                 canvas.save();
                 canvas.translate(tagsLeft, getMeasuredHeight() - dp(21.66f) - (useSeparator ? 1 : 0));
                 tags.draw(canvas, tagsRight - tagsLeft);
