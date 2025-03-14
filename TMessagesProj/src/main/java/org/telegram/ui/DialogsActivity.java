@@ -7212,7 +7212,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         showForkNotification();
         if(recentChatsPanel != null){
-            recentChatsPanel.reloadData();
+            recentChatsPanel.onResume();
         }
     }
 
@@ -7258,6 +7258,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             for (int a = 0; a < viewPages.length; a++) {
                 viewPages[a].dialogsAdapter.pause();
             }
+        }
+
+        if(recentChatsPanel != null){
+            recentChatsPanel.onPause();
         }
     }
 
@@ -10703,16 +10707,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 filterTabsView.checkTabsCounter();
             }
             slowedReloadAfterDialogClick = false;
-
-            if(recentChatsPanel != null){
-                recentChatsPanel.reloadData();
-            }
         } else if (id == NotificationCenter.dialogsUnreadCounterChanged) {
             if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE) {
                 filterTabsView.notifyTabCounterChanged(filterTabsView.getDefaultTabId());
-            }
-            if(recentChatsPanel != null){
-                recentChatsPanel.reload();
             }
         } else if (id == NotificationCenter.dialogsUnreadReactionsCounterChanged) {
             updateVisibleRows(0);
@@ -11001,9 +10998,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             updateDialogsHint();
         } else if(id == NotificationCenter.needSetDayNightTheme){
            updateFilterTabsColors();
-           if(recentChatsPanel != null){
-               recentChatsPanel.updateColors();
-           }
         }
     }
 
@@ -12579,6 +12573,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             SimpleThemeDescription.add(arrayList, authHintCell::updateColors, Theme.key_windowBackgroundWhite, Theme.key_windowBackgroundWhiteBlackText, Theme.key_windowBackgroundWhiteGrayText, Theme.key_windowBackgroundWhiteValueText, Theme.key_text_RedBold);
         }
 
+        if(recentChatsPanel != null){
+            SimpleThemeDescription.add(arrayList, recentChatsPanel::updateColors, Theme.key_actionBarDefault, Theme.key_windowBackgroundGray, Theme.key_windowBackgroundWhiteGrayText, Theme.key_divider);
+        }
+
         return arrayList;
     }
 
@@ -13683,6 +13681,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             DahlSettings.setRecentChatsEnabled(false);
             finishPreviewFragment();
             if(recentChatsPanel != null){
+                recentChatsPanel.onPause();
                 ((ViewGroup)fragmentView).removeView(recentChatsPanel);
                 recentChatsPanel = null;
                 fragmentView.requestLayout();

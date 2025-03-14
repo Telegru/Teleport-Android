@@ -18,14 +18,15 @@ import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.DialogObject
 import org.telegram.messenger.ImageReceiver
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.MessagesController
+import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
@@ -46,7 +47,7 @@ import kotlin.math.max
 class RecentChatsPanel(
     context: Context,
     delegate: RecentChatCell.Delegate
-) : FrameLayout(context), OnSharedPreferenceChangeListener {
+) : FrameLayout(context), OnSharedPreferenceChangeListener, NotificationCenter.NotificationCenterDelegate {
 
     companion object {
         const val HEIGHT_IN_DP = 56f
@@ -88,33 +89,33 @@ class RecentChatsPanel(
         addView(bottomDivider, LayoutHelper.createFrame(ViewGroup.LayoutParams.MATCH_PARENT.toFloat(), 0.5f, Gravity.BOTTOM))
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
+    fun onResume() {
         DahlSettings.addListener(this)
+        AccountInstance.getInstance(UserConfig.selectedAccount).notificationCenter.apply {
+            addObserver(this@RecentChatsPanel, NotificationCenter.dialogsNeedReload)
+            addObserver(this@RecentChatsPanel, NotificationCenter.dialogsUnreadCounterChanged)
+        }
+        reloadData(false)
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
+    fun onPause() {
         DahlSettings.removeListener(this)
+        AccountInstance.getInstance(UserConfig.selectedAccount).notificationCenter.apply {
+            removeObserver(this@RecentChatsPanel, NotificationCenter.dialogsNeedReload)
+            removeObserver(this@RecentChatsPanel, NotificationCenter.dialogsUnreadCounterChanged)
+        }
     }
 
-    fun reloadData() {
-        val messagesController = MessagesController.getInstance(UserConfig.selectedAccount)
-        val chats = DahlSettings
+    private fun reloadData(scrollToFirst: Boolean) {
+        val ids = DahlSettings
             .getRecentChats(UserConfig.selectedAccount)
             .reversed()
-            .mapNotNull { messagesController.getDialog(it) ?: messagesController.getDialog(-it) }
 
-        adapter.update(chats)
-        if (chats.isNotEmpty()) {
+        adapter.update(ids)
+        if (scrollToFirst && adapter.itemCount > 0) {
             listView.scrollToPosition(0)
         }
-        emptyView.visibility = if (chats.isEmpty()) VISIBLE else GONE
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun reload(){
-        adapter.notifyDataSetChanged()
+        emptyView.visibility = if (adapter.itemCount == 0) VISIBLE else GONE
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -122,12 +123,24 @@ class RecentChatsPanel(
         setBackgroundColor(Theme.getColor(if(Theme.isCurrentThemeDark()) Theme.key_actionBarDefault else Theme.key_windowBackgroundGray))
         topDivider.setBackgroundColor(Theme.getColor(Theme.key_divider))
         bottomDivider.setBackgroundColor(Theme.getColor(Theme.key_divider))
-        reload()
+        adapter.notifyDataSetChanged()
     }
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String?) {
         if(key == DahlSettingsKeys.recentChatsKey(UserConfig.selectedAccount)){
-            reloadData()
+            reloadData(scrollToFirst = true)
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun didReceivedNotification(id: Int, account: Int, vararg args: Any?) {
+        when(id){
+            NotificationCenter.dialogsNeedReload -> {
+                adapter.notifyDataSetChanged()
+            }
+            NotificationCenter.dialogsUnreadCounterChanged -> {
+                adapter.notifyDataSetChanged()
+            }
         }
     }
 }
@@ -155,23 +168,12 @@ internal class RecentChatAdapter(private val currentAccount: Int, private val de
     override fun getItemId(position: Int): Long = items[position].id
 
     @SuppressLint("NotifyDataSetChanged")
-    fun update(items: List<TLRPC.Dialog>) {
-//        val callback = DialogsCallback(this.items, items)
-//        val result = DiffUtil.calculateDiff(callback)
+    fun update(dialogIds: Collection<Long>) {
+        val messagesController = MessagesController.getInstance(currentAccount)
+        val dialogs = dialogIds.mapNotNull { messagesController.getDialog(it) ?: messagesController.getDialog(-it) }
         this.items.clear()
-        this.items.addAll(items)
-//        result.dispatchUpdatesTo(this)
+        this.items.addAll(dialogs)
         notifyDataSetChanged()
-    }
-
-    private class DialogsCallback(val oldItems: List<TLRPC.Dialog>, val newItems: List<TLRPC.Dialog>): DiffUtil.Callback(){
-        override fun getOldListSize(): Int = oldItems.size
-
-        override fun getNewListSize(): Int = newItems.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldItems[oldItemPosition].id == newItems[newItemPosition].id
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = oldItems[oldItemPosition] == newItems[newItemPosition]
     }
 }
 
@@ -277,7 +279,6 @@ class RecentChatCell(context: Context, private val currentAccount: Int, private 
                 if (buttonBounce == null) {
                     buttonBounce = ButtonBounce(this, 1.5f, 5f)
                 }
-                parent.requestDisallowInterceptTouchEvent(true)
                 buttonBounce!!.isPressed = true
                 pressed = true
                 startX = event.x
@@ -292,10 +293,6 @@ class RecentChatCell(context: Context, private val currentAccount: Int, private 
                     }
 
                     buttonBounce?.isPressed = false
-
-                    if (parent is ViewGroup) {
-                        parent.requestDisallowInterceptTouchEvent(false)
-                    }
                     pressed = false
                     delegate.showContextMenu(dialogId)
                 }.also { longPressRunnable = it }, ViewConfiguration.getLongPressTimeout().toLong())
@@ -308,7 +305,6 @@ class RecentChatCell(context: Context, private val currentAccount: Int, private 
                     if (longPressRunnable != null) {
                         AndroidUtilities.cancelRunOnUIThread(longPressRunnable)
                     }
-                    parent.requestDisallowInterceptTouchEvent(false)
                     pressed = false
                 }
             }
@@ -319,8 +315,6 @@ class RecentChatCell(context: Context, private val currentAccount: Int, private 
                 if (pressed && event.action == MotionEvent.ACTION_UP) {
                     delegate.openChat(dialogId)
                 }
-                parent.requestDisallowInterceptTouchEvent(false)
-
                 pressed = false
                 if (longPressRunnable != null) {
                     AndroidUtilities.cancelRunOnUIThread(longPressRunnable)
@@ -331,8 +325,8 @@ class RecentChatCell(context: Context, private val currentAccount: Int, private 
     }
 
     fun bind(dialog: TLRPC.Dialog) {
-        this.dialog = dialog
         val messagesController = MessagesController.getInstance(currentAccount)
+        this.dialog = messagesController.getDialog(dialog.id) ?: dialog
         var user: TLRPC.User? = null
         var chat: TLRPC.Chat? = null
         if (dialog.id != 0L) {
@@ -353,13 +347,7 @@ class RecentChatCell(context: Context, private val currentAccount: Int, private 
             avatarDrawable.setInfo(currentAccount, chat)
             avatarImage.setForUserOrChat(chat, avatarDrawable)
         }
-        val count: Int
-        if(chat != null && chat.forum){
-            val counts = MessagesController.getInstance(currentAccount).topicsController.getForumUnreadCount(chat.id)
-            count = counts[0]
-        }else{
-            count = dialog.unread_count ?: 0
-        }
+        val count = messagesController.getDialogUnreadCount(this.dialog)
         val countString = if (count > 0) {
            "$count"
         } else {

@@ -70,7 +70,6 @@ class DahlSettingsActivity : BaseFragment() {
         actionBar.setTitleColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         actionBar.setItemsColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), false)
         actionBar.backgroundColor = Color.TRANSPARENT
-        if ((Theme.isCurrentThemeDay())) WindowCompat.getInsetsController(parentActivity.window, this.fragmentView).isAppearanceLightStatusBars = true
 
         actionBar.setActionBarMenuOnItemClick(object : ActionBarMenuOnItemClick() {
             override fun onItemClick(id: Int) {
@@ -255,8 +254,13 @@ class DahlSettingsActivity : BaseFragment() {
         info?.visibility = if(progress < 0.5f) View.VISIBLE else View.INVISIBLE
     }
 
-    override fun onFragmentDestroy() {
-        super.onFragmentDestroy()
+    override fun onResume() {
+        super.onResume()
+        if (Theme.isCurrentThemeDay()) WindowCompat.getInsetsController(parentActivity.window, this.fragmentView).isAppearanceLightStatusBars = true
+    }
+
+    override fun onPause() {
+        super.onPause()
         if (Theme.isCurrentThemeDay()) WindowCompat.getInsetsController(parentActivity.window, this.fragmentView).isAppearanceLightStatusBars = false
     }
 }
