@@ -83,13 +83,12 @@ object DahlSettings {
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
+    @JvmStatic
     fun getAvatarCornerRadius(): Int {
-        if (chatListLines == 1) {
-            return if (rectangularAvatars) AndroidUtilities.dp(4.5f) else AndroidUtilities.dp(18f)
-        }
-        return if (rectangularAvatars) AndroidUtilities.dp(6f) else AndroidUtilities.dp(if(chatListLines == 3) 28f else 27f)
+        return if (rectangularAvatars) AndroidUtilities.dp(6f) else AndroidUtilities.dp(28f)
     }
 
+    @JvmStatic
     fun getCounterCornerRadius() = if (rectangularAvatars) AndroidUtilities.dp(6f) else AndroidUtilities.dp(11.5f)
 
     fun getCurrentIconPack(): BaseIconReplacement {

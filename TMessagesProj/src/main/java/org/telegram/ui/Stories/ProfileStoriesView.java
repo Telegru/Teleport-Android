@@ -103,7 +103,7 @@ public class ProfileStoriesView extends View implements NotificationCenter.Notif
     private class StoryCircle {
         public StoryCircle(TL_stories.StoryItem storyItem) {
             this.storyId = storyItem.id;
-            int radius = (DahlSettings.getRectangularAvatars()) ? DahlSettings.INSTANCE.getAvatarCornerRadius() : dp(200);
+            int radius = (DahlSettings.getRectangularAvatars()) ? DahlSettings.getAvatarCornerRadius() : dp(200);
             this.imageReceiver.setRoundRadius(radius);
             this.imageReceiver.setParentView(ProfileStoriesView.this);
             if (attached) {

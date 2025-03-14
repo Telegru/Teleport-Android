@@ -245,9 +245,9 @@ public class BackupImageView extends View {
     }
 
     public void setRoundRadius(int value) {
-        imageReceiver.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : value);
+        imageReceiver.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.getAvatarCornerRadius() : value);
         if (blurAllowed) {
-            blurImageReceiver.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : value);
+            blurImageReceiver.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.getAvatarCornerRadius() : value);
         }
         invalidate();
     }

@@ -890,7 +890,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
         if (countLayout != null) {
             final int x = countLeft - dp(5.5f);
             rect.set(x, countTop, x + countWidth + dp(11), countTop + dp(23));
-            canvas.drawRoundRect(rect, 11.5f * AndroidUtilities.density, 11.5f * AndroidUtilities.density, MessagesController.getInstance(currentAccount).isDialogMuted(dialog_id, 0) ? Theme.dialogs_countGrayPaint : Theme.dialogs_countPaint);
+            canvas.drawRoundRect(rect, DahlSettings.getCounterCornerRadius(), DahlSettings.getCounterCornerRadius(), MessagesController.getInstance(currentAccount).isDialogMuted(dialog_id, 0) ? Theme.dialogs_countGrayPaint : Theme.dialogs_countPaint);
             canvas.save();
             canvas.translate(countLeft, countTop + dp(4));
             countLayout.draw(canvas);
