@@ -59,9 +59,6 @@ class RecentChatsPanel(
     val listView: RecyclerListView
     private val adapter: RecentChatAdapter
 
-    private val paint = Paint()
-    private val rect = RectF()
-
     init {
         setBackgroundColor(Theme.getColor(if(Theme.isCurrentThemeDark()) Theme.key_actionBarDefault else Theme.key_windowBackgroundGray))
 
@@ -347,6 +344,7 @@ class RecentChatCell(context: Context, private val currentAccount: Int, private 
             avatarDrawable.setInfo(currentAccount, chat)
             avatarImage.setForUserOrChat(chat, avatarDrawable)
         }
+
         val count = messagesController.getDialogUnreadCount(this.dialog)
         val countString = if (count > 0) {
            "$count"

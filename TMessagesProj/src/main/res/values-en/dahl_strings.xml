@@ -131,4 +131,6 @@
 
     <string name="SendAudioMessage">Send audio message</string>
     <string name="SendAudioMessageInfo">Are you sure you want to send this audio message?</string>
+
+    <string name="CallConfirmationAlert">Are you sure you want to call <![CDATA[<font color="%1$s"><b>%2$s</b></font>]]>?</string>
 </resources>
