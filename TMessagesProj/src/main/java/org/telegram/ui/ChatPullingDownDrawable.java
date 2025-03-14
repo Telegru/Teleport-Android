@@ -288,7 +288,7 @@ public class ChatPullingDownDrawable implements NotificationCenter.NotificationC
             float cx = lastWidth / 2f;
             float cy = AndroidUtilities.dp(12) + circleRadius;
             imageReceiver.setImageCoords(cx - AndroidUtilities.dp(40) / 2f, cy - AndroidUtilities.dp(40) / 2f, AndroidUtilities.dp(40), AndroidUtilities.dp(40));
-            float radius = (DahlSettings.getRectangularAvatars()) ? DahlSettings.INSTANCE.getAvatarCornerRadius() : dp(40) / 2f;
+            float radius = (DahlSettings.getRectangularAvatars()) ? DahlSettings.getAvatarCornerRadius() : dp(40) / 2f;
             imageReceiver.setRoundRadius((int) radius);
 
             counterDrawable.setSize(AndroidUtilities.dp(28), AndroidUtilities.dp(100));

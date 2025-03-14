@@ -271,14 +271,14 @@ public class AvatarsDrawable {
             currentStates[a] = new DrawingState();
             currentStates[a].imageReceiver = new ImageReceiver(parent);
             currentStates[a].imageReceiver.setInvalidateAll(true);
-            currentStates[a].imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getCounterCornerRadius());
+            currentStates[a].imageReceiver.setRoundRadius(DahlSettings.getCounterCornerRadius());
             currentStates[a].avatarDrawable = new AvatarDrawable();
             currentStates[a].avatarDrawable.setTextSize(AndroidUtilities.dp(12));
 
             animatingStates[a] = new DrawingState();
             animatingStates[a].imageReceiver = new ImageReceiver(parent);
             animatingStates[a].imageReceiver.setInvalidateAll(true);
-            animatingStates[a].imageReceiver.setRoundRadius(DahlSettings.INSTANCE.getCounterCornerRadius());
+            animatingStates[a].imageReceiver.setRoundRadius(DahlSettings.getCounterCornerRadius());
             animatingStates[a].avatarDrawable = new AvatarDrawable();
             animatingStates[a].avatarDrawable.setTextSize(AndroidUtilities.dp(12));
         }
@@ -383,7 +383,7 @@ public class AvatarsDrawable {
         } else {
             animatingStates[index].imageReceiver.setForUserOrChat(currentChat, animatingStates[index].avatarDrawable);
         }
-        animatingStates[index].imageReceiver.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : size / 2);
+        animatingStates[index].imageReceiver.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.getAvatarCornerRadius() : size / 2);
         animatingStates[index].imageReceiver.setImageCoords(0, 0, size, size);
         invalidate();
     }

@@ -1169,8 +1169,8 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             }
             createTextView();
             addView(textViewContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-            avatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
-            crossfageToAvatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
+            avatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
+            crossfageToAvatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
         }
 
         private void createTextView() {
@@ -1183,8 +1183,8 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             textView.setMaxLines(1);
 
             textViewContainer.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 1, 0, 1, 0));
-            avatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
-            crossfageToAvatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.INSTANCE.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
+            avatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
+            crossfageToAvatarImage.setRoundRadius(DahlSettings.getRectangularAvatars() ? DahlSettings.getAvatarCornerRadius() : AndroidUtilities.dp(avatarSize) / 2);
         }
 
         public void setDialogId(long dialogId) {
@@ -1358,7 +1358,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             }
             if (progressToCollapsed != 0) {
                 if (DahlSettings.getRectangularAvatars()) {
-                    canvas.drawRoundRect(x - AndroidUtilities.dp(4), y - AndroidUtilities.dp(4), x + finalSize + AndroidUtilities.dp(4), y + finalSize + AndroidUtilities.dp(4), DahlSettings.INSTANCE.getAvatarCornerRadius(), DahlSettings.INSTANCE.getAvatarCornerRadius(), backgroundPaint);
+                    canvas.drawRoundRect(x - AndroidUtilities.dp(4), y - AndroidUtilities.dp(4), x + finalSize + AndroidUtilities.dp(4), y + finalSize + AndroidUtilities.dp(4), DahlSettings.getAvatarCornerRadius(), DahlSettings.getAvatarCornerRadius(), backgroundPaint);
                 } else {
                     canvas.drawCircle(cx, cy, radius + AndroidUtilities.dp(3), backgroundPaint);
                 }
@@ -1480,8 +1480,8 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             }
 //            if (progressToCollapsed != 0) {
 //                if (DahlSettings.getRectangularAvatars() && !isLast) {
-//                    //canvas.drawRoundRect(x + finalSize - AndroidUtilities.dp(1.7f), y - AndroidUtilities.dp(2.3f), x + finalSize + AndroidUtilities.dp(4.5f), y + finalSize + AndroidUtilities.dp(1.7f), DahlSettings.INSTANCE.getAvatarCornerRadius(), DahlSettings.INSTANCE.getAvatarCornerRadius(), backgroundPaint);
-//                    //canvas.drawArc(x + finalSize - AndroidUtilities.dp(1.7f), y - AndroidUtilities.dp(2.3f), x + finalSize + AndroidUtilities.dp(4.5f), y + finalSize + AndroidUtilities.dp(1.7f), DahlSettings.INSTANCE.getAvatarCornerRadius(), DahlSettings.INSTANCE.getAvatarCornerRadius(), true, backgroundPaint);
+//                    //canvas.drawRoundRect(x + finalSize - AndroidUtilities.dp(1.7f), y - AndroidUtilities.dp(2.3f), x + finalSize + AndroidUtilities.dp(4.5f), y + finalSize + AndroidUtilities.dp(1.7f), DahlSettings.getAvatarCornerRadius(), DahlSettings.getAvatarCornerRadius(), backgroundPaint);
+//                    //canvas.drawArc(x + finalSize - AndroidUtilities.dp(1.7f), y - AndroidUtilities.dp(2.3f), x + finalSize + AndroidUtilities.dp(4.5f), y + finalSize + AndroidUtilities.dp(1.7f), DahlSettings.getAvatarCornerRadius(), DahlSettings.getAvatarCornerRadius(), true, backgroundPaint);
 //                    Path path = new Path();
 //                    path.reset();
 //                    float width = x + finalSize + AndroidUtilities.dp(1f);
