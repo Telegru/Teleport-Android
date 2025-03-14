@@ -70,7 +70,7 @@ class DahlSettingsActivity : BaseFragment() {
         actionBar.setTitleColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         actionBar.setItemsColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), false)
         actionBar.backgroundColor = Color.TRANSPARENT
-        WindowCompat.getInsetsController(parentActivity.window, this.fragmentView).isAppearanceLightStatusBars = true
+        if ((Theme.isCurrentThemeDay())) WindowCompat.getInsetsController(parentActivity.window, this.fragmentView).isAppearanceLightStatusBars = true
 
         actionBar.setActionBarMenuOnItemClick(object : ActionBarMenuOnItemClick() {
             override fun onItemClick(id: Int) {
@@ -133,15 +133,6 @@ class DahlSettingsActivity : BaseFragment() {
         })
 
         return contentView.also { fragmentView = it }
-    }
-
-    override fun isLightStatusBar(): Boolean {
-        val color = if (actionBar.isActionModeShowed) {
-            getThemedColor(Theme.key_actionBarActionModeDefault)
-        } else {
-            getThemedColor(Theme.key_actionBarDefault)
-        }
-        return ColorUtils.calculateLuminance(color) > 0.7f
     }
 
     private fun fillItems(items: ArrayList<UItem>) {
@@ -266,6 +257,6 @@ class DahlSettingsActivity : BaseFragment() {
 
     override fun onFragmentDestroy() {
         super.onFragmentDestroy()
-        WindowCompat.getInsetsController(parentActivity.window, this.fragmentView).isAppearanceLightStatusBars = false
+        if (Theme.isCurrentThemeDay()) WindowCompat.getInsetsController(parentActivity.window, this.fragmentView).isAppearanceLightStatusBars = false
     }
 }
