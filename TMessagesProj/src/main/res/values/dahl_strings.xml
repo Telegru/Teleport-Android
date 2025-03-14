@@ -134,5 +134,9 @@
     <string name="SendAudioMessage">Отправить аудиосообщение</string>
     <string name="SendAudioMessageInfo">Вы точно хотите отправить это аудиосообщение?</string>
 
+    <string name="Keyboard">Клавиатура</string>
+    <string name="HideOnScroll">Скрывать при скролле</string>
+    <string name="HideOnScrollInfo">Во время скроллинга чата при активном поле ввода сообщения клавиатура будет скрываться.</string>
+
     <string name="CallConfirmationAlert">Вы точно хотите позвонить <![CDATA[<font color="%1$s"><b>%2$s</b></font>]]>?</string>
 </resources>

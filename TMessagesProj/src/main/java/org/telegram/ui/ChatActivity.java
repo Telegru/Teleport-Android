@@ -6216,6 +6216,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         wasManualScroll = true;
                         scrollingChatListView = true;
                     } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+
                         pollHintCell = null;
                         wasManualScroll = true;
                         scrollingFloatingDate = true;
@@ -6244,6 +6245,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     chatListThanosEffect.scroll(dx, dy);
                 }
                 scrollUp = dy < 0;
+
                 int firstVisibleItem = chatLayoutManager.findFirstVisibleItemPosition();
                 if (dy != 0 && (scrollByTouch && recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_SETTLING) || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING) {
                     if (forceNextPinnedMessageId != 0) {
@@ -6275,6 +6277,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
                 if (recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING) {
                     forceScrollToFirst = false;
+                    if (DahlSettings.isKeyboardHidingEnabled()) {
+                        if (isKeyboardVisible() && scrollUp) {
+                            AndroidUtilities.hideKeyboard(getParentActivity().getCurrentFocus());
+                        } else if (chatActivityEnterView != null && chatActivityEnterView.isPopupShowing()) {
+                            chatActivityEnterView.hidePopup(false);
+                        }
+                    }
                     if (!wasManualScroll && dy != 0) {
                         wasManualScroll = true;
                     }

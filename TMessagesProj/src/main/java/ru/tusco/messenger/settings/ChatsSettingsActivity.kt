@@ -26,6 +26,7 @@ class ChatsSettingsActivity : UniversalFragment() {
         const val SELECTOR_VIDEO_CAMERA = 7
 
         const val SWITCH_RECENT_CHATS = 8
+        const val SWITCH_KEYBOARD_HIDING = 9
     }
 
     override fun getTitle(): CharSequence {
@@ -56,6 +57,12 @@ class ChatsSettingsActivity : UniversalFragment() {
         items?.add(UItem.asCheck(SWITCH_FOLDERS_INFINITE_SCROLL, getString(R.string.FoldersInfiniteScrolling)).setChecked(DahlSettings.isFoldersTabInfiniteScroll))
         items?.add(UItem.asCheck(SWITCH_SHOW_FOLDERS_TABS, getString(R.string.ShowAllFolders)).setChecked(!DahlSettings.isHiddenFoldersTabs))
         items?.add(UItem.asCheck(SWITCH_HIDE_ALL_CHATS_FOLDER, getString(R.string.HideAllChatsFolder)).setChecked(DahlSettings.isHiddenAllChatsFolder))
+
+        items?.add(UItem.asShadow(-3, null))
+
+        items?.add(UItem.asHeader(getString(R.string.Keyboard)))
+        items?.add(UItem.asCheck(SWITCH_KEYBOARD_HIDING, getString(R.string.HideOnScroll)).setChecked(DahlSettings.isKeyboardHidingEnabled))
+        items?.add(UItem.asShadow(getString(R.string.HideOnScrollInfo)))
     }
 
     override fun onClick(item: UItem?, view: View?, position: Int, x: Float, y: Float) {
@@ -70,7 +77,7 @@ class ChatsSettingsActivity : UniversalFragment() {
             SWITCH_HIDE_ALL_CHATS_FOLDER -> DahlSettings.isHiddenAllChatsFolder = !DahlSettings.isHiddenAllChatsFolder
             SWITCH_FOLDERS_INFINITE_SCROLL -> DahlSettings.isFoldersTabInfiniteScroll = !DahlSettings.isFoldersTabInfiniteScroll
             SWITCH_SHOW_FOLDERS_TABS -> DahlSettings.isHiddenFoldersTabs = !DahlSettings.isHiddenFoldersTabs
-
+            SWITCH_KEYBOARD_HIDING -> DahlSettings.isKeyboardHidingEnabled = !DahlSettings.isKeyboardHidingEnabled
             else -> {}
         }
         listView.adapter.update(true)

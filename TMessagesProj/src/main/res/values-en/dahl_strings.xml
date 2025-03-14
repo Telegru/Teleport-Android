@@ -132,5 +132,9 @@
     <string name="SendAudioMessage">Send audio message</string>
     <string name="SendAudioMessageInfo">Are you sure you want to send this audio message?</string>
 
+    <string name="Keyboard">Keyboard</string>
+    <string name="HideOnScroll">Hide on scroll</string>
+    <string name="HideOnScrollInfo">Keyboard will hide while scrolling chat up</string>
+
     <string name="CallConfirmationAlert">Are you sure you want to call <![CDATA[<font color="%1$s"><b>%2$s</b></font>]]>?</string>
 </resources>
