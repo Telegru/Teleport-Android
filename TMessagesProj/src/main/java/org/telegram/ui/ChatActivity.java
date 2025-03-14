@@ -63,6 +63,7 @@ import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
+import android.text.Html;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -3613,7 +3614,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     }
                 } else if (id == call || id == video_call) {
                     if (currentUser != null && getParentActivity() != null) {
-                        VoIPHelper.startCall(currentUser, id == video_call, userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
+                        if(DahlSettings.isConfirmCall()){
+                            showCallConfirmationDialog(id);
+                        }else {
+                            VoIPHelper.startCall(currentUser, id == video_call, userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
+                        }
                     }
                 } else if (id == text_bold) {
                     if (chatActivityEnterView != null && chatActivityEnterView.getEditField() != null) {
@@ -41476,5 +41481,22 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         }
         return -1;
+    }
+
+    private void showCallConfirmationDialog(int callId) {
+        String nameColor = String.format("#%06X", (0xFFFFFF & Theme.getColor(Theme.key_dialogTextBlack)));
+        String name = AndroidUtilities.escape(ContactsController.formatName(currentUser.first_name, currentUser.last_name).replace("\n", ""));
+        CharSequence message = Html.fromHtml(formatString(R.string.CallConfirmationAlert, nameColor, name));
+        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity())
+                .setTitle(LocaleController.getString(callId == video_call ? R.string.VideoCall : R.string.Call))
+                .setMessage(message)
+                .setPositiveButton(LocaleController.getString(R.string.Call), (dialog, which) -> {
+                    VoIPHelper.startCall(currentUser, callId == video_call, userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
+                })
+                .setNegativeButton(LocaleController.getString(R.string.Cancel), (dialog, which) -> {
+                    dialog.dismiss();
+                });
+
+        showDialog(builder.create());
     }
 }
