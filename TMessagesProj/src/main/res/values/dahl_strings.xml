@@ -133,4 +133,6 @@
 
     <string name="SendAudioMessage">Отправить аудиосообщение</string>
     <string name="SendAudioMessageInfo">Вы точно хотите отправить это аудиосообщение?</string>
+
+    <string name="CallConfirmationAlert">Вы точно хотите позвонить <![CDATA[<font color="%1$s"><b>%2$s</b></font>]]>?</string>
 </resources>

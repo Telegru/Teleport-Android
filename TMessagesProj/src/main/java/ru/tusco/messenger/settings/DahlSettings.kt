@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.util.Log
-import androidx.annotation.StringRes
 import org.json.JSONArray
 import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.AndroidUtilities
@@ -308,7 +307,7 @@ object DahlSettings {
         }
 
     @JvmStatic
-    var confirmCall: Boolean
+    var isConfirmCall: Boolean
         get() = sharedPreferences.getBoolean("confirm_call", false)
         set(value) {
             putBoolean("confirm_call", value)
