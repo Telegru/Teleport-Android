@@ -323,10 +323,10 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 			imageView.setScaleType(ImageView.ScaleType.CENTER);
 			imageView.setOnClickListener(v -> {
 				CallLogRow row = (CallLogRow) v.getTag();
+				TLRPC.UserFull userFull = getMessagesController().getUserFull(row.user.id);
 				if (DahlSettings.isConfirmCall()) {
-					showCallConfirmationDialog(row.video, row.user);
+					showCallConfirmationDialog(row.video, row.user, userFull);
 				} else {
-					TLRPC.UserFull userFull = getMessagesController().getUserFull(row.user.id);
 					VoIPHelper.startCall(lastCallUser = row.user, row.video, row.video || userFull != null && userFull.video_calls_available, getParentActivity(), null, getAccountInstance());
 				}
 			});
@@ -585,10 +585,10 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 			args.putBoolean("allowSelf", false);
 			ContactsActivity contactsFragment = new ContactsActivity(args);
 			contactsFragment.setDelegate((user, param, activity) -> {
+				TLRPC.UserFull userFull = getMessagesController().getUserFull(user.id);
 				if(DahlSettings.isConfirmCall()){
-					showCallConfirmationDialog(false, user);
+					showCallConfirmationDialog(false, user, userFull);
 				}else {
-					TLRPC.UserFull userFull = getMessagesController().getUserFull(user.id);
 					VoIPHelper.startCall(lastCallUser = user, false, userFull != null && userFull.video_calls_available, getParentActivity(), null, getAccountInstance());
 				}
 			});
@@ -1301,8 +1301,7 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 		return themeDescriptions;
 	}
 
-	private void showCallConfirmationDialog(boolean videoCall, TLRPC.User user) {
-		TLRPC.UserFull userFull = getMessagesController().getUserFull(user.id);
+	private void showCallConfirmationDialog(boolean videoCall, TLRPC.User user, @Nullable TLRPC.UserFull userFull) {
 		String nameColor = String.format("#%06X", (0xFFFFFF & Theme.getColor(Theme.key_dialogTextBlack)));
 		String name = AndroidUtilities.escape(ContactsController.formatName(user.first_name, user.last_name).replace("\n", ""));
 		CharSequence message = Html.fromHtml(formatString(R.string.CallConfirmationAlert, nameColor, name));
