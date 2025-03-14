@@ -532,11 +532,11 @@ public class EmojiThemes {
         if (isDark != themeInfo.isDark()) {
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("themeconfig", Activity.MODE_PRIVATE);
             String lastThemeName = isDark
-                    ? preferences.getString("lastDarkTheme", "Dark Blue")
-                    : preferences.getString("lastDayTheme", "Blue");
+                    ? preferences.getString("lastDarkTheme", "Night")
+                    : preferences.getString("lastDayTheme", "Day");
             themeInfo = Theme.getTheme(lastThemeName);
             if (themeInfo == null) {
-                themeInfo = Theme.getTheme(isDark ? "Dark Blue" : "Blue");
+                themeInfo = Theme.getTheme(isDark ? "Night" : "Day");
             }
         }
         return new Theme.ThemeInfo(themeInfo);

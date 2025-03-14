@@ -14,11 +14,12 @@ import android.widget.LinearLayout.LayoutParams
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
+import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.BuildVars
-import org.telegram.messenger.LocaleController
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
@@ -69,6 +70,8 @@ class DahlSettingsActivity : BaseFragment() {
         actionBar.setTitleColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         actionBar.setItemsColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), false)
         actionBar.backgroundColor = Color.TRANSPARENT
+        WindowCompat.getInsetsController(parentActivity.window, this.fragmentView).isAppearanceLightStatusBars = true
+
         actionBar.setActionBarMenuOnItemClick(object : ActionBarMenuOnItemClick() {
             override fun onItemClick(id: Int) {
                 if (id == -1) {
@@ -132,6 +135,14 @@ class DahlSettingsActivity : BaseFragment() {
         return contentView.also { fragmentView = it }
     }
 
+    override fun isLightStatusBar(): Boolean {
+        val color = if (actionBar.isActionModeShowed) {
+            getThemedColor(Theme.key_actionBarActionModeDefault)
+        } else {
+            getThemedColor(Theme.key_actionBarDefault)
+        }
+        return ColorUtils.calculateLuminance(color) > 0.7f
+    }
 
     private fun fillItems(items: ArrayList<UItem>) {
         items.add(UItem.asSpace(headerViewHeight))
@@ -251,5 +262,10 @@ class DahlSettingsActivity : BaseFragment() {
         info?.scaleY = 1f - progress
         info?.alpha = 1f - progress
         info?.visibility = if(progress < 0.5f) View.VISIBLE else View.INVISIBLE
+    }
+
+    override fun onFragmentDestroy() {
+        super.onFragmentDestroy()
+        WindowCompat.getInsetsController(parentActivity.window, this.fragmentView).isAppearanceLightStatusBars = false
     }
 }
