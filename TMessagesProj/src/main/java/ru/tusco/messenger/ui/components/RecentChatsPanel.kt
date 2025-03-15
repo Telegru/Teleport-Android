@@ -68,7 +68,6 @@ class RecentChatsPanel(
         val margin = AndroidUtilities.dp(16f)
         emptyView.setPadding(margin, 0, margin, 0)
         addView(emptyView, LayoutHelper.createFrame(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER))
-        emptyView.visibility = View.GONE
 
         adapter = RecentChatAdapter(UserConfig.selectedAccount, delegate)
         adapter.setHasStableIds(true)
@@ -115,6 +114,11 @@ class RecentChatsPanel(
         emptyView.visibility = if (adapter.itemCount == 0) VISIBLE else GONE
     }
 
+    private fun reload(){
+        adapter.reload()
+        emptyView.visibility = if (adapter.itemCount == 0) VISIBLE else GONE
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun updateColors(){
         setBackgroundColor(Theme.getColor(if(Theme.isCurrentThemeDark()) Theme.key_actionBarDefault else Theme.key_windowBackgroundGray))
@@ -133,10 +137,10 @@ class RecentChatsPanel(
     override fun didReceivedNotification(id: Int, account: Int, vararg args: Any?) {
         when(id){
             NotificationCenter.dialogsNeedReload -> {
-                adapter.notifyDataSetChanged()
+                reload()
             }
             NotificationCenter.dialogsUnreadCounterChanged -> {
-                adapter.notifyDataSetChanged()
+                reload()
             }
         }
     }
@@ -145,7 +149,8 @@ class RecentChatsPanel(
 internal class RecentChatAdapter(private val currentAccount: Int, private val delegate: RecentChatCell.Delegate) :
     RecyclerListView.SelectionAdapter() {
 
-    val items = mutableListOf<TLRPC.Dialog>()
+    private val dialogsIds = mutableListOf<Long>()
+    private val dialogs = mutableListOf<TLRPC.Dialog>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val cell = RecentChatCell(parent.context, currentAccount, delegate)
@@ -153,23 +158,34 @@ internal class RecentChatAdapter(private val currentAccount: Int, private val de
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val dialog = items[position]
+        val dialog = dialogs[position]
         val cell = holder.itemView as RecentChatCell
         cell.bind(dialog)
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount(): Int = dialogs.size
 
     override fun isEnabled(holder: RecyclerView.ViewHolder?): Boolean = true
 
-    override fun getItemId(position: Int): Long = items[position].id
+    override fun getItemId(position: Int): Long = dialogs[position].id
 
     @SuppressLint("NotifyDataSetChanged")
     fun update(dialogIds: Collection<Long>) {
         val messagesController = MessagesController.getInstance(currentAccount)
-        val dialogs = dialogIds.mapNotNull { messagesController.getDialog(it) ?: messagesController.getDialog(-it) }
-        this.items.clear()
-        this.items.addAll(dialogs)
+        this.dialogsIds.clear()
+        this.dialogsIds.addAll(dialogIds)
+        val dialogs = dialogIds.mapNotNull { messagesController.getDialog(it) }
+        this.dialogs.clear()
+        this.dialogs.addAll(dialogs)
+        notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun reload() {
+        val messagesController = MessagesController.getInstance(currentAccount)
+        val dialogs = dialogsIds.mapNotNull { messagesController.getDialog(it) }
+        this.dialogs.clear()
+        this.dialogs.addAll(dialogs)
         notifyDataSetChanged()
     }
 }
@@ -323,7 +339,7 @@ class RecentChatCell(context: Context, private val currentAccount: Int, private 
 
     fun bind(dialog: TLRPC.Dialog) {
         val messagesController = MessagesController.getInstance(currentAccount)
-        this.dialog = messagesController.getDialog(dialog.id) ?: dialog
+        this.dialog = dialog
         var user: TLRPC.User? = null
         var chat: TLRPC.Chat? = null
         if (dialog.id != 0L) {
@@ -345,7 +361,7 @@ class RecentChatCell(context: Context, private val currentAccount: Int, private 
             avatarImage.setForUserOrChat(chat, avatarDrawable)
         }
 
-        val count = messagesController.getDialogUnreadCount(this.dialog)
+        val count = messagesController.getDialogUnreadCount(dialog)
         val countString = if (count > 0) {
            "$count"
         } else {

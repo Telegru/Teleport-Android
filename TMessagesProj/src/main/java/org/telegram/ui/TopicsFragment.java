@@ -3822,7 +3822,7 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
             finishFragment();
         }
 
-        DahlSettings.putToRecentChats(chatId, UserConfig.selectedAccount);
+        DahlSettings.putToRecentChats(-chatId, UserConfig.selectedAccount);
     }
 
     @Override
