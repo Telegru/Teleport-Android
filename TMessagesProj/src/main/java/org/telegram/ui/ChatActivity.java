@@ -17176,7 +17176,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             measureChildWithMargins(chatActivityEnterView, widthMeasureSpec, 0, heightMeasureSpec, 0);
 
             int listViewTopHeight;
-            if (inPreviewMode || isInsideContainer) {
+            if (inPreviewMode || isInsideContainer || !isShowBottomView()) {
                 inputFieldHeight = 0;
                 listViewTopHeight = 0;
             } else {
@@ -17428,7 +17428,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     childTop -= chatActivityEnterView.getMeasuredHeight() - AndroidUtilities.dp(2);
                     mentionContainer.setTranslationY(chatActivityEnterView.getAnimatedTop());
                 } else if (child == pagedownButton || child == searchUpButton || child == searchDownButton || child == mentiondownButton || child == reactionsMentiondownButton) {
-                    if (!inPreviewMode) {
+                    if (!inPreviewMode && isShowBottomView()) {
                         childTop -= chatActivityEnterView.getMeasuredHeight();
                     }
                 } else if (child == emptyViewContainer) {
@@ -17445,6 +17445,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     childTop -= blurredViewTopOffset;
                     if (!inPreviewMode && !isInsideContainer) {
                         childTop -= (inputFieldHeight - AndroidUtilities.dp(51));
+                        if(!isShowBottomView()){
+                            childTop -= AndroidUtilities.dp(51);
+                        }
                     }
                     childTop -= paddingBottom;
                     if (keyboardSize > AndroidUtilities.dp(20) && getLayoutParams().height < 0) {
@@ -26061,8 +26064,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     chatActivityEnterView.setFieldFocused();
                     AndroidUtilities.runOnUIThread(() -> chatActivityEnterView.openKeyboard(), 100);
                 } else {
-                    bottomOverlayChat.setVisibility(View.VISIBLE);
-                    AndroidUtilities.updateViewShow(bottomOverlayChat, true, false, true);
+                    bottomOverlayChat.setVisibility(isShowBottomOverlayChat() ? View.VISIBLE : View.INVISIBLE);
+                    AndroidUtilities.updateViewShow(bottomOverlayChat, isShowBottomOverlayChat(), false, true);
                     chatActivityEnterView.setFieldFocused(false);
                     chatActivityEnterView.setVisibility(View.INVISIBLE);
                     chatActivityEnterView.closeKeyboard();
@@ -42004,5 +42007,19 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 });
 
         showDialog(builder.create());
+    }
+
+    private boolean isShowBottomOverlayChat(){
+        return !ChatObject.isChannel(currentChat) ||
+                ChatObject.isNotInChat(currentChat) ||
+                isThreadChat() ||
+                shouldDisplaySwipeToLeftToReplyInForum() ||
+                DahlSettings.isShowBottomPanelInChannels();
+    }
+
+    private boolean isShowBottomView(){
+        return (chatActivityEnterView != null && chatActivityEnterView.getVisibility() == View.VISIBLE) ||
+                (bottomOverlay != null && bottomOverlay.getVisibility() == View.VISIBLE) ||
+                isShowBottomOverlayChat();
     }
 }
