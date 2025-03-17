@@ -1139,6 +1139,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     boolean pulled = false;
     private static boolean replacingChatActivity = false;
 
+    private boolean isScrollUp = false;
+
     private PinchToZoomHelper pinchToZoomHelper;
     public EmojiAnimationsOverlay emojiAnimationsOverlay;
     public float drawingChatListViewYoffset;
@@ -4524,6 +4526,17 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (e != null) {
                     wasManualScroll = true;
                 }
+                if (DahlSettings.isKeyboardHidingEnabled()) {
+                    if (e != null && e.getAction() == MotionEvent.ACTION_MOVE) {
+                        int currentTouchY = (int) (chatListView.getY() + e.getY(startedTrackingPointerId));
+                        if (isKeyboardVisible() && isScrollUp && currentTouchY >= chatActivityEnterView.getY() - fixedKeyboardHeight - AndroidUtilities.dp(52)) {
+                            AndroidUtilities.hideKeyboard(getParentActivity().getCurrentFocus());
+                        } else if (chatActivityEnterView != null && chatActivityEnterView.isPopupShowing()) {
+                            chatActivityEnterView.hidePopup(false);
+                        }
+                    }
+                }
+
                 if (e != null && e.getAction() == MotionEvent.ACTION_DOWN && !startedTrackingSlidingView && !maybeStartTrackingSlidingView && slidingView == null && !inPreviewMode) {
                     View view = getPressedChildView();
                     if (view instanceof ChatMessageCell) {
@@ -6182,7 +6195,6 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         chatListView.setOnScrollListener(new RecyclerView.OnScrollListener() {
 
             private float totalDy = 0;
-            private boolean scrollUp;
             private final int scrollValue = AndroidUtilities.dp(100);
 
             @Override
@@ -6244,12 +6256,12 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (chatListThanosEffect != null) {
                     chatListThanosEffect.scroll(dx, dy);
                 }
-                scrollUp = dy < 0;
+                isScrollUp = dy < 0;
 
                 int firstVisibleItem = chatLayoutManager.findFirstVisibleItemPosition();
                 if (dy != 0 && (scrollByTouch && recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_SETTLING) || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING) {
                     if (forceNextPinnedMessageId != 0) {
-                        if ((!scrollUp || forceScrollToFirst)) {
+                        if ((!isScrollUp || forceScrollToFirst)) {
                             forceNextPinnedMessageId = 0;
                         } else if (!chatListView.isFastScrollAnimationRunning() && firstVisibleItem != RecyclerView.NO_POSITION) {
                             int lastVisibleItem = chatLayoutManager.findLastVisibleItemPosition();
@@ -6277,13 +6289,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
                 if (recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING) {
                     forceScrollToFirst = false;
-                    if (DahlSettings.isKeyboardHidingEnabled()) {
-                        if (isKeyboardVisible() && scrollUp) {
-                            AndroidUtilities.hideKeyboard(getParentActivity().getCurrentFocus());
-                        } else if (chatActivityEnterView != null && chatActivityEnterView.isPopupShowing()) {
-                            chatActivityEnterView.hidePopup(false);
-                        }
-                    }
+//                    if (DahlSettings.isKeyboardHidingEnabled()) {
+//                        if (isKeyboardVisible() && scrollUp) {
+//                            AndroidUtilities.hideKeyboard(getParentActivity().getCurrentFocus());
+//                        } else if (chatActivityEnterView != null && chatActivityEnterView.isPopupShowing()) {
+//                            chatActivityEnterView.hidePopup(false);
+//                        }
+//                    }
                     if (!wasManualScroll && dy != 0) {
                         wasManualScroll = true;
                     }
