@@ -22,8 +22,10 @@ import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
 import org.telegram.messenger.SharedConfig
 import org.telegram.messenger.SharedConfig.ProxyInfo
+import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.ui.ActionBar.Theme
+import org.telegram.ui.Cells.TextDetailSettingsCell
 import org.telegram.ui.Components.CheckBox2
 import org.telegram.ui.Components.LayoutHelper
 import org.telegram.ui.Components.UItem
@@ -36,11 +38,13 @@ class GeneralSettingsActivity : UniversalFragment(), NotificationCenter.Notifica
 
     companion object {
         const val PROXY = 1
-        const val HIDE_PHONE_NUMBER = 2
-        const val MESSAGE_READ_STATUS = 3
-        const val OFFLINE_MODE = 4
-        const val PREMIUM = 5
-        const val DAHL_PROXY = 6
+        const val HIDE_HELP = 2
+        const val NAVIGATION_DRAWER = 3
+        const val HIDE_PHONE_NUMBER = 4
+        const val MESSAGE_READ_STATUS = 5
+        const val OFFLINE_MODE = 6
+        const val PREMIUM = 7
+        const val DAHL_PROXY = 8
         const val CUSTOM_PROXY = 99
     }
 
@@ -105,10 +109,23 @@ class GeneralSettingsActivity : UniversalFragment(), NotificationCenter.Notifica
 
         items?.add(UItem.asShadow(-3, null))
 
-//
-//        items?.add(UItem.asHeader(getString(R.string.Profile)))
+        items?.add(UItem.asHeader(getString(R.string.TgSettingsMenu)))
+        items?.add(UItem.asCheck(HIDE_HELP, getString(R.string.HideHelpBlock)).setChecked(DahlSettings.isHiddenHelpBlock))
+
+        items?.add(UItem.asShadow(-3, null))
+
+        items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
+        val isPremium = UserConfig.getInstance(UserConfig.selectedAccount)?.isPremium == true
+        val settingsCell = TextDetailSettingsCell(context).apply {
+            setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite))
+            setMultilineDetail(true)
+            setTextAndValue(getString(R.string.NavigationDrawerItems), DahlSettings.navigationDrawerItems.getInfoText(isPremium), false)
+        }
+        items?.add(UItem.asCustom(NAVIGATION_DRAWER, settingsCell))
 //        items?.add(UItem.asCheck(HIDE_PHONE_NUMBER, getString(R.string.HidePhoneNumber)).setChecked(DahlSettings.isHidePhoneNumber))
-//        items?.add(UItem.asShadow(getString(R.string.HidePhoneNumberInfo)))
+
+        items?.add(UItem.asShadow(-3, null))
+
 //
 //        items?.add(UItem.asHeader(getString(R.string.Privacy)))
 //        items?.add(
@@ -169,6 +186,8 @@ class GeneralSettingsActivity : UniversalFragment(), NotificationCenter.Notifica
                     return
                 }
             }
+            HIDE_HELP -> DahlSettings.isHiddenHelpBlock = !DahlSettings.isHiddenHelpBlock
+            NAVIGATION_DRAWER -> presentFragment(NavigationDrawerSettingsActivity())
 
             else -> {}
         }

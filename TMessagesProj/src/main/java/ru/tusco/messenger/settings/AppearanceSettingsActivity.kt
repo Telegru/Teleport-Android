@@ -37,13 +37,11 @@ class AppearanceSettingsActivity : UniversalFragment() {
         const val BOTTOM_PANEL = 1
         const val PERSONAL_COLORS = 2
         const val WALLPAPERS = 3
-        const val HIDE_HELP = 4
-        const val NAVIGATION_DRAWER = 5
-        const val SWITCH_ICONS = 6
-        const val SQUARE_AVATARS = 7
-        const val AVATARS_FONT = 8
-        const val CUSTOM_WALLPAPERS = 9
-        const val CHAT_LIST_LINES = 10
+        const val SWITCH_ICONS = 4
+        const val SQUARE_AVATARS = 5
+        const val AVATARS_FONT = 7
+        const val CUSTOM_WALLPAPERS = 7
+        const val CHAT_LIST_LINES = 8
     }
 
     private val icons: Set<Int> by lazy {
@@ -87,22 +85,8 @@ class AppearanceSettingsActivity : UniversalFragment() {
 
         items?.add(UItem.asShadow(-3, null))
 
-        items?.add(UItem.asHeader(getString(R.string.TgSettingsMenu)))
-        items?.add(UItem.asCheck(HIDE_HELP, getString(R.string.HideHelpBlock)).setChecked(DahlSettings.isHiddenHelpBlock))
-
-        items?.add(UItem.asShadow(-3, null))
-
-//        val counterColor = String.format("#%06X", (0xFFFFFF and Theme.getColor(Theme.key_windowBackgroundWhiteGrayText)))
-        val isPremium = UserConfig.getInstance(UserConfig.selectedAccount)?.isPremium == true
-        val settingsCell = TextDetailSettingsCell(context).apply {
-            setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite))
-            setMultilineDetail(true)
-            setTextAndValue(getString(R.string.NavigationDrawerItems), DahlSettings.navigationDrawerItems.getInfoText(isPremium), false)
-        }
-        items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
-        items?.add(UItem.asCustom(NAVIGATION_DRAWER, settingsCell))
-
-        items?.add(UItem.asShadow(-3, null))
+//        items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
+//        items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.ElementsRounding)))
         items?.add(UItem.asCheck(SQUARE_AVATARS, getString(R.string.Squared)).apply {
@@ -135,8 +119,6 @@ class AppearanceSettingsActivity : UniversalFragment() {
             BOTTOM_PANEL -> DahlSettings.isShowBottomPanelInChannels = !DahlSettings.isShowBottomPanelInChannels
             PERSONAL_COLORS -> DahlSettings.isEnabledPersonalColors = !DahlSettings.isEnabledPersonalColors
             WALLPAPERS -> presentFragment(WallpapersListActivity(WallpapersListActivity.TYPE_ALL))
-            HIDE_HELP -> DahlSettings.isHiddenHelpBlock = !DahlSettings.isHiddenHelpBlock
-            NAVIGATION_DRAWER -> presentFragment(NavigationDrawerSettingsActivity())
             SWITCH_ICONS -> {
                 if (item.checked) {
                     DahlSettings.iconReplacement = NO_REPLACEMENT
