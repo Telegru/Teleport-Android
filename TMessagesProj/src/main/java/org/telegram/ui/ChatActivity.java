@@ -17435,7 +17435,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } else if (child == chatListView || child == chatListThanosEffect || child == floatingDateView || child == infoTopView) {
                     childTop -= blurredViewTopOffset;
                     if (!inPreviewMode && !isInsideContainer) {
-                        childTop -= (inputFieldHeight - AndroidUtilities.dp(51));
+                        childTop -= (inputFieldHeight - AndroidUtilities.dp(102));
                     }
                     childTop -= paddingBottom;
                     if (keyboardSize > AndroidUtilities.dp(20) && getLayoutParams().height < 0) {
@@ -26052,8 +26052,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     chatActivityEnterView.setFieldFocused();
                     AndroidUtilities.runOnUIThread(() -> chatActivityEnterView.openKeyboard(), 100);
                 } else {
-                    bottomOverlayChat.setVisibility(View.VISIBLE);
-                    AndroidUtilities.updateViewShow(bottomOverlayChat, true, false, true);
+                    bottomOverlayChat.setVisibility(isShowBottomOverlay() ? View.VISIBLE : View.INVISIBLE);
+                    AndroidUtilities.updateViewShow(bottomOverlayChat, isShowBottomOverlay(), false, true);
                     chatActivityEnterView.setFieldFocused(false);
                     chatActivityEnterView.setVisibility(View.INVISIBLE);
                     chatActivityEnterView.closeKeyboard();
@@ -41995,5 +41995,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 });
 
         showDialog(builder.create());
+    }
+
+    private boolean isShowBottomOverlay(){
+        return !ChatObject.isChannel(currentChat) || ChatObject.isNotInChat(currentChat) || isThreadChat() || shouldDisplaySwipeToLeftToReplyInForum() || DahlSettings.isShowBottomPanelInChannels();
     }
 }

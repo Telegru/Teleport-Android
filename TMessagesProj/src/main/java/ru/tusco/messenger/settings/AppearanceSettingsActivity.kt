@@ -64,9 +64,9 @@ class AppearanceSettingsActivity : UniversalFragment() {
     override fun fillItems(items: ArrayList<UItem>?, adapter: UniversalAdapter?) {
 
         items?.add(UItem.asHeader(getString(R.string.EnableInChatsAndChannels)))
-//        items?.add(
-//            UItem.asCheck(BOTTOM_PANEL, getString(R.string.BottomPanelInChannels)).setChecked(DahlSettings.isShowBottomPanelInChannels)
-//        )
+        items?.add(
+            UItem.asCheck(BOTTOM_PANEL, getString(R.string.BottomPanelInChannels)).setChecked(DahlSettings.isShowBottomPanelInChannels)
+        )
 //        items?.add(UItem.asCheck(PERSONAL_COLORS, getString(R.string.PersonalColors)).setChecked(DahlSettings.isEnabledPersonalColors))
         items?.add(UItem.asCheck(CUSTOM_WALLPAPERS, getString(R.string.CustomWallpapers)).setChecked(DahlSettings.isCustomWallpapersEnabled))
         items?.add(UItem.asShadow(-3, null))
