@@ -79,7 +79,8 @@
     <string name="AnimatedPremiumStickers">Анимация премиум-стикеров</string>
     <string name="TouchPremiumStickers">Нажатие на премиум-стикеры</string>
     <string name="Stories">Истории</string>
-    <string name="HideStories">Не показывать</string>
+    <string name="HideStories">Не показывать в чатах</string>
+    <string name="HideArchiveStories">Не показывать в Архиве</string>
     <string name="HideAddStory">Скрыть кнопку создания</string>
     <string name="HideViewedStories">Скрывать просмотренные истории</string>
     <string name="RecentChats">Недавние чаты</string>

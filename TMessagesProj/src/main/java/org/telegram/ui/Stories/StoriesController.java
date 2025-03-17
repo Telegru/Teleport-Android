@@ -273,7 +273,7 @@ public class StoriesController {
     }
 
     public boolean hasStories() {
-        if(DahlSettings.getHideStories()){
+        if(DahlSettings.isHideStories()){
             return false;
         }
         int count = dialogListStories == null ? 0 : dialogListStories.size();
@@ -1620,7 +1620,19 @@ public class StoriesController {
     }
 
     public boolean hasHiddenStories() {
-        return !hiddenListStories.isEmpty();
+        if(DahlSettings.isHideStoriesInArchive()){
+            return false;
+        }
+        int count = hiddenListStories == null ? 0 : hiddenListStories.size();
+        if(count > 0 && DahlSettings.getHideViewedStories()){
+            for (TL_stories.PeerStories story : hiddenListStories) {
+                long dialogId = DialogObject.getPeerDialogId(story.peer);
+                if(!hasUnreadStories(dialogId)){
+                    count--;
+                }
+            }
+        }
+        return count > 0;
     }
 
     public void checkExpiredStories() {
