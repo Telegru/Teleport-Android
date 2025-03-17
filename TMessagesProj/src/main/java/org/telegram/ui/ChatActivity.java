@@ -28246,7 +28246,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             starReactionsOverlay.bringToFront();
         }
 
-        if(!isTopic && !inPreviewMode && !isReport()) {
+        if(!inPreviewMode && !isReport()) {
             AndroidUtilities.runOnUIThread(putToRecentChatsRunnable, 200);
         }
     }

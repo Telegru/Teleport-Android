@@ -531,7 +531,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 textureOverlayView.getLayoutParams().width = textureOverlayView.getLayoutParams().height = textureViewSize;
                 cameraContainer.getLayoutParams().width = cameraContainer.getLayoutParams().height = textureViewSize;
                 ((LayoutParams) muteImageView.getLayoutParams()).topMargin = textureViewSize / 2 - dp(24);
-                textureOverlayView.setRoundRadius(textureViewSize / 2);
+                textureOverlayView.setRoundRadius(textureViewSize / 2, textureViewSize / 2, textureViewSize / 2, textureViewSize / 2);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     cameraContainer.invalidateOutline();
                 }

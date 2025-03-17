@@ -379,7 +379,6 @@ object DahlSettings {
         }
         val set = getRecentChats(currentAccount)
         set.remove(dialogId)
-        set.remove(-dialogId)
         putString(DahlSettingsKeys.recentChatsKey(currentAccount), JSONArray(set).toString())
     }
 
@@ -391,7 +390,10 @@ object DahlSettings {
     fun getRecentChats(currentAccount: Int): LinkedHashSet<Long> {
         val set = LinkedHashSet<Long>()
         try {
-            val json = sharedPreferences.getString(DahlSettingsKeys.recentChatsKey(currentAccount), null) ?: return set
+            val json = sharedPreferences.getString(DahlSettingsKeys.recentChatsKey(currentAccount), "")
+            if(json.isNullOrBlank()){
+                return set
+            }
             val jsonArray = JSONArray(json)
             for (i in 0 until jsonArray.length()) {
                 set.add(jsonArray.getLong(i))
