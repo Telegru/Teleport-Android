@@ -282,10 +282,18 @@ object DahlSettings {
         }
 
     @JvmStatic
-    var hideStories: Boolean
+    var isHideStories: Boolean
         get() = sharedPreferences.getBoolean("hide_stories", false)
         set(value) {
             putBoolean("hide_stories", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isHideStoriesInArchive: Boolean
+        get() = sharedPreferences.getBoolean("hide_stories_in_archive", false)
+        set(value) {
+            putBoolean("hide_stories_in_archive", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 

@@ -8976,7 +8976,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     public boolean storiesEnabled = true;
 
     private void updateStoriesPosting() {
-        final boolean storiesEnabled = getMessagesController().storiesEnabled() && !DahlSettings.getHideStories() && !DahlSettings.getHideAddStory();
+        final boolean storiesEnabled = getMessagesController().storiesEnabled() && !DahlSettings.isHideStories() && !DahlSettings.getHideAddStory();
         if (this.storiesEnabled != storiesEnabled) {
             if (floatingButton2Container != null) {
                 floatingButton2Container.setVisibility(onlySelect && initialDialogsType != 10 || folderId != 0 || !storiesEnabled || (searchItem != null && searchItem.isSearchFieldVisible()) || isInPreviewMode() ? View.GONE : View.VISIBLE);
@@ -12889,7 +12889,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         boolean onlySelfStories = !isArchive() && getStoriesController().hasOnlySelfStories();
         boolean newVisibility;
         if (isArchive()) {
-            newVisibility = !getStoriesController().getHiddenList().isEmpty();
+            newVisibility = getStoriesController().hasHiddenStories();
         } else {
             newVisibility = !onlySelfStories && getStoriesController().hasStories();
             onlySelfStories = getStoriesController().hasOnlySelfStories();
