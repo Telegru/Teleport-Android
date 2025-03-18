@@ -39,7 +39,7 @@ class AppearanceSettingsActivity : UniversalFragment() {
         const val WALLPAPERS = 3
         const val SWITCH_ICONS = 4
         const val SQUARE_AVATARS = 5
-        const val AVATARS_FONT = 7
+        const val AVATARS_FONT = 6
         const val CUSTOM_WALLPAPERS = 7
         const val CHAT_LIST_LINES = 8
     }
