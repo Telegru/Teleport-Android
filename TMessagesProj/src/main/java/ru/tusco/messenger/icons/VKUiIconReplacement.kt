@@ -111,7 +111,7 @@ class VKUiIconReplacement: BaseIconReplacement() {
         R.drawable.msg_admin_add to R.drawable.user_star_badge_outline_28,
         R.drawable.msg_discuss to R.drawable.chats_outline_28,
         R.drawable.msg_contact_add to R.drawable.user_add_outline_28,
-        R.drawable.msg_clearcache to R.drawable.delete_outline_28,
+        R.drawable.msg_clearcache to R.drawable.delete_outline_24,
         R.drawable.msg_newphone to R.drawable.cards_2_outline_28,
         R.drawable.msg_message to R.drawable.view_outline_28,
         R.drawable.msg_viewchats to R.drawable.chats_outline_28,

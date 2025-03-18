@@ -85,9 +85,9 @@
     <string name="RecentChats">Недавние чаты</string>
     <string name="EnablePanel">Включить панель</string>
     <string name="RecentChatsInfo">Над списком чатов появится панель быстрого перехода к недавно посещенным чатам. </string>
-    <string name="NeedConfirm">Подтверждать</string>
+    <string name="NeedConfirm">Подтверждение</string>
     <string name="ConfirmCalling">Звонок</string>
-    <string name="ConfirmAudioMessage">Отправку аудиосообщения</string>
+    <string name="ConfirmAudioMessage">Отправка аудиосообщения</string>
     <string name="ConfirmVideoMessageCamera">Камера видеосообщения</string>
   
     <string name="DahlProxyEnable">Включить прокси Даль</string>
