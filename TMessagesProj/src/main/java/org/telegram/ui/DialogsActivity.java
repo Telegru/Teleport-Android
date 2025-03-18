@@ -785,12 +785,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             }
             h += storiesOverscroll;
 
-            float recentChatsHeight = 0;
-            if(recentChatsPanel != null && recentChatsPanel.getVisibility() != GONE){
-                recentChatsHeight = recentChatsPanel.getMeasuredHeight() * (1f - rightSlidingProgress);
+            if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+                h += dp(RecentChatsPanel.HEIGHT_IN_DP) * (1f - rightSlidingProgress);
             }
-            h += recentChatsHeight;
-
             return (int) h;
         }
 
@@ -1189,6 +1186,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     if (dialogsHintCell != null) {
                         h -= dialogsHintCell.height();
                     }
+                    if(!rightSlidingDialogContainer.hasFragment() && recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE) {
+                        h -= dp(RecentChatsPanel.HEIGHT_IN_DP);
+                    }
                     h += actionModeAdditionalHeight;
                     if (filtersTabAnimator != null && (hasStories || (filterTabsView != null && filterTabsView.getVisibility() == VISIBLE))) {
                         h += filterTabsMoveFrom;
@@ -1328,18 +1328,17 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     childTop = actionBar.getMeasuredHeight();
                 } else if (child instanceof ViewPage) {
                     if (!onlySelect || initialDialogsType == DIALOGS_TYPE_FORWARD) {
-                        boolean isFilterTabsAtTopAndVisible = filterTabsView != null && filterTabsView.getVisibility() == VISIBLE && !DahlSettings.isFoldersTabsAtBottom();
-                        boolean isRecentChatsVisible = recentChatsPanel != null && recentChatsPanel.getVisibility() == VISIBLE;
-                        if (hasStories || (isFilterTabsAtTopAndVisible || isRecentChatsVisible)) {
+                        boolean isFilterTabsVisible = filterTabsView != null && filterTabsView.getVisibility() == VISIBLE;
+                        if (hasStories || isFilterTabsVisible) {
                             childTop = 0;
-                            if (isFilterTabsAtTopAndVisible) {
+                            if (isFilterTabsVisible && !DahlSettings.isFoldersTabsAtBottom()) {
                                 childTop += dp(44);
-                            }
-                            if(isRecentChatsVisible){
-                                childTop += dp(RecentChatsPanel.HEIGHT_IN_DP);
                             }
                         } else {
                             childTop = actionBar.getMeasuredHeight();
+                        }
+                        if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+                            childTop += dp(RecentChatsPanel.HEIGHT_IN_DP);
                         }
                     }
                     childTop += topPadding;
@@ -5597,8 +5596,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (authHintCell != null && authHintCellVisible) {
             h += authHintCell.getMeasuredHeight();
         }
-        if(recentChatsPanel != null){
-            h += recentChatsPanel.getMeasuredHeight();
+        if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+            h += dp(RecentChatsPanel.HEIGHT_IN_DP);
         }
         return h;
     }
