@@ -25,6 +25,7 @@ import android.util.Pair;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.collection.LongSparseArray;
 
@@ -102,6 +103,7 @@ public class MessagesStorage extends BaseController {
 
     private static volatile MessagesStorage[] Instance = new MessagesStorage[UserConfig.MAX_ACCOUNT_COUNT];
     private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
+
     static {
         for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
             lockObjects[i] = new Object();
@@ -17411,5 +17413,34 @@ public class MessagesStorage extends BaseController {
                     ", topicId=" + topicId +
                     '}';
         }
+    }
+
+
+    //--------Dahl----
+
+    public void loadChannelsUnreadMessages(int offset, int limit, LongsCallback callback) {
+        storageQueue.postRunnable(() -> {
+            SQLiteCursor cursor = null;
+            List<Long> result = new ArrayList<>(limit);
+            try {
+                String query = String.format(Locale.US, "SELECT mid FROM messages_v2 WHERE is_channel = 1 ORDER BY date ASC, mid ASC", offset, limit);
+                cursor = database.queryFinalized("SELECT mid FROM messages_v2 WHERE is_channel = 0 ORDER BY date ASC, mid ASC");
+                while (cursor.next()) {
+                    result.add(cursor.longValue(0));
+                }
+            } catch (Exception e) {
+                    checkSQLException(e);
+            } finally {
+                if (cursor != null) {
+                    cursor.dispose();
+                }
+            }
+            AndroidUtilities.runOnUIThread(() -> callback.run(result));
+        });
+    }
+
+    public interface LongsCallback {
+
+        void run(@NonNull List<Long> param);
     }
 }
