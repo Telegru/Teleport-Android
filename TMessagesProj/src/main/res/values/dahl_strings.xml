@@ -44,7 +44,6 @@
     <string name="ProxyDahl">Прокси Даль</string>
     <string name="ProxyDahlInfo">Включайте при сбоях в соединении.</string>
     <string name="Profile">Профиль</string>
-    <string name="HidePhoneNumber">Скрыть номер телефона</string>
     <string name="HidePhoneNumberInfo">Номер будет скрыт только из меню Настроек.</string>
     <string name="Privacy">Приватность</string>
     <string name="MessagesStatus">Статус прочтения сообщений</string>
@@ -90,7 +89,8 @@
     <string name="ConfirmCalling">Звонок</string>
     <string name="ConfirmAudioMessage">Отправка аудиосообщения</string>
     <string name="ConfirmVideoMessageCamera">Камера видеосообщения</string>
-  
+    <string name="ShowNumber">Показывать номер телефона</string>
+
     <string name="DahlProxyEnable">Включить прокси Даль</string>
     <string name="DahlProxyDisable">Выключить прокси Даль</string>
     <string name="DahlUseYourProxySettings">Использовать свой прокси</string>
@@ -140,4 +140,6 @@
     <string name="HideOnScrollInfo">Во время скроллинга чата при активном поле ввода сообщения клавиатура будет скрываться.</string>
 
     <string name="CallConfirmationAlert">Вы точно хотите позвонить <![CDATA[<font color="%1$s"><b>%2$s</b></font>]]>?</string>
+    <string name="WallpaperAsBackground">Обои как фон меню</string>
+    <string name="AvatarAsBackground">Аватар как фон меню</string>
 </resources>
