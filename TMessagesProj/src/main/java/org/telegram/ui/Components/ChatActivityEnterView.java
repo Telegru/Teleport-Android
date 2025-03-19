@@ -2770,7 +2770,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                                 } else if (recordingAudioVideo && DahlSettings.isConfirmAudioMessage()) {
                                     showConfirmAudioAlert();
                                 }
-                                if(!DahlSettings.isConfirmAudioMessage()) {
+                                if(isInScheduleMode() || !DahlSettings.isConfirmAudioMessage()) {
                                     MediaController.getInstance().stopRecording((isInScheduleMode()) ? 3 : 1, true, 0, voiceOnce, 0);
                                 }
                                 if (AlertsCreator.needsPaidMessageAlert(currentAccount, dialog_id)) {
@@ -2794,7 +2794,9 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                                     });
                                     return true;
                                 }
-                                MediaController.getInstance().stopRecording(isInScheduleMode() ? 3 : 1, true, 0, voiceOnce, 0);
+                                if(isInScheduleMode() || !DahlSettings.isConfirmAudioMessage()) {
+                                    MediaController.getInstance().stopRecording(isInScheduleMode() ? 3 : 1, true, 0, voiceOnce, 0);
+                                }
                                 delegate.needStartRecordAudio(0);
                             }
                             recordingAudioVideo = false;
@@ -2915,7 +2917,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                                     showConfirmAudioAlert();
                                 }
                                 delegate.needStartRecordAudio(0);
-                                if(!DahlSettings.isConfirmAudioMessage()){
+                                if(isInScheduleMode() || !DahlSettings.isConfirmAudioMessage()){
                                     MediaController.getInstance().stopRecording((isInScheduleMode()) ? 3 : 1, true, 0, voiceOnce, 0);
                                 }
                             }
