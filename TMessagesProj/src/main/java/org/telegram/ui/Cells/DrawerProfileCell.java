@@ -54,13 +54,11 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.ChatBackgroundDrawable;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.MotionBackgroundDrawable;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 import org.telegram.ui.Components.Premium.StarParticlesView;
 import org.telegram.ui.Components.RLottieDrawable;
@@ -73,7 +71,6 @@ import org.telegram.ui.ThemeActivity;
 
 import java.util.ArrayList;
 
-import ru.tusco.messenger.settings.DahlAppearanceSettings;
 import ru.tusco.messenger.settings.DahlSettings;
 
 public class DrawerProfileCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
@@ -108,13 +105,8 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     StarParticlesView.Drawable starParticlesDrawable;
     PremiumGradient.PremiumGradientTools gradientTools;
 
-    protected final ImageReceiver imageReceiver;
-
     public DrawerProfileCell(Context context, DrawerLayoutContainer drawerLayoutContainer) {
         super(context);
-
-        imageReceiver = new ImageReceiver(this);
-        imageReceiver.setCrossfadeByScale(0f);
 
         shadowView = new ImageView(context);
         shadowView.setVisibility(INVISIBLE);
@@ -230,7 +222,6 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         sunDrawable.commitApplyLayerColors();
         darkThemeView.setScaleType(ImageView.ScaleType.CENTER);
         darkThemeView.setAnimation(sunDrawable);
-
         if (Build.VERSION.SDK_INT >= 21) {
             darkThemeView.setBackgroundDrawable(Theme.createSelectorDrawable(darkThemeBackgroundColor = Theme.getColor(Theme.key_listSelector), 1, AndroidUtilities.dp(17)));
             Theme.setRippleDrawableForceSoftware((RippleDrawable) darkThemeView.getBackground());
@@ -549,11 +540,11 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     protected void onDraw(Canvas canvas) {
         Drawable backgroundDrawable = Theme.getCachedWallpaper();
         int backgroundKey = applyBackground(false);
-        boolean useImageBackground = DahlAppearanceSettings.getWallpaperAsBackground() || (backgroundKey != Theme.key_chats_menuTopBackground && Theme.isCustomTheme() && !Theme.isPatternWallpaper() && backgroundDrawable != null && !(backgroundDrawable instanceof ColorDrawable) && !(backgroundDrawable instanceof GradientDrawable));
+        boolean useImageBackground = backgroundKey != Theme.key_chats_menuTopBackground && Theme.isCustomTheme() && !Theme.isPatternWallpaper() && backgroundDrawable != null && !(backgroundDrawable instanceof ColorDrawable) && !(backgroundDrawable instanceof GradientDrawable);
         boolean drawCatsShadow = false;
         int color;
         int darkBackColor = 0;
-        if (!DahlAppearanceSettings.getAvatarAsBackground() && !useImageBackground && Theme.hasThemeKey(Theme.key_chats_menuTopShadowCats)) {
+        if (!useImageBackground && Theme.hasThemeKey(Theme.key_chats_menuTopShadowCats)) {
             color = Theme.getColor(Theme.key_chats_menuTopShadowCats);
             drawCatsShadow = true;
         } else {
@@ -578,17 +569,15 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             sunDrawable.commitApplyLayerColors();
         }
         nameTextView.setTextColor(Theme.getColor(Theme.key_chats_menuName));
-        if (DahlAppearanceSettings.getAvatarAsBackground() || useImageBackground) {
+        if (useImageBackground) {
             phoneTextView.setTextColor(Theme.getColor(Theme.key_chats_menuPhone));
             if (shadowView.getVisibility() != VISIBLE) {
                 shadowView.setVisibility(VISIBLE);
             }
-            if (DahlAppearanceSettings.getAvatarAsBackground()) {
-                imageReceiver.setImageCoords(0, 0, getWidth(), getHeight());
-                imageReceiver.draw(canvas);
-            } else if (backgroundDrawable instanceof ColorDrawable || backgroundDrawable instanceof GradientDrawable || backgroundDrawable instanceof MotionBackgroundDrawable) {
+            if (backgroundDrawable instanceof ColorDrawable || backgroundDrawable instanceof GradientDrawable) {
                 backgroundDrawable.setBounds(0, 0, getMeasuredWidth(), getMeasuredHeight());
                 backgroundDrawable.draw(canvas);
+                darkBackColor = Theme.getColor(Theme.key_listSelector);
             } else if (backgroundDrawable instanceof BitmapDrawable) {
                 Bitmap bitmap = ((BitmapDrawable) backgroundDrawable).getBitmap();
                 float scaleX = (float) getMeasuredWidth() / (float) bitmap.getWidth();
@@ -605,6 +594,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
                 } catch (Throwable e) {
                     FileLog.e(e);
                 }
+                darkBackColor = (Theme.getServiceMessageColor() & 0x00ffffff) | 0x50000000;
             }
         } else {
             int visibility = drawCatsShadow? VISIBLE : INVISIBLE;
@@ -613,6 +603,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             }
             phoneTextView.setTextColor(Theme.getColor(Theme.key_chats_menuPhoneCats));
             super.onDraw(canvas);
+            darkBackColor = Theme.getColor(Theme.key_listSelector);
         }
 
 
@@ -657,11 +648,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     }
 
     public boolean isInAvatar(float x, float y) {
-        if (DahlAppearanceSettings.getAvatarAsBackground()) {
-            return y <= arrowView.getTop();
-        } else {
-            return x >= avatarImageView.getLeft() && x <= avatarImageView.getRight() && y >= avatarImageView.getTop() && y <= avatarImageView.getBottom();
-        }
+        return x >= avatarImageView.getLeft() && x <= avatarImageView.getRight() && y >= avatarImageView.getTop() && y <= avatarImageView.getBottom();
     }
 
     public boolean hasAvatar() {
@@ -735,34 +722,10 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         }
         animatedStatus.setColor(Theme.getColor(Theme.isCurrentThemeDark() ? Theme.key_chats_verifiedBackground : Theme.key_chats_menuPhoneCats));
         status.setColor(Theme.getColor(Theme.isCurrentThemeDark() ? Theme.key_chats_verifiedBackground : Theme.key_chats_menuPhoneCats));
-        String phoneText = DahlSettings.isShowPhoneNumber() ?  PhoneFormat.getInstance().format("+" + user.phone) : "@" + user.username;
-        if (user.username == null) phoneText = "";
-        phoneTextView.setText(phoneText);
+        phoneTextView.setText(PhoneFormat.getInstance().format("+" + user.phone));
         AvatarDrawable avatarDrawable = new AvatarDrawable(user);
         avatarDrawable.setColor(Theme.getColor(Theme.key_avatar_backgroundInProfileBlue));
         avatarImageView.setForUserOrChat(user, avatarDrawable);
-        if (DahlAppearanceSettings.getAvatarAsBackground()) {
-            boolean hasPhoto = user.photo != null;
-            if (hasPhoto) {
-                avatarImageView.setVisibility(INVISIBLE);
-                BitmapDrawable strippedBitmap = user.photo.strippedBitmap;
-                boolean hasStripped = user.photo.stripped_thumb != null;
-                ImageLocation imageLocation = ImageLocation.getForUser(user, ImageLocation.TYPE_BIG);
-                String filter = "512_512";
-                if (strippedBitmap != null) {
-                    imageReceiver.setImage(imageLocation, filter, strippedBitmap, null, user, 0);
-                } else if (hasStripped) {
-                    imageReceiver.setImage(imageLocation, filter, ImageLocation.getForUser(user, ImageLocation.TYPE_STRIPPED), "50_50_b", new ColorDrawable(0x00000000), user, 0);
-                } else {
-                    imageReceiver.setImage(imageLocation, filter, new ColorDrawable(0x00000000), null, user, 0);
-                }
-            } else {
-                avatarImageView.setVisibility(VISIBLE);
-                imageReceiver.setImage(null, "", new ColorDrawable(0x00000000), null, user, 0);
-            }
-        } else {
-            avatarImageView.setVisibility(VISIBLE);
-        }
         applyBackground(true);
         updateRightDrawable = true;
     }
