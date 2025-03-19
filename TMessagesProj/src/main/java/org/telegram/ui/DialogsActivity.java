@@ -8975,7 +8975,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     public boolean storiesEnabled = true;
 
     private void updateStoriesPosting() {
-        final boolean storiesEnabled = getMessagesController().storiesEnabled() && !DahlSettings.isHideStories() && !DahlSettings.getHideAddStory();
+        final boolean storiesEnabled = getMessagesController().storiesEnabled() && !DahlSettings.getHideAddStory();
         if (this.storiesEnabled != storiesEnabled) {
             if (floatingButton2Container != null) {
                 floatingButton2Container.setVisibility(onlySelect && initialDialogsType != 10 || folderId != 0 || !storiesEnabled || (searchItem != null && searchItem.isSearchFieldVisible()) || isInPreviewMode() ? View.GONE : View.VISIBLE);

@@ -285,7 +285,8 @@ object DahlSettings {
         get() = sharedPreferences.getBoolean("hide_stories", false)
         set(value) {
             putBoolean("hide_stories", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+            AccountInstance.getInstance(UserConfig.selectedAccount).notificationCenter.postNotificationName(NotificationCenter.storiesEnabledUpdate)
+//            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
@@ -369,9 +370,9 @@ object DahlSettings {
 
     @JvmStatic
     fun putToRecentChats(dialogId: Long, currentAccount: Int) {
-        if (sharedPreferences.getInt(DahlSettingsKeys.RECENT_CHATS_ENABLED, -1) < 0) {
-            return
-        }
+//        if (sharedPreferences.getInt(DahlSettingsKeys.RECENT_CHATS_ENABLED, 1) < 0) {
+//            return
+//        }
         val set = getRecentChats(currentAccount)
         set.remove(dialogId)
         set.add(dialogId)
