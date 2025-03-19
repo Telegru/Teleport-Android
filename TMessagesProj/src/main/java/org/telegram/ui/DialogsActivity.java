@@ -4701,7 +4701,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         .setJoint(1, -40)
                         .setBgColor(getThemedColor(Theme.key_undo_background))
                         .setOnHiddenListener(() -> MessagesController.getInstance(currentAccount).getMainSettings().edit().putBoolean("storyhint", false).commit());
-                contentView.addView(storyHint, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 160, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 0, 0, 80, 0));
+                int bottomMargin = filterTabsView != null && DahlSettings.isFoldersTabsAtBottom() ? 44 : 0;
+                contentView.addView(storyHint, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 160, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 0, 0, 80, bottomMargin));
             }
         }
 
@@ -8961,14 +8962,22 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void updateFloatingButtonOffset() {
+        float additionalTranslation = Math.max(additionalFloatingTranslation, additionalFloatingTranslation2);
+        float d = 0;
+        if (filterTabsView != null && DahlSettings.isFoldersTabsAtBottom()) {
+            filterTabsView.setElevation(additionalTranslation > 0 ? 0 : dp(20));
+            if(additionalTranslation > 0) {
+                d = dp(44);
+            }
+        }
         if (floatingButtonContainer != null) {
-            floatingButtonContainer.setTranslationY(floatingButtonTranslation - floatingButtonPanOffset - Math.max(additionalFloatingTranslation, additionalFloatingTranslation2) * (1f - floatingButtonHideProgress));
+            floatingButtonContainer.setTranslationY(floatingButtonTranslation - floatingButtonPanOffset - additionalTranslation * (1f - floatingButtonHideProgress) + d);
             if (storyHint != null) {
                 storyHint.setTranslationY(floatingButtonContainer.getTranslationY());
             }
         }
         if (floatingButton2Container != null) {
-            floatingButton2Container.setTranslationY(floatingButtonTranslation - floatingButtonPanOffset - Math.max(additionalFloatingTranslation, additionalFloatingTranslation2) * (1f - floatingButtonHideProgress) + dp(44) * floatingButtonHideProgress);
+            floatingButton2Container.setTranslationY(floatingButtonTranslation - floatingButtonPanOffset - additionalTranslation * (1f - floatingButtonHideProgress) + dp(44) * floatingButtonHideProgress + d);
         }
     }
 
