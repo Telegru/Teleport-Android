@@ -3635,7 +3635,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } else if (id == call || id == video_call) {
                     if (currentUser != null && getParentActivity() != null) {
                         if(DahlSettings.isConfirmCall()){
-                            showCallConfirmationDialog(id);
+                            showCallConfirmationDialog(id, currentUser);
                         }else {
                             VoIPHelper.startCall(currentUser, id == video_call, userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
                         }
@@ -36986,7 +36986,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             MessageObject messageObject = cell.getMessageObject();
             if (messageObject.type == MessageObject.TYPE_PHONE_CALL) {
                 if (currentUser != null) {
-                    VoIPHelper.startCall(currentUser, messageObject.isVideoCall(), userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
+                    if(DahlSettings.isConfirmCall()){
+                        showCallConfirmationDialog(messageObject.isVideoCall() ? video_call : call, currentUser);
+                    }else {
+                        VoIPHelper.startCall(currentUser, messageObject.isVideoCall(), userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
+                    }
                 }
             } else {
                 createMenu(cell, true, false, otherX, otherY, messageObject.isMusic(), false);
@@ -41392,10 +41396,18 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 options.add(R.drawable.msg_discussion, getString(R.string.SendMessage), () -> presentFragment(ChatActivity.of(user.id)));
                 if (!UserObject.isUserSelf(user)) {
                     options.add(R.drawable.msg_calls, getString(R.string.VoiceCallViaTelegram), () -> {
-                        VoIPHelper.startCall(user, false, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                        if(DahlSettings.isConfirmCall()){
+                            showCallConfirmationDialog(call, user);
+                        }else {
+                            VoIPHelper.startCall(user, false, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                        }
                     });
                     options.add(R.drawable.msg_videocall, getString(R.string.VideoCallViaTelegram), () -> {
-                        VoIPHelper.startCall(user, true, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                        if (DahlSettings.isConfirmCall()) {
+                            showCallConfirmationDialog(video_call, user);
+                        } else {
+                            VoIPHelper.startCall(user, true, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                        }
                     });
                 }
                 options.add(R.drawable.msg_calls_regular, getString(R.string.VoiceCallViaCarrier), () -> {
@@ -42004,15 +42016,16 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         return -1;
     }
 
-    private void showCallConfirmationDialog(int callId) {
+    private void showCallConfirmationDialog(int callId, TLRPC.User user) {
+        TLRPC.UserFull userFull = getMessagesController().getUserFull(user.id);
         String nameColor = String.format("#%06X", (0xFFFFFF & Theme.getColor(Theme.key_dialogTextBlack)));
-        String name = AndroidUtilities.escape(ContactsController.formatName(currentUser.first_name, currentUser.last_name).replace("\n", ""));
+        String name = AndroidUtilities.escape(ContactsController.formatName(user.first_name, user.last_name).replace("\n", ""));
         CharSequence message = Html.fromHtml(formatString(R.string.CallConfirmationAlert, nameColor, name));
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity())
                 .setTitle(LocaleController.getString(callId == video_call ? R.string.VideoCall : R.string.Call))
                 .setMessage(message)
                 .setPositiveButton(LocaleController.getString(R.string.Call), (dialog, which) -> {
-                    VoIPHelper.startCall(currentUser, callId == video_call, userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
+                    VoIPHelper.startCall(user, callId == video_call, userFull != null && userFull.video_calls_available, getParentActivity(), userFull, getAccountInstance());
                 })
                 .setNegativeButton(LocaleController.getString(R.string.Cancel), (dialog, which) -> {
                     dialog.dismiss();
