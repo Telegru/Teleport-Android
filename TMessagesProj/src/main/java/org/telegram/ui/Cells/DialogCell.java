@@ -4693,7 +4693,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     }
 
     private void drawCounter(Canvas canvas, boolean drawCounterMuted, int countTop, int countLeftLocal, int countLeftOld, float globalScale, boolean outline) {
-        final boolean drawBubble = isForumCell() || isFolderCell();
+        final boolean drawBubble = (isForumCell() || isFolderCell()) && !DahlSettings.getRectangularAvatars();
         if (drawCount && drawCount2 || countChangeProgress != 1f) {
             final float progressFinal = (unreadCount == 0 && !markUnread) ? 1f - countChangeProgress : countChangeProgress;
             Paint paint;
