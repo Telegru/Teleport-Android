@@ -123,6 +123,4 @@
     <string name="CameraAsk">Ask before recording</string>
     <string name="CameraFront">Front</string>
     <string name="CameraRear">Rear</string>
-    <string name="WallpaperAsBackground">Wallpaper as drawer background</string>
-    <string name="AvatarAsBackground">Avatar as drawer background</string>
 </resources>

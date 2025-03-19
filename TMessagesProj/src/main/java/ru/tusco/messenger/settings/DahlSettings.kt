@@ -45,18 +45,6 @@ object DahlSettings {
         editor.apply()
     }
 
-    fun getBoolean(key: String, defValue: Boolean): Boolean {
-        return sharedPreferences.getBoolean(key, defValue)
-    }
-
-    fun getInt(key: String, defValue: Int): Int {
-        return sharedPreferences.getInt(key, defValue)
-    }
-
-    fun getString(key: String, defValue: String): String {
-        return sharedPreferences.getString(key, defValue) ?: defValue
-    }
-
     fun remove(key: String) {
         sharedPreferences.edit().remove(key).apply()
     }
@@ -149,45 +137,7 @@ object DahlSettings {
             putBoolean("enable_proxy_button_by_default", value)
         }
 
-    @JvmStatic
-    var hideMessageReadStatus: Boolean
-        get() = sharedPreferences.getBoolean("hide_message_read_status", false)
-        set(value) {
-            putBoolean("hide_message_read_status", value)
-        }
 
-    @JvmStatic
-    var isOffline: Boolean
-        get() = sharedPreferences.getBoolean("offline_mode", false)
-        set(value) {
-            putBoolean("offline_mode", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
-        }
-
-    @JvmStatic
-    var isShowBottomPanelInChannels: Boolean
-        get() = sharedPreferences.getBoolean("show_bottom_panel_in_channels", true)
-        set(value) {
-            putBoolean("show_bottom_panel_in_channels", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
-        }
-
-    @JvmStatic
-    var isEnabledPersonalColors: Boolean
-        get() = sharedPreferences.getBoolean("enabled_personal_colors", true)
-        set(value) {
-            putBoolean("enabled_personal_colors", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
-        }
-
-    @JvmStatic
-    var isHiddenHelpBlock: Boolean
-        get() = sharedPreferences.getBoolean("hide_help_block", true)
-        set(value) {
-            putBoolean("hide_help_block", value)
-        }
-
-    // Region general settings
     @JvmStatic
     var isProxyEnabled: Boolean
         get() {
@@ -234,18 +184,56 @@ object DahlSettings {
         }
 
     @JvmStatic
-    var navigationDrawerItems: NavDrawerSettings
-        get() = NavDrawerSettings(sharedPreferences)
+    var isHidePhoneNumber: Boolean
+        get() = sharedPreferences.getBoolean("hide_phone_number_in_menu", false)
         set(value) {
-            value.save(sharedPreferences)
+            putBoolean("hide_phone_number_in_menu", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
-    var isShowPhoneNumber: Boolean
-        get() = sharedPreferences.getBoolean("show_phone_number_in_menu", true)
+    var hideMessageReadStatus: Boolean
+        get() = sharedPreferences.getBoolean("hide_message_read_status", false)
         set(value) {
-            putBoolean("show_phone_number_in_menu", value)
+            putBoolean("hide_message_read_status", value)
+        }
+
+    @JvmStatic
+    var isOffline: Boolean
+        get() = sharedPreferences.getBoolean("offline_mode", false)
+        set(value) {
+            putBoolean("offline_mode", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isShowBottomPanelInChannels: Boolean
+        get() = sharedPreferences.getBoolean("show_bottom_panel_in_channels", true)
+        set(value) {
+            putBoolean("show_bottom_panel_in_channels", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isEnabledPersonalColors: Boolean
+        get() = sharedPreferences.getBoolean("enabled_personal_colors", true)
+        set(value) {
+            putBoolean("enabled_personal_colors", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isHiddenHelpBlock: Boolean
+        get() = sharedPreferences.getBoolean("hide_help_block", true)
+        set(value) {
+            putBoolean("hide_help_block", value)
+        }
+
+    @JvmStatic
+    var navigationDrawerItems: NavDrawerSettings
+        get() = NavDrawerSettings(sharedPreferences)
+        set(value) {
+            value.save(sharedPreferences)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
@@ -255,8 +243,6 @@ object DahlSettings {
         set(value) {
             putBoolean("premium_hide_block", value)
         }
-
-    // End region general settings
 
     @JvmStatic
     var isEmojiStatus: Boolean

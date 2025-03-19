@@ -39,11 +39,9 @@ class AppearanceSettingsActivity : UniversalFragment() {
         const val WALLPAPERS = 3
         const val SWITCH_ICONS = 4
         const val SQUARE_AVATARS = 5
-        const val AVATARS_FONT = 6
+        const val AVATARS_FONT = 7
         const val CUSTOM_WALLPAPERS = 7
         const val CHAT_LIST_LINES = 8
-        const val WALLPAPER_AS_DRAWER_BACKGROUND = 9
-        const val AVATAR_AS_DRAWER_BACKGROUND = 10
     }
 
     private val icons: Set<Int> by lazy {
@@ -87,14 +85,8 @@ class AppearanceSettingsActivity : UniversalFragment() {
 
         items?.add(UItem.asShadow(-3, null))
 
-        items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
-        items?.add(UItem.asCheck(WALLPAPER_AS_DRAWER_BACKGROUND, getString(R.string.WallpaperAsBackground)).apply {
-            setChecked(DahlAppearanceSettings.wallpaperAsBackground)
-        })
-        items?.add(UItem.asCheck(AVATAR_AS_DRAWER_BACKGROUND, getString(R.string.AvatarAsBackground)).apply {
-            setChecked(DahlAppearanceSettings.avatarAsBackground)
-        })
-        items?.add(UItem.asShadow(-3, null))
+//        items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
+//        items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.ElementsRounding)))
         items?.add(UItem.asCheck(SQUARE_AVATARS, getString(R.string.Squared)).apply {
@@ -143,14 +135,6 @@ class AppearanceSettingsActivity : UniversalFragment() {
                 DahlSettings.ngAvatarFont = !DahlSettings.ngAvatarFont
             }
             CUSTOM_WALLPAPERS -> DahlSettings.isCustomWallpapersEnabled = !DahlSettings.isCustomWallpapersEnabled
-            AVATAR_AS_DRAWER_BACKGROUND -> {
-                DahlAppearanceSettings.avatarAsBackground = !DahlAppearanceSettings.avatarAsBackground
-                DahlAppearanceSettings.wallpaperAsBackground = !DahlAppearanceSettings.wallpaperAsBackground
-            }
-            WALLPAPER_AS_DRAWER_BACKGROUND -> {
-                DahlAppearanceSettings.wallpaperAsBackground = !DahlAppearanceSettings.wallpaperAsBackground
-                DahlAppearanceSettings.avatarAsBackground = !DahlAppearanceSettings.avatarAsBackground
-            }
             else -> {}
         }
         if(item?.id != CHAT_LIST_LINES) {

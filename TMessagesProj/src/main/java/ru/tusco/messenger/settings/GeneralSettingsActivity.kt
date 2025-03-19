@@ -40,7 +40,7 @@ class GeneralSettingsActivity : UniversalFragment(), NotificationCenter.Notifica
         const val PROXY = 1
         const val HIDE_HELP = 2
         const val NAVIGATION_DRAWER = 3
-        const val SHOW_PHONE_NUMBER = 4
+        const val HIDE_PHONE_NUMBER = 4
         const val MESSAGE_READ_STATUS = 5
         const val OFFLINE_MODE = 6
         const val PREMIUM = 7
@@ -122,7 +122,7 @@ class GeneralSettingsActivity : UniversalFragment(), NotificationCenter.Notifica
             setTextAndValue(getString(R.string.NavigationDrawerItems), DahlSettings.navigationDrawerItems.getInfoText(isPremium), false)
         }
         items?.add(UItem.asCustom(NAVIGATION_DRAWER, settingsCell))
-        items?.add(UItem.asCheck(SHOW_PHONE_NUMBER, getString(R.string.ShowNumber)).setChecked(DahlSettings.isShowPhoneNumber))
+//        items?.add(UItem.asCheck(HIDE_PHONE_NUMBER, getString(R.string.HidePhoneNumber)).setChecked(DahlSettings.isHidePhoneNumber))
 
         items?.add(UItem.asShadow(-3, null))
 
@@ -173,7 +173,7 @@ class GeneralSettingsActivity : UniversalFragment(), NotificationCenter.Notifica
                 checkProxyList()
             }
 
-            SHOW_PHONE_NUMBER -> DahlSettings.isShowPhoneNumber = !DahlSettings.isShowPhoneNumber
+            HIDE_PHONE_NUMBER -> DahlSettings.isHidePhoneNumber = !DahlSettings.isHidePhoneNumber
             MESSAGE_READ_STATUS -> DahlSettings.hideMessageReadStatus = !DahlSettings.hideMessageReadStatus
             OFFLINE_MODE -> DahlSettings.isOffline = !DahlSettings.isOffline
             PREMIUM -> presentFragment(PremiumSettingsActivity())
