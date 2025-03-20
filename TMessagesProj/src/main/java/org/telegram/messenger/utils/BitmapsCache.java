@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 
-import com.google.common.util.concurrent.AtomicDouble;
-
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.DispatchQueuePoolBackground;
@@ -46,7 +44,7 @@ public class BitmapsCache {
     ArrayList<FrameOffset> frameOffsets = new ArrayList<>();
 
     final boolean useSharedBuffers;
-    static ConcurrentHashMap<Thread, byte[]> sharedBuffers = new ConcurrentHashMap();
+    final static ConcurrentHashMap<Thread, byte[]> sharedBuffers = new ConcurrentHashMap<>();
     static volatile boolean cleanupScheduled;
     byte[] bufferTmp;
 

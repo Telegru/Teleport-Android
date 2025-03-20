@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.MediaError;
 import com.google.android.gms.cast.MediaLoadOptions;
-import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
@@ -42,6 +41,10 @@ public class ChromecastController implements SessionManagerListener<CastSession>
         sessionManager.addSessionManagerListener(this, CastSession.class);
 
         tryInitClient(sessionManager.getCurrentCastSession());
+    }
+
+    public boolean isCasting() {
+        return state.getClient() != null;
     }
 
     public void setCurrentMediaAndCastIfNeeded(ChromecastMediaVariations newMedia) {

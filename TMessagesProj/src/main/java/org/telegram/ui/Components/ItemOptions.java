@@ -5,21 +5,16 @@ import static org.telegram.messenger.LocaleController.getString;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -29,7 +24,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
@@ -43,13 +37,11 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.Emoji;
-import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
-import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
@@ -60,10 +52,6 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.UserCell;
 import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.Stories.recorder.HintView2;
-import org.telegram.ui.Stories.recorder.ToggleButton;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 public class ItemOptions {
 
@@ -820,6 +808,25 @@ public class ItemOptions {
                 }
             }
             return itemsCount;
+        }
+    }
+
+    public View getItemAt(int index) {
+        if (lastLayout == null && layout == null)
+            return null;
+        if (lastLayout == layout) {
+            return lastLayout.getItemAt(index);
+        } else {
+            for (int j = 0; j < layout.getChildCount() - 1; ++j) {
+                View child = j == layout.getChildCount() - 1 ? lastLayout : layout.getChildAt(j);
+                if (child instanceof ActionBarPopupWindow.ActionBarPopupWindowLayout) {
+                    ActionBarPopupWindow.ActionBarPopupWindowLayout popupLayout = (ActionBarPopupWindow.ActionBarPopupWindowLayout) child;
+                    View item = popupLayout.getItemAt(index);
+                    if (item != null) return item;
+                    index -= popupLayout.getItemsCount();
+                }
+            }
+            return null;
         }
     }
 

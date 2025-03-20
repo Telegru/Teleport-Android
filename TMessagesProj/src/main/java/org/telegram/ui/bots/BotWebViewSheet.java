@@ -1,6 +1,5 @@
 package org.telegram.ui.bots;
 
-import static org.telegram.messenger.AndroidUtilities.distanceInfluenceForSnapDuration;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.lerp;
 import static org.telegram.ui.Components.Bulletin.DURATION_PROLONG;
@@ -16,7 +15,6 @@ import android.content.ContextWrapper;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
-import android.graphics.Insets;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
@@ -30,9 +28,7 @@ import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,15 +45,9 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.math.MathUtils;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
-
-import com.google.android.exoplayer2.offline.Download;
-import com.google.android.gms.vision.Frame;
 
 import org.json.JSONObject;
 import org.telegram.messenger.AndroidUtilities;
@@ -96,7 +86,6 @@ import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ArticleViewer;
 import org.telegram.ui.ChatActivity;
-import org.telegram.ui.Components.AnchorSpan;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CubicBezierInterpolator;
@@ -106,7 +95,6 @@ import org.telegram.ui.Components.OverlayActionBarLayoutDialog;
 import org.telegram.ui.Components.PasscodeView;
 import org.telegram.ui.Components.SimpleFloatPropertyCompat;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
-import org.telegram.ui.Components.VerticalPositionAutoAnimator;
 import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PaymentFormActivity;
@@ -1347,7 +1335,8 @@ public class BotWebViewSheet extends Dialog implements NotificationCenter.Notifi
         final TLRPC.UserFull userInfo = MessagesController.getInstance(currentAccount).getUserFull(botId);
         if (userbot != null && userbot.verified || userInfo != null && userInfo.user != null && userInfo.user.verified) {
             verifiedDrawable = getContext().getResources().getDrawable(R.drawable.verified_profile).mutate();
-            verifiedDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_addButton), PorterDuff.Mode.SRC_IN));
+            verifiedDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), PorterDuff.Mode.SRC_IN));
+            verifiedDrawable.setAlpha(0xFF);
             actionBar.getTitleTextView().setDrawablePadding(dp(2));
             actionBar.getTitleTextView().setRightDrawable(new Drawable() {
                 @Override
@@ -1673,11 +1662,29 @@ public class BotWebViewSheet extends Dialog implements NotificationCenter.Notifi
             })
             .addIf(currentBot != null && (currentBot.show_in_side_menu || currentBot.show_in_attach_menu), R.drawable.msg_delete, LocaleController.getString(R.string.BotWebViewDeleteBot), () -> {
                 deleteBot(currentAccount, botId, () -> dismiss());
-            })
+            });
+
+        if (actionBarColor != Theme.getColor(Theme.key_windowBackgroundWhite)) {
+            final int backgroundColor = AndroidUtilities.computePerceivedBrightness(actionBarColor) >= .721f ? 0xFF181819 : 0xffffffff;
+            final int textColor = AndroidUtilities.computePerceivedBrightness(backgroundColor) >= .721f ? Color.BLACK : Color.WHITE;
+            final int iconColor = Theme.multAlpha(textColor, .85f);
+            final int selectorColor = Theme.multAlpha(textColor, .10f);
+
+            o.setBackgroundColor(backgroundColor);
+            for (int i = 0; i < o.getItemsCount(); ++i) {
+                View item = o.getItemAt(i);
+                if (item instanceof ActionBarMenuSubItem) {
+                    ((ActionBarMenuSubItem) item).setColors(textColor, iconColor);
+                    ((ActionBarMenuSubItem) item).setSelectorColor(selectorColor);
+                }
+            }
+        }
+        o
             .setGravity(Gravity.RIGHT)
             .translate(-insets.right, 0)
             .forceTop(true)
             .setDrawScrim(false)
+            .setDimAlpha(0)
             .show();
     }
 

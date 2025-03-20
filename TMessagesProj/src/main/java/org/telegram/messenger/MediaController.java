@@ -49,9 +49,6 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.MediaStore;
@@ -81,7 +78,6 @@ import org.telegram.messenger.chromecast.ChromecastMedia;
 import org.telegram.messenger.chromecast.ChromecastMediaVariations;
 import org.telegram.messenger.video.MediaCodecVideoConvertor;
 import org.telegram.messenger.voip.VoIPService;
-import org.telegram.tgnet.AbstractSerializedData;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.InputSerializedData;
 import org.telegram.tgnet.OutputSerializedData;
@@ -94,7 +90,6 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Adapters.FiltersView;
 import org.telegram.ui.CastSync;
 import org.telegram.ui.ChatActivity;
-import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.EmbedBottomSheet;
 import org.telegram.ui.Components.PermissionRequest;
 import org.telegram.ui.Components.PhotoFilterView;
@@ -3886,7 +3881,9 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         try {
             CastSync.check(CastSync.TYPE_MUSIC);
             if (!ignorePlayerUpdate) {
-                ChromecastController.getInstance().setCurrentMediaAndCastIfNeeded(getCurrentChromecastMedia());
+                if (ChromecastController.getInstance().isCasting()) {
+                    ChromecastController.getInstance().setCurrentMediaAndCastIfNeeded(getCurrentChromecastMedia());
+                }
                 CastSync.setPlaying(true);
             }
         } catch (Exception e) {
@@ -3925,7 +3922,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         return getProgressMs(playingMessageObject);
     }
 
-    private ChromecastMediaVariations getCurrentChromecastMedia() {
+    public ChromecastMediaVariations getCurrentChromecastMedia() {
         if (playingMessageObject == null) {
             return null;
         }
@@ -4112,7 +4109,9 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         try {
             CastSync.check(CastSync.TYPE_MUSIC);
             if (!ignorePlayerUpdate) {
-                ChromecastController.getInstance().setCurrentMediaAndCastIfNeeded(getCurrentChromecastMedia());
+                if (ChromecastController.getInstance().isCasting()) {
+                    ChromecastController.getInstance().setCurrentMediaAndCastIfNeeded(getCurrentChromecastMedia());
+                }
                 CastSync.setPlaying(false);
             }
         } catch (Exception e) {

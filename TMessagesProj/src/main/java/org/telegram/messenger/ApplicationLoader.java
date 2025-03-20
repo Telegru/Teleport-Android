@@ -18,7 +18,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -44,7 +43,6 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Adapters.DrawerLayoutAdapter;
 import org.telegram.ui.Components.ForegroundDetector;
-import org.telegram.ui.Components.Premium.boosts.BoostRepository;
 import org.telegram.ui.IUpdateButton;
 import org.telegram.ui.IUpdateLayout;
 import org.telegram.ui.LauncherIconController;
@@ -138,11 +136,19 @@ public class ApplicationLoader extends Application {
         return applicationLoaderInstance.isStandalone();
     }
 
+    public static boolean isBetaBuild() {
+        return applicationLoaderInstance.isBeta();
+    }
+
     protected boolean isHuaweiBuild() {
         return false;
     }
 
     protected boolean isStandalone() {
+        return false;
+    }
+
+    protected boolean isBeta() {
         return false;
     }
 
@@ -614,6 +620,10 @@ public class ApplicationLoader extends Application {
         return false;
     }
 
+    public boolean showCustomUpdateAppPopup(Context context, BetaUpdate update, int account) {
+        return false;
+    }
+
     public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenu, ViewGroup sideMenuContainer) {
         return null;
     }
@@ -659,6 +669,25 @@ public class ApplicationLoader extends Application {
     }
 
     public BaseFragment openSettings(int n) {
+        return null;
+    }
+
+    public boolean isCustomUpdate() {
+        return false;
+    }
+    public void downloadUpdate() {}
+    public void cancelDownloadingUpdate() {}
+    public boolean isDownloadingUpdate() {
+        return false;
+    }
+    public float getDownloadingUpdateProgress() {
+        return 0.0f;
+    }
+    public void checkUpdate(boolean force, Runnable whenDone) {}
+    public BetaUpdate getUpdate() {
+        return null;
+    }
+    public File getDownloadedUpdateFile() {
         return null;
     }
 }

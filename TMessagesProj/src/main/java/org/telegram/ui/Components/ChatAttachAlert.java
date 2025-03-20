@@ -130,9 +130,9 @@ import org.telegram.ui.Stars.StarsController;
 import org.telegram.ui.Stars.StarsIntroActivity;
 import org.telegram.ui.Stories.recorder.StoryEntry;
 import org.telegram.ui.WebAppDisclaimerAlert;
-import org.telegram.ui.web.BotWebViewContainer;
 import org.telegram.ui.bots.BotWebViewMenuContainer;
 import org.telegram.ui.bots.ChatAttachAlertBotWebViewLayout;
+import org.telegram.ui.web.BotWebViewContainer;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -700,6 +700,10 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
         public boolean canDismissWithTouchOutside() {
             return true;
+        }
+
+        public boolean canDismissWithSwipe() {
+            return false;
         }
 
         public void onDismissWithButtonClick(int item) {
@@ -2366,6 +2370,8 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 currentAttachLayout.onButtonsTranslationYUpdated();
             }
         };
+        buttonsRecyclerView.setClipChildren(true);
+        buttonsRecyclerView.setClipToPadding(true);
         buttonsRecyclerView.setAdapter(buttonsAdapter = new ButtonsAdapter(context));
         buttonsRecyclerView.setLayoutManager(buttonsLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         buttonsRecyclerView.setVerticalScrollBarEnabled(false);

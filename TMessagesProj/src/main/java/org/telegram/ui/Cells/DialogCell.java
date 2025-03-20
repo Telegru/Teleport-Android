@@ -343,6 +343,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     private int currentAccount;
     private CustomDialog customDialog;
     private long currentDialogId;
+    private String customMessage;
     private int currentDialogFolderId;
     private int currentDialogFolderDialogsCount;
     private int currentEditDate;
@@ -634,6 +635,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         if(isSingleLine()){
             messagePaddingStart = 52;
             chekBoxPaddingTop = 30;
+        }
+    }
+
+    public void setCustomMessage(String message) {
+        if (!TextUtils.equals(customMessage, message)) {
+            customMessage = message;
+            buildLayout();
+            requestLayout();
         }
     }
 
@@ -1375,6 +1384,12 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     buttonString = spannableStringBuilder;
                 }
                 currentMessagePaint = Theme.dialogs_messagePaint[paintIndex];
+            } else if (!TextUtils.isEmpty(customMessage)) {
+                draftMessage = null;
+                draftVoice = false;
+                messageString = customMessage;
+                timeString = "";
+                currentMessagePaint = Theme.dialogs_messagePaint[paintIndex];
             } else {
                 if (printingString != null) {
                     lastPrintString = printingString;
@@ -1840,7 +1855,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 }
             }
 
-            if (draftMessage != null) {
+            if (!TextUtils.isEmpty(customMessage)) {
+                timeString = "";
+            } else if (draftMessage != null) {
                 timeString = LocaleController.stringForMessageListDate(draftMessage.date);
             } else if (lastMessageDate != 0) {
                 timeString = LocaleController.stringForMessageListDate(lastMessageDate);
