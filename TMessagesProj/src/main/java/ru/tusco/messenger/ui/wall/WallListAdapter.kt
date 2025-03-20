@@ -1,35 +1,57 @@
 package ru.tusco.messenger.ui.wall
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import org.telegram.messenger.MessageObject
 import org.telegram.ui.Cells.BaseCell
+import org.telegram.ui.Cells.ChatMessageCell
 import org.telegram.ui.Components.RecyclerListView
 
-class WallListAdapter: RecyclerListView.SelectionAdapter() {
+internal class WallListAdapter(private val currentUser: Int, private val loadNextPage: (Int) -> Unit) : RecyclerListView.SelectionAdapter() {
+
+    private val messages = mutableListOf<MessageObject>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        TODO("Not yet implemented")
+        val view = WallMessageCell(parent.context, currentUser)
+        return RecyclerListView.Holder(view)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        val message = messages[position]
+        message.needDrawAvatar()
+        val messageCell = (holder.itemView as ChatMessageCell)
+        messageCell.setMessageObject(message, null, false, false)
+        if(position > itemCount - 10){
+            loadNextPage.invoke(itemCount)
+        }
     }
 
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun getItemCount(): Int = messages.size
+
+    override fun getItemId(position: Int): Long = messages[position].stableId.toLong()
 
     override fun isEnabled(holder: RecyclerView.ViewHolder): Boolean = true
+
+    fun insert(messages: List<MessageObject>){
+        val pos = messages.size
+        this.messages.addAll(messages)
+        notifyItemRangeChanged(pos, messages.size)
+    }
 }
 
-class WallMessageCell(context: Context) : BaseCell(context){
+@SuppressLint("ViewConstructor")
+internal class WallMessageCell(context: Context, currentUser: Int) : ChatMessageCell(context, currentUser) {
 
-    private var offsetY: Float = 0f
-
-
-    override fun onLayout(p0: Boolean, p1: Int, p2: Int, p3: Int, p4: Int) {
-
+    init {
+//        isChat = true
     }
+
+    override fun needDrawAvatar(): Boolean {
+        return true
+    }
+
 
 }

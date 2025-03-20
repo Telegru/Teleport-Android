@@ -17418,15 +17418,90 @@ public class MessagesStorage extends BaseController {
 
     //--------Dahl----
 
-    public void loadChannelsUnreadMessages(int offset, int limit, LongsCallback callback) {
+    public void loadChannelsUnreadMessages(int offset, int limit, MessagesCallback callback) {
         storageQueue.postRunnable(() -> {
+            TLRPC.TL_messages_messages res = new TLRPC.TL_messages_messages();
+            long currentUserId = getUserConfig().clientUserId;
             SQLiteCursor cursor = null;
-            List<Long> result = new ArrayList<>(limit);
+            ArrayList<Long> usersToLoad = new ArrayList<>();
+            ArrayList<Long> chatsToLoad = new ArrayList<>();
+            ArrayList<Long> animatedEmojiToLoad = new ArrayList<>();
+            ArrayList<MessageObject> result = new ArrayList<>(limit);
+            String messageSelect = "SELECT m.read_state, m.data, m.mid, m.date, r.random_id, m.replydata, m.media, m.forwards, m.replies_data, m.imp, m.custom_params, m.is_channel FROM messages_v2 as m LEFT JOIN randoms_v2 as r ON r.mid = m.mid AND r.uid = m.uid";
             try {
-                String query = String.format(Locale.US, "SELECT mid FROM messages_v2 WHERE is_channel = 1 ORDER BY date ASC, mid ASC", offset, limit);
-                cursor = database.queryFinalized("SELECT mid FROM messages_v2 WHERE is_channel = 0 ORDER BY date ASC, mid ASC");
-                while (cursor.next()) {
-                    result.add(cursor.longValue(0));
+                cursor = database.queryFinalized(String.format(Locale.US,  messageSelect + " WHERE is_channel <> %d AND is_channel <> %d AND read_state = %d ORDER BY m.date ASC, m.mid ASC LIMIT %d OFFSET %d", 0, currentUserId, 3, limit, offset));
+                if (cursor != null) {
+                    while (cursor.next()) {
+                        NativeByteBuffer data = cursor.byteBufferValue(1);
+                        if (data != null) {
+                            TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
+                            long fullMid = cursor.longValue(2);
+                            message.id = (int) fullMid;
+                            data.reuse();
+                            MessageObject.setUnreadFlags(message, cursor.intValue(0));
+                            message.date = cursor.intValue(3);
+                            message.dialog_id = cursor.longValue(11);
+                            if ((message.flags & TLRPC.MESSAGE_FLAG_HAS_VIEWS) != 0) {
+                                message.views = cursor.intValue(6);
+                                message.forwards = cursor.intValue(7);
+                            }
+                            NativeByteBuffer repliesData = cursor.byteBufferValue(8);
+                            if (repliesData != null) {
+                                TLRPC.MessageReplies replies = TLRPC.MessageReplies.TLdeserialize(repliesData, repliesData.readInt32(false), false);
+                                if (replies != null) {
+                                    message.replies = replies;
+                                }
+                                repliesData.reuse();
+                            }
+
+                            int flags = cursor.intValue(9);
+                            if ((flags & 1) != 0) {
+                                message.stickerVerified = 0;
+                            } else if ((flags & 2) != 0) {
+                                message.stickerVerified = 2;
+                            }
+                            NativeByteBuffer customParams = cursor.byteBufferValue(10);
+                            if (customParams != null) {
+                                MessageCustomParamsHelper.readLocalParams(message, customParams);
+                                customParams.reuse();
+                            }
+                            res.messages.add(message);
+
+                            addUsersAndChatsFromMessage(message, usersToLoad, chatsToLoad, animatedEmojiToLoad);
+                        }
+                    }
+                    if (!usersToLoad.isEmpty()) {
+                        getUsersInternal(usersToLoad, res.users);
+                    }
+                    if (!chatsToLoad.isEmpty()) {
+                        getChatsInternal(TextUtils.join(",", chatsToLoad), res.chats);
+                    }
+                    if (!animatedEmojiToLoad.isEmpty()) {
+                        res.animatedEmoji = new ArrayList<>();
+                        getAnimatedEmoji(TextUtils.join(",", animatedEmojiToLoad), res.animatedEmoji);
+                    }
+                }
+                LongSparseArray<TLRPC.User> usersDict = new LongSparseArray<>();
+                LongSparseArray<TLRPC.Chat> chatsDict = new LongSparseArray<>();
+                for (int a = 0; a < res.users.size(); a++) {
+                    TLRPC.User u = res.users.get(a);
+                    usersDict.put(u.id, u);
+                }
+                for (int a = 0; a < res.chats.size(); a++) {
+                    TLRPC.Chat c = res.chats.get(a);
+                    chatsDict.put(c.id, c);
+                }
+
+                for (int a = 0; a < res.messages.size(); a++) {
+                    TLRPC.Message message = res.messages.get(a);
+                    MessageObject messageObject = new MessageObject(currentAccount, message, usersDict, chatsDict, true, false, false);
+                    result.add(messageObject);
+                }
+                getFileLoader().checkMediaExistance(result);
+                if (MessageObject.canCreateStripedThubms()) {
+                    for (int i = 0; i < result.size(); i++) {
+                        result.get(i).createStrippedThumb();
+                    }
                 }
             } catch (Exception e) {
                     checkSQLException(e);
@@ -17439,8 +17514,8 @@ public class MessagesStorage extends BaseController {
         });
     }
 
-    public interface LongsCallback {
+    public interface MessagesCallback {
 
-        void run(@NonNull List<Long> param);
+        void run(@NonNull List<MessageObject> param);
     }
 }

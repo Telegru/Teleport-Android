@@ -10,26 +10,18 @@ abstract class BaseStateFragment<T: Any, VM: BaseViewModel<T>>: BaseFragment() {
 
     abstract fun renderState(state: T)
 
+    private val stateObserver = { state: T -> renderState(state) }
+
     override fun onFragmentCreate(): Boolean {
         viewModel = createViewModel()
+        viewModel.state.observe(stateObserver)
         return super.onFragmentCreate()
     }
 
     override fun onFragmentDestroy() {
         super.onFragmentDestroy()
-        ViewModelFactory.destroyViewModel(viewModel::class.java)
-    }
-
-    private val stateObserver = { state: T -> renderState(state) }
-
-    override fun setParentFragment(fragment: BaseFragment?) {
-        super.setParentFragment(fragment)
-        viewModel.state.observe(stateObserver)
-    }
-
-    override fun onRemoveFromParent() {
-        super.onRemoveFromParent()
         viewModel.state.removeObserver(stateObserver)
+        ViewModelFactory.destroyViewModel(viewModel::class.java)
     }
 
 }
