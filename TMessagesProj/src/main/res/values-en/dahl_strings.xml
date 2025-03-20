@@ -138,4 +138,5 @@
     <string name="HideOnScrollInfo">Keyboard will hide while scrolling chat up</string>
 
     <string name="CallConfirmationAlert">Are you sure you want to call <![CDATA[<font color="%1$s"><b>%2$s</b></font>]]>?</string>
+    <string name="reloadToApply">Reload to apply changes</string>
 </resources>

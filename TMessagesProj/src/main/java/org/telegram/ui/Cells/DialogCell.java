@@ -3542,7 +3542,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 Theme.dialogs_pinnedPaint.setColor(backgroundColor);
                 canvas.drawRect(tx - dp(8), 0, getMeasuredWidth(), getMeasuredHeight(), Theme.dialogs_pinnedPaint);
                 if (currentRevealProgress == 0) {
-                    if (Theme.dialogs_archiveDrawableRecolored) {
+                    if (Theme.dialogs_archiveDrawableRecolored && DahlSettings.getIconReplacement() == DahlSettings.NO_REPLACEMENT) {
                         Theme.dialogs_archiveDrawable.setLayerColor("Arrow.**", Theme.getNonAnimatedColor(Theme.key_chats_archiveBackground));
                         Theme.dialogs_archiveDrawableRecolored = false;
                     }

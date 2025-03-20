@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.core.util.forEach
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,7 +40,7 @@ class AppearanceSettingsActivity : UniversalFragment() {
         const val WALLPAPERS = 3
         const val SWITCH_ICONS = 4
         const val SQUARE_AVATARS = 5
-        const val AVATARS_FONT = 7
+        const val AVATARS_FONT = 6
         const val CUSTOM_WALLPAPERS = 7
         const val CHAT_LIST_LINES = 8
     }
@@ -100,8 +101,8 @@ class AppearanceSettingsActivity : UniversalFragment() {
             setChecked(DahlSettings.ngAvatarFont)
         })
 
-        val hexAuthorColor = String.format("#%06X", (0xFFFFFF and Theme.getColor(Theme.key_windowBackgroundWhiteGrayText)))
-        items?.add(UItem.asGraySection(Html.fromHtml(formatString(R.string.FontAuthor, hexAuthorColor))))
+        val hexAuthorColor = String.format("#%06X", (0xFFFFFF and Theme.getColor(Theme.key_windowBackgroundWhiteBlackText)))
+        items?.add(UItem.asShadow(Html.fromHtml(formatString(R.string.FontAuthor, hexAuthorColor))))
 
         items?.add(UItem.asShadow(-3, null))
 
@@ -125,8 +126,8 @@ class AppearanceSettingsActivity : UniversalFragment() {
                 } else {
                     DahlSettings.iconReplacement = ICON_REPLACEMENT_VKUI
                 }
+                Toast.makeText(context, R.string.reloadToApply, Toast.LENGTH_SHORT).show()
                 (context as LaunchActivity).reloadResources()
-
             }
             SQUARE_AVATARS -> {
                 DahlSettings.rectangularAvatars = !DahlSettings.rectangularAvatars

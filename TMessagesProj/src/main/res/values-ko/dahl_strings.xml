@@ -123,4 +123,5 @@
     <string name="CameraAsk">Ask before recording</string>
     <string name="CameraFront">Front</string>
     <string name="CameraRear">Rear</string>
+    <string name="reloadToApply">Reload to apply changes</string>
 </resources>

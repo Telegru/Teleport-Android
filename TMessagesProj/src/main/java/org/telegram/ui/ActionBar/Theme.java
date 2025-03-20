@@ -155,6 +155,7 @@ import java.util.stream.IntStream;
 
 import ru.tusco.messenger.DahlWallpaper;
 import ru.tusco.messenger.DefaultWallpapersHelper;
+import ru.tusco.messenger.settings.DahlSettings;
 
 public class Theme {
 
@@ -8317,8 +8318,12 @@ public class Theme {
             if (dialogs_hidePsaDrawable != null) {
                 dialogs_hidePsaDrawable.recycle(false);
             }
-            dialogs_archiveAvatarDrawable = new RLottieDrawable(R.raw.chats_archiveavatar, "chats_archiveavatar", dp(36), dp(36), false, null);
-            dialogs_archiveDrawable = new RLottieDrawable(R.raw.chats_archive, "chats_archive", dp(36), dp(36), false, null);
+            dialogs_archiveAvatarDrawable = DahlSettings.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI ?
+                new RLottieDrawable(R.raw.archive_drawable, "archive_drawable", dp(36), dp(36), false, null) :
+                new RLottieDrawable(R.raw.chats_archiveavatar, "chats_archiveavatar", dp(36), dp(36), false, null);
+            dialogs_archiveDrawable = DahlSettings.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI ?
+                new RLottieDrawable(R.raw.archive_drawable, "archive_drawable", dp(36), dp(36), false, null) :
+                new RLottieDrawable(R.raw.chats_archive, "chats_archive", dp(36), dp(36), false, null);
             dialogs_unarchiveDrawable = new RLottieDrawable(R.raw.chats_unarchive, "chats_unarchive", dp(dp(36)), dp(36), false, null);
             dialogs_pinArchiveDrawable = new RLottieDrawable(R.raw.chats_hide, "chats_hide", dp(36), dp(36), false, null);
             dialogs_unpinArchiveDrawable = new RLottieDrawable(R.raw.chats_unhide, "chats_unhide", dp(36), dp(36), false, null);
@@ -8348,14 +8353,6 @@ public class Theme {
             setDrawableColorByKey(avatarDrawables[a], key_avatar_text);
         }
 
-        dialogs_archiveAvatarDrawable.beginApplyLayerColors();
-        dialogs_archiveAvatarDrawable.setLayerColor("Arrow1.**", getNonAnimatedColor(key_avatar_backgroundArchived));
-        dialogs_archiveAvatarDrawable.setLayerColor("Arrow2.**", getNonAnimatedColor(key_avatar_backgroundArchived));
-        dialogs_archiveAvatarDrawable.setLayerColor("Box2.**", getNonAnimatedColor(key_avatar_text));
-        dialogs_archiveAvatarDrawable.setLayerColor("Box1.**", getNonAnimatedColor(key_avatar_text));
-        dialogs_archiveAvatarDrawable.commitApplyLayerColors();
-        dialogs_archiveAvatarDrawableRecolored = false;
-        dialogs_archiveAvatarDrawable.setAllowDecodeSingleFrame(true);
 
         dialogs_pinArchiveDrawable.beginApplyLayerColors();
         dialogs_pinArchiveDrawable.setLayerColor("Arrow.**", getNonAnimatedColor(key_chats_archiveIcon));
@@ -8376,12 +8373,35 @@ public class Theme {
         dialogs_hidePsaDrawable.commitApplyLayerColors();
         dialogs_hidePsaDrawableRecolored = false;
 
-        dialogs_archiveDrawable.beginApplyLayerColors();
-        dialogs_archiveDrawable.setLayerColor("Arrow.**", getNonAnimatedColor(key_chats_archiveBackground));
-        dialogs_archiveDrawable.setLayerColor("Box2.**", getNonAnimatedColor(key_chats_archiveIcon));
-        dialogs_archiveDrawable.setLayerColor("Box1.**", getNonAnimatedColor(key_chats_archiveIcon));
-        dialogs_archiveDrawable.commitApplyLayerColors();
-        dialogs_archiveDrawableRecolored = false;
+        if (DahlSettings.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI) {
+            dialogs_archiveDrawable.beginApplyLayerColors();
+            dialogs_archiveDrawable.setLayerColor("archive_outline_24", getNonAnimatedColor(key_chats_archiveIcon));
+            dialogs_archiveDrawable.commitApplyLayerColors();
+            dialogs_archiveDrawableRecolored = false;
+
+            dialogs_archiveAvatarDrawable.beginApplyLayerColors();
+            dialogs_archiveAvatarDrawable.setLayerColor("archive_outline_24", getNonAnimatedColor(key_chats_archiveIcon));
+            dialogs_archiveAvatarDrawable.commitApplyLayerColors();
+            dialogs_archiveAvatarDrawableRecolored = false;
+            dialogs_archiveAvatarDrawable.setAllowDecodeSingleFrame(true);
+
+        } else {
+            dialogs_archiveDrawable.beginApplyLayerColors();
+            dialogs_archiveDrawable.setLayerColor("Arrow.**", getNonAnimatedColor(key_chats_archiveBackground));
+            dialogs_archiveDrawable.setLayerColor("Box2.**", getNonAnimatedColor(key_chats_archiveIcon));
+            dialogs_archiveDrawable.setLayerColor("Box1.**", getNonAnimatedColor(key_chats_archiveIcon));
+            dialogs_archiveDrawable.commitApplyLayerColors();
+            dialogs_archiveDrawableRecolored = false;
+
+            dialogs_archiveAvatarDrawable.beginApplyLayerColors();
+            dialogs_archiveAvatarDrawable.setLayerColor("Arrow1.**", getNonAnimatedColor(key_avatar_backgroundArchived));
+            dialogs_archiveAvatarDrawable.setLayerColor("Arrow2.**", getNonAnimatedColor(key_avatar_backgroundArchived));
+            dialogs_archiveAvatarDrawable.setLayerColor("Box2.**", getNonAnimatedColor(key_avatar_text));
+            dialogs_archiveAvatarDrawable.setLayerColor("Box1.**", getNonAnimatedColor(key_avatar_text));
+            dialogs_archiveAvatarDrawable.commitApplyLayerColors();
+            dialogs_archiveAvatarDrawableRecolored = false;
+            dialogs_archiveAvatarDrawable.setAllowDecodeSingleFrame(true);
+        }
 
         dialogs_unarchiveDrawable.beginApplyLayerColors();
         dialogs_unarchiveDrawable.setLayerColor("Arrow1.**", getNonAnimatedColor(key_chats_archiveIcon));

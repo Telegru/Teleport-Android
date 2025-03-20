@@ -60,6 +60,7 @@ object DahlSettings {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
+    @JvmStatic
     var iconReplacement
         get() = sharedPreferences.getInt("AP_Icon_Replacements", ICON_REPLACEMENT_VKUI)
         set(value) {
