@@ -140,6 +140,7 @@
     <string name="HideOnScrollInfo">Во время скроллинга чата при активном поле ввода сообщения клавиатура будет скрываться.</string>
 
     <string name="CallConfirmationAlert">Вы точно хотите позвонить <![CDATA[<font color="%1$s"><b>%2$s</b></font>]]>?</string>
+    <string name="reloadToApply">Перезапустите приложение, чтобы изменения вступили в силу</string>
     <string name="WallpaperAsBackground">Обои как фон меню</string>
     <string name="AvatarAsBackground">Аватар как фон меню</string>
 </resources>

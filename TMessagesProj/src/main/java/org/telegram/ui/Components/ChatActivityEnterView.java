@@ -13387,7 +13387,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         videoMessagePopupLayout.addView(frontCameraButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
 
         ActionBarMenuSubItem rearCameraButton = new ActionBarMenuSubItem(getContext(), false, true, resourcesProvider);
-        rearCameraButton.setTextAndIcon(LocaleController.getString(R.string.CameraRear), DahlSettings.INSTANCE.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI ? R.drawable.back_camera_outline_28 : R.drawable.input_video);
+        rearCameraButton.setTextAndIcon(LocaleController.getString(R.string.CameraRear), DahlSettings.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI ? R.drawable.back_camera_outline_28 : R.drawable.input_video);
         rearCameraButton.setMinimumWidth(AndroidUtilities.dp(196));
         rearCameraButton.setOnClickListener(v -> openCamera(false));
         videoMessagePopupLayout.addView(rearCameraButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
