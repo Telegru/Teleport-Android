@@ -5704,11 +5704,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int getSmallAvatarRoundRadius() {
         if (chatId != 0) {
             TLRPC.Chat chatLocal = getMessagesController().getChat(chatId);
-            if (ChatObject.isForum(chatLocal)) {
+            if (ChatObject.isForum(chatLocal) || DahlSettings.getRectangularAvatars()) {
                 return AndroidUtilities.dp(needInsetForStories() ? 11 : 16);
             }
         }
-        return AndroidUtilities.dp(21);
+        return DahlSettings.getRectangularAvatars() ? DahlSettings.getAvatarCornerRadius() : AndroidUtilities.dp(21);
     }
 
     private void updateTtlIcon() {
