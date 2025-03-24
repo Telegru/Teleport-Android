@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.core.util.forEach
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,13 +38,13 @@ class AppearanceSettingsActivity : UniversalFragment() {
         const val BOTTOM_PANEL = 1
         const val PERSONAL_COLORS = 2
         const val WALLPAPERS = 3
-        const val HIDE_HELP = 4
-        const val NAVIGATION_DRAWER = 5
-        const val SWITCH_ICONS = 6
-        const val SQUARE_AVATARS = 7
-        const val AVATARS_FONT = 8
-        const val CUSTOM_WALLPAPERS = 9
-        const val CHAT_LIST_LINES = 10
+        const val SWITCH_ICONS = 4
+        const val SQUARE_AVATARS = 5
+        const val AVATARS_FONT = 6
+        const val CUSTOM_WALLPAPERS = 7
+        const val CHAT_LIST_LINES = 8
+        const val WALLPAPER_AS_DRAWER_BACKGROUND = 9
+        const val AVATAR_AS_DRAWER_BACKGROUND = 10
     }
 
     private val icons: Set<Int> by lazy {
@@ -64,9 +65,9 @@ class AppearanceSettingsActivity : UniversalFragment() {
     override fun fillItems(items: ArrayList<UItem>?, adapter: UniversalAdapter?) {
 
         items?.add(UItem.asHeader(getString(R.string.EnableInChatsAndChannels)))
-//        items?.add(
-//            UItem.asCheck(BOTTOM_PANEL, getString(R.string.BottomPanelInChannels)).setChecked(DahlSettings.isShowBottomPanelInChannels)
-//        )
+        items?.add(
+            UItem.asCheck(BOTTOM_PANEL, getString(R.string.BottomPanelInChannels)).setChecked(DahlSettings.isShowBottomPanelInChannels)
+        )
 //        items?.add(UItem.asCheck(PERSONAL_COLORS, getString(R.string.PersonalColors)).setChecked(DahlSettings.isEnabledPersonalColors))
         items?.add(UItem.asCheck(CUSTOM_WALLPAPERS, getString(R.string.CustomWallpapers)).setChecked(DahlSettings.isCustomWallpapersEnabled))
         items?.add(UItem.asShadow(-3, null))
@@ -87,21 +88,13 @@ class AppearanceSettingsActivity : UniversalFragment() {
 
         items?.add(UItem.asShadow(-3, null))
 
-        items?.add(UItem.asHeader(getString(R.string.TgSettingsMenu)))
-        items?.add(UItem.asCheck(HIDE_HELP, getString(R.string.HideHelpBlock)).setChecked(DahlSettings.isHiddenHelpBlock))
-
-        items?.add(UItem.asShadow(-3, null))
-
-//        val counterColor = String.format("#%06X", (0xFFFFFF and Theme.getColor(Theme.key_windowBackgroundWhiteGrayText)))
-        val isPremium = UserConfig.getInstance(UserConfig.selectedAccount)?.isPremium == true
-        val settingsCell = TextDetailSettingsCell(context).apply {
-            setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite))
-            setMultilineDetail(true)
-            setTextAndValue(getString(R.string.NavigationDrawerItems), DahlSettings.navigationDrawerItems.getInfoText(isPremium), false)
-        }
         items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
-        items?.add(UItem.asCustom(NAVIGATION_DRAWER, settingsCell))
-
+        items?.add(UItem.asCheck(WALLPAPER_AS_DRAWER_BACKGROUND, getString(R.string.WallpaperAsBackground)).apply {
+            setChecked(DahlAppearanceSettings.wallpaperAsBackground)
+        })
+        items?.add(UItem.asCheck(AVATAR_AS_DRAWER_BACKGROUND, getString(R.string.AvatarAsBackground)).apply {
+            setChecked(DahlAppearanceSettings.avatarAsBackground)
+        })
         items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.ElementsRounding)))
@@ -116,8 +109,8 @@ class AppearanceSettingsActivity : UniversalFragment() {
             setChecked(DahlSettings.ngAvatarFont)
         })
 
-        val hexAuthorColor = String.format("#%06X", (0xFFFFFF and Theme.getColor(Theme.key_windowBackgroundWhiteGrayText)))
-        items?.add(UItem.asGraySection(Html.fromHtml(formatString(R.string.FontAuthor, hexAuthorColor))))
+        val hexAuthorColor = String.format("#%06X", (0xFFFFFF and Theme.getColor(Theme.key_windowBackgroundWhiteBlackText)))
+        items?.add(UItem.asShadow(Html.fromHtml(formatString(R.string.FontAuthor, hexAuthorColor))))
 
         items?.add(UItem.asShadow(-3, null))
 
@@ -135,16 +128,14 @@ class AppearanceSettingsActivity : UniversalFragment() {
             BOTTOM_PANEL -> DahlSettings.isShowBottomPanelInChannels = !DahlSettings.isShowBottomPanelInChannels
             PERSONAL_COLORS -> DahlSettings.isEnabledPersonalColors = !DahlSettings.isEnabledPersonalColors
             WALLPAPERS -> presentFragment(WallpapersListActivity(WallpapersListActivity.TYPE_ALL))
-            HIDE_HELP -> DahlSettings.isHiddenHelpBlock = !DahlSettings.isHiddenHelpBlock
-            NAVIGATION_DRAWER -> presentFragment(NavigationDrawerSettingsActivity())
             SWITCH_ICONS -> {
                 if (item.checked) {
                     DahlSettings.iconReplacement = NO_REPLACEMENT
                 } else {
                     DahlSettings.iconReplacement = ICON_REPLACEMENT_VKUI
                 }
+                Toast.makeText(context, R.string.reloadToApply, Toast.LENGTH_SHORT).show()
                 (context as LaunchActivity).reloadResources()
-
             }
             SQUARE_AVATARS -> {
                 DahlSettings.rectangularAvatars = !DahlSettings.rectangularAvatars
@@ -153,6 +144,14 @@ class AppearanceSettingsActivity : UniversalFragment() {
                 DahlSettings.ngAvatarFont = !DahlSettings.ngAvatarFont
             }
             CUSTOM_WALLPAPERS -> DahlSettings.isCustomWallpapersEnabled = !DahlSettings.isCustomWallpapersEnabled
+            AVATAR_AS_DRAWER_BACKGROUND -> {
+                DahlAppearanceSettings.avatarAsBackground = !DahlAppearanceSettings.avatarAsBackground
+                DahlAppearanceSettings.wallpaperAsBackground = !DahlAppearanceSettings.wallpaperAsBackground
+            }
+            WALLPAPER_AS_DRAWER_BACKGROUND -> {
+                DahlAppearanceSettings.wallpaperAsBackground = !DahlAppearanceSettings.wallpaperAsBackground
+                DahlAppearanceSettings.avatarAsBackground = !DahlAppearanceSettings.avatarAsBackground
+            }
             else -> {}
         }
         if(item?.id != CHAT_LIST_LINES) {

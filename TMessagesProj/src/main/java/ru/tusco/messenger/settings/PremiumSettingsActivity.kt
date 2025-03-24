@@ -20,6 +20,7 @@ class PremiumSettingsActivity: UniversalFragment() {
         const val SWITCH_HIDE_STORIES = 7
         const val SWITCH_HIDE_ADD_STORY = 8
         const val SWITCH_HIDE_VIEWED_STORIES = 9
+        const val SWITCH_HIDE_STORIES_IN_ARCHIVE = 10
     }
 
     override fun getTitle(): CharSequence = getString(R.string.PremiumFeatures)
@@ -40,8 +41,9 @@ class PremiumSettingsActivity: UniversalFragment() {
         items?.add(UItem.asShadow(-3, getString(R.string.PremiumFeaturesEnableInfo)))
 
         items?.add(UItem.asHeader(getString(R.string.Stories)))
-        items?.add(UItem.asCheck(SWITCH_HIDE_STORIES, getString(R.string.HideStories)).setChecked(DahlSettings.hideStories))
-        items?.add(UItem.asCheck(SWITCH_HIDE_ADD_STORY, getString(R.string.HideAddStory)).setEnabled(!DahlSettings.hideStories).setChecked(DahlSettings.hideAddStory || DahlSettings.hideStories))
+        items?.add(UItem.asCheck(SWITCH_HIDE_STORIES, getString(R.string.HideStories)).setChecked(DahlSettings.isHideStories))
+        items?.add(UItem.asCheck(SWITCH_HIDE_STORIES_IN_ARCHIVE, getString(R.string.HideArchiveStories)).setChecked(DahlSettings.isHideStoriesInArchive))
+        items?.add(UItem.asCheck(SWITCH_HIDE_ADD_STORY, getString(R.string.HideAddStory)).setEnabled(!DahlSettings.isHideStories).setChecked(DahlSettings.hideAddStory || DahlSettings.isHideStories))
         items?.add(UItem.asCheck(SWITCH_HIDE_VIEWED_STORIES, getString(R.string.HideViewedStories)).setChecked(DahlSettings.hideViewedStories))
     }
 
@@ -53,13 +55,14 @@ class PremiumSettingsActivity: UniversalFragment() {
             SWITCH_CUSTOM_WALLPAPERS_IN_CHANNELS -> DahlSettings.customChannelsWallpapers = !DahlSettings.customChannelsWallpapers
             SWITCH_ANIMATED_REACTIONS -> DahlSettings.isAnimatedReactions = !DahlSettings.isAnimatedReactions
             SWITCH_ANIMATED_PREMIUM_STICKERS -> DahlSettings.isAnimatedStickers = !DahlSettings.isAnimatedStickers
-            SWITCH_HIDE_STORIES -> DahlSettings.hideStories = !DahlSettings.hideStories
+            SWITCH_HIDE_STORIES -> DahlSettings.isHideStories = !DahlSettings.isHideStories
             SWITCH_HIDE_ADD_STORY -> {
-                if(!DahlSettings.hideStories) {
+                if(!DahlSettings.isHideStories) {
                     DahlSettings.hideAddStory = !DahlSettings.hideAddStory
                 }
             }
             SWITCH_HIDE_VIEWED_STORIES -> DahlSettings.hideViewedStories = !DahlSettings.hideViewedStories
+            SWITCH_HIDE_STORIES_IN_ARCHIVE -> DahlSettings.isHideStoriesInArchive = !DahlSettings.isHideStoriesInArchive
         }
         listView.adapter.update(true)
     }

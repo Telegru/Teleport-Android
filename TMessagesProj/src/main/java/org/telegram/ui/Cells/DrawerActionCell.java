@@ -163,7 +163,7 @@ public class DrawerActionCell extends FrameLayout {
                 textView.setText(bot.short_name);
             }
 
-            if(currentId == 1985737506 && DahlSettings.INSTANCE.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI){ // wallet id = 1985737506
+            if(currentId == 1985737506 && DahlSettings.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI){ // wallet id = 1985737506
                 imageView.setImageResource(R.drawable.wallet_outline_28);
             }else {
                 TLRPC.TL_attachMenuBotIcon botIcon = MediaDataController.getSideAttachMenuBotIcon(bot);

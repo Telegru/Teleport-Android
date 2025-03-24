@@ -2770,7 +2770,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                                 } else if (recordingAudioVideo && DahlSettings.isConfirmAudioMessage()) {
                                     showConfirmAudioAlert();
                                 }
-                                if(!DahlSettings.isConfirmAudioMessage()) {
+                                if(isInScheduleMode() || !DahlSettings.isConfirmAudioMessage()) {
                                     MediaController.getInstance().stopRecording((isInScheduleMode()) ? 3 : 1, true, 0, voiceOnce, 0);
                                 }
                                 if (AlertsCreator.needsPaidMessageAlert(currentAccount, dialog_id)) {
@@ -2794,7 +2794,9 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                                     });
                                     return true;
                                 }
-                                MediaController.getInstance().stopRecording(isInScheduleMode() ? 3 : 1, true, 0, voiceOnce, 0);
+                                if(isInScheduleMode() || !DahlSettings.isConfirmAudioMessage()) {
+                                    MediaController.getInstance().stopRecording(isInScheduleMode() ? 3 : 1, true, 0, voiceOnce, 0);
+                                }
                                 delegate.needStartRecordAudio(0);
                             }
                             recordingAudioVideo = false;
@@ -2915,7 +2917,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                                     showConfirmAudioAlert();
                                 }
                                 delegate.needStartRecordAudio(0);
-                                if(!DahlSettings.isConfirmAudioMessage()){
+                                if(isInScheduleMode() || !DahlSettings.isConfirmAudioMessage()){
                                     MediaController.getInstance().stopRecording((isInScheduleMode()) ? 3 : 1, true, 0, voiceOnce, 0);
                                 }
                             }
@@ -13385,7 +13387,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         videoMessagePopupLayout.addView(frontCameraButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
 
         ActionBarMenuSubItem rearCameraButton = new ActionBarMenuSubItem(getContext(), false, true, resourcesProvider);
-        rearCameraButton.setTextAndIcon(LocaleController.getString(R.string.CameraRear), DahlSettings.INSTANCE.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI ? R.drawable.back_camera_outline_28 : R.drawable.input_video);
+        rearCameraButton.setTextAndIcon(LocaleController.getString(R.string.CameraRear), DahlSettings.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI ? R.drawable.back_camera_outline_28 : R.drawable.input_video);
         rearCameraButton.setMinimumWidth(AndroidUtilities.dp(196));
         rearCameraButton.setOnClickListener(v -> openCamera(false));
         videoMessagePopupLayout.addView(rearCameraButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));

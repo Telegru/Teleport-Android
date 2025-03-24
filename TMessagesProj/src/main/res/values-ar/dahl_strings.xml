@@ -79,7 +79,8 @@
     <string name="AnimatedPremiumStickers">Animated Premium stickers</string>
     <string name="TouchPremiumStickers">Tapping on premium stickers</string>
     <string name="Stories">Stories</string>
-    <string name="HideStories">Hide stories</string>
+    <string name="HideStories">Do not show in chats</string>
+    <string name="HideArchiveStories">Do not show in Archive</string>
     <string name="HideAddStory">Hide create button</string>
     <string name="HideViewedStories">Hide viewed stories</string>
     <string name="NeedConfirm">Confirm</string>
@@ -122,4 +123,7 @@
     <string name="CameraAsk">Ask before recording</string>
     <string name="CameraFront">Front</string>
     <string name="CameraRear">Rear</string>
+    <string name="reloadToApply">Reload to apply changes</string>
+    <string name="WallpaperAsBackground">Wallpaper as drawer background</string>
+    <string name="AvatarAsBackground">Avatar as drawer background</string>
 </resources>

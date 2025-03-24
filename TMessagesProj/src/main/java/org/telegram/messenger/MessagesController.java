@@ -123,6 +123,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import ru.tusco.messenger.settings.DahlSettings;
+
 public class MessagesController extends BaseController implements NotificationCenter.NotificationCenterDelegate {
 
     public int lastKnownSessionsCount;
@@ -21440,6 +21442,9 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public boolean storiesEnabled() {
+        if(DahlSettings.isHideStories()){
+            return false;
+        }
         switch (storiesPosting) {
             case "premium":
                 return getUserConfig().isPremium();

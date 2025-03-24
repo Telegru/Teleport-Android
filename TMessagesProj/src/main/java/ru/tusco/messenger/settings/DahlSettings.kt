@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.util.Log
-import org.json.JSONArray
 import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
@@ -46,6 +45,18 @@ object DahlSettings {
         editor.apply()
     }
 
+    fun getBoolean(key: String, defValue: Boolean): Boolean {
+        return sharedPreferences.getBoolean(key, defValue)
+    }
+
+    fun getInt(key: String, defValue: Int): Int {
+        return sharedPreferences.getInt(key, defValue)
+    }
+
+    fun getString(key: String, defValue: String): String {
+        return sharedPreferences.getString(key, defValue) ?: defValue
+    }
+
     fun remove(key: String) {
         sharedPreferences.edit().remove(key).apply()
     }
@@ -61,6 +72,7 @@ object DahlSettings {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
+    @JvmStatic
     var iconReplacement
         get() = sharedPreferences.getInt("AP_Icon_Replacements", ICON_REPLACEMENT_VKUI)
         set(value) {
@@ -138,7 +150,45 @@ object DahlSettings {
             putBoolean("enable_proxy_button_by_default", value)
         }
 
+    @JvmStatic
+    var hideMessageReadStatus: Boolean
+        get() = sharedPreferences.getBoolean("hide_message_read_status", false)
+        set(value) {
+            putBoolean("hide_message_read_status", value)
+        }
 
+    @JvmStatic
+    var isOffline: Boolean
+        get() = sharedPreferences.getBoolean("offline_mode", false)
+        set(value) {
+            putBoolean("offline_mode", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isShowBottomPanelInChannels: Boolean
+        get() = sharedPreferences.getBoolean("show_bottom_panel_in_channels", true)
+        set(value) {
+            putBoolean("show_bottom_panel_in_channels", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isEnabledPersonalColors: Boolean
+        get() = sharedPreferences.getBoolean("enabled_personal_colors", true)
+        set(value) {
+            putBoolean("enabled_personal_colors", value)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isHiddenHelpBlock: Boolean
+        get() = sharedPreferences.getBoolean("hide_help_block", true)
+        set(value) {
+            putBoolean("hide_help_block", value)
+        }
+
+    // Region general settings
     @JvmStatic
     var isProxyEnabled: Boolean
         get() {
@@ -185,56 +235,18 @@ object DahlSettings {
         }
 
     @JvmStatic
-    var isHidePhoneNumber: Boolean
-        get() = sharedPreferences.getBoolean("hide_phone_number_in_menu", false)
-        set(value) {
-            putBoolean("hide_phone_number_in_menu", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
-        }
-
-    @JvmStatic
-    var hideMessageReadStatus: Boolean
-        get() = sharedPreferences.getBoolean("hide_message_read_status", false)
-        set(value) {
-            putBoolean("hide_message_read_status", value)
-        }
-
-    @JvmStatic
-    var isOffline: Boolean
-        get() = sharedPreferences.getBoolean("offline_mode", false)
-        set(value) {
-            putBoolean("offline_mode", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
-        }
-
-    @JvmStatic
-    var isShowBottomPanelInChannels: Boolean
-        get() = sharedPreferences.getBoolean("show_bottom_panel_in_channels", true)
-        set(value) {
-            putBoolean("show_bottom_panel_in_channels", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
-        }
-
-    @JvmStatic
-    var isEnabledPersonalColors: Boolean
-        get() = sharedPreferences.getBoolean("enabled_personal_colors", true)
-        set(value) {
-            putBoolean("enabled_personal_colors", value)
-            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
-        }
-
-    @JvmStatic
-    var isHiddenHelpBlock: Boolean
-        get() = sharedPreferences.getBoolean("hide_help_block", true)
-        set(value) {
-            putBoolean("hide_help_block", value)
-        }
-
-    @JvmStatic
     var navigationDrawerItems: NavDrawerSettings
         get() = NavDrawerSettings(sharedPreferences)
         set(value) {
             value.save(sharedPreferences)
+            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isShowPhoneNumber: Boolean
+        get() = sharedPreferences.getBoolean("show_phone_number_in_menu", true)
+        set(value) {
+            putBoolean("show_phone_number_in_menu", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
@@ -244,6 +256,8 @@ object DahlSettings {
         set(value) {
             putBoolean("premium_hide_block", value)
         }
+
+    // End region general settings
 
     @JvmStatic
     var isEmojiStatus: Boolean
@@ -282,10 +296,19 @@ object DahlSettings {
         }
 
     @JvmStatic
-    var hideStories: Boolean
+    var isHideStories: Boolean
         get() = sharedPreferences.getBoolean("hide_stories", false)
         set(value) {
             putBoolean("hide_stories", value)
+            AccountInstance.getInstance(UserConfig.selectedAccount).notificationCenter.postNotificationName(NotificationCenter.storiesEnabledUpdate)
+//            LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
+        }
+
+    @JvmStatic
+    var isHideStoriesInArchive: Boolean
+        get() = sharedPreferences.getBoolean("hide_stories_in_archive", false)
+        set(value) {
+            putBoolean("hide_stories_in_archive", value)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
@@ -354,32 +377,31 @@ object DahlSettings {
 
     @JvmStatic
     var isRecentChatsEnabled: Boolean
-        get() = sharedPreferences.getBoolean(DahlSettingsKeys.RECENT_CHATS_ENABLED, false)
+        get() = sharedPreferences.getInt(DahlSettingsKeys.RECENT_CHATS_ENABLED, 1) > 0
         set(value) {
-            putBoolean(DahlSettingsKeys.RECENT_CHATS_ENABLED, value)
+            putInt(DahlSettingsKeys.RECENT_CHATS_ENABLED, if(value) 1 else 0)
             LaunchActivity.getSafeLastFragment().parentLayout.rebuildFragments(0)
         }
 
     @JvmStatic
     fun putToRecentChats(dialogId: Long, currentAccount: Int) {
-        if (!sharedPreferences.contains(DahlSettingsKeys.RECENT_CHATS_ENABLED)) {
-            return
-        }
+//        if (sharedPreferences.getInt(DahlSettingsKeys.RECENT_CHATS_ENABLED, 1) < 0) {
+//            return
+//        }
         val set = getRecentChats(currentAccount)
         set.remove(dialogId)
         set.add(dialogId)
         val list = set.drop(if(set.size <= 100) 0 else set.size - 100)
-        putString(DahlSettingsKeys.recentChatsKey(currentAccount), JSONArray(list).toString())
+        val json = list.joinToString(";")
+        putString(DahlSettingsKeys.recentChatsKey(currentAccount), json)
     }
 
     @JvmStatic
     fun removeFromRecentChats(dialogId: Long, currentAccount: Int) {
-        if (!sharedPreferences.contains(DahlSettingsKeys.RECENT_CHATS_ENABLED)) {
-            return
-        }
         val set = getRecentChats(currentAccount)
         set.remove(dialogId)
-        putString(DahlSettingsKeys.recentChatsKey(currentAccount), JSONArray(set).toString())
+        val json = set.joinToString(";")
+        putString(DahlSettingsKeys.recentChatsKey(currentAccount), json)
     }
 
     @JvmStatic
@@ -394,9 +416,11 @@ object DahlSettings {
             if(json.isNullOrBlank()){
                 return set
             }
-            val jsonArray = JSONArray(json)
-            for (i in 0 until jsonArray.length()) {
-                set.add(jsonArray.getLong(i))
+            val array = json.split(";")
+            array.forEach{str ->
+                str.toLongOrNull()?.let{
+                    set.add(it)
+                }
             }
         } catch (e: Exception) {
             if (BuildVars.LOGS_ENABLED) {

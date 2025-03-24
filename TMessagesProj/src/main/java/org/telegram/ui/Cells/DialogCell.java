@@ -3542,7 +3542,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 Theme.dialogs_pinnedPaint.setColor(backgroundColor);
                 canvas.drawRect(tx - dp(8), 0, getMeasuredWidth(), getMeasuredHeight(), Theme.dialogs_pinnedPaint);
                 if (currentRevealProgress == 0) {
-                    if (Theme.dialogs_archiveDrawableRecolored) {
+                    if (Theme.dialogs_archiveDrawableRecolored && DahlSettings.getIconReplacement() == DahlSettings.NO_REPLACEMENT) {
                         Theme.dialogs_archiveDrawable.setLayerColor("Arrow.**", Theme.getNonAnimatedColor(Theme.key_chats_archiveBackground));
                         Theme.dialogs_archiveDrawableRecolored = false;
                     }
@@ -4548,6 +4548,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     } else {
                         left = (int) (storyParams.originalAvatarRect.right - dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 10 : 6));
                     }
+                    if (DahlSettings.getRectangularAvatars()) {
+                        if (LocaleController.isRTL) {
+                            left = (int) (storyParams.originalAvatarRect.left + dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 5 : 4));
+                        } else {
+                            left = (int) (storyParams.originalAvatarRect.right - dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 5 : 4));
+                        }
+                        top = (int) (storyParams.originalAvatarRect.bottom - dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 6 : 5));
+                    }
 
                     Theme.dialogs_onlineCirclePaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
                     canvas.drawCircle(left, top, dp(7) * onlineProgress, Theme.dialogs_onlineCirclePaint);
@@ -4693,7 +4701,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     }
 
     private void drawCounter(Canvas canvas, boolean drawCounterMuted, int countTop, int countLeftLocal, int countLeftOld, float globalScale, boolean outline) {
-        final boolean drawBubble = isForumCell() || isFolderCell();
+        final boolean drawBubble = (isForumCell() || isFolderCell()) && !DahlSettings.getRectangularAvatars();
         if (drawCount && drawCount2 || countChangeProgress != 1f) {
             final float progressFinal = (unreadCount == 0 && !markUnread) ? 1f - countChangeProgress : countChangeProgress;
             Paint paint;

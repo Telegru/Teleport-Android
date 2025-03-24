@@ -786,12 +786,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             }
             h += storiesOverscroll;
 
-            float recentChatsHeight = 0;
-            if(recentChatsPanel != null && recentChatsPanel.getVisibility() != GONE){
-                recentChatsHeight = recentChatsPanel.getMeasuredHeight() * (1f - rightSlidingProgress);
+            if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+                h += dp(RecentChatsPanel.HEIGHT_IN_DP) * (1f - rightSlidingProgress);
             }
-            h += recentChatsHeight;
-
             return (int) h;
         }
 
@@ -1190,6 +1187,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     if (dialogsHintCell != null) {
                         h -= dialogsHintCell.height();
                     }
+                    if(!rightSlidingDialogContainer.hasFragment() && recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE) {
+                        h -= dp(RecentChatsPanel.HEIGHT_IN_DP);
+                    }
                     h += actionModeAdditionalHeight;
                     if (filtersTabAnimator != null && (hasStories || (filterTabsView != null && filterTabsView.getVisibility() == VISIBLE))) {
                         h += filterTabsMoveFrom;
@@ -1329,18 +1329,17 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     childTop = actionBar.getMeasuredHeight();
                 } else if (child instanceof ViewPage) {
                     if (!onlySelect || initialDialogsType == DIALOGS_TYPE_FORWARD) {
-                        boolean isFilterTabsAtTopAndVisible = filterTabsView != null && filterTabsView.getVisibility() == VISIBLE && !DahlSettings.isFoldersTabsAtBottom();
-                        boolean isRecentChatsVisible = recentChatsPanel != null && recentChatsPanel.getVisibility() == VISIBLE;
-                        if (hasStories || (isFilterTabsAtTopAndVisible || isRecentChatsVisible)) {
+                        boolean isFilterTabsVisible = filterTabsView != null && filterTabsView.getVisibility() == VISIBLE;
+                        if (hasStories || isFilterTabsVisible) {
                             childTop = 0;
-                            if (isFilterTabsAtTopAndVisible) {
+                            if (isFilterTabsVisible && !DahlSettings.isFoldersTabsAtBottom()) {
                                 childTop += dp(44);
-                            }
-                            if(isRecentChatsVisible){
-                                childTop += dp(RecentChatsPanel.HEIGHT_IN_DP);
                             }
                         } else {
                             childTop = actionBar.getMeasuredHeight();
+                        }
+                        if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+                            childTop += dp(RecentChatsPanel.HEIGHT_IN_DP);
                         }
                     }
                     childTop += topPadding;
@@ -2833,7 +2832,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
         getNotificationCenter().addObserver(this, NotificationCenter.starBalanceUpdated);
         getNotificationCenter().addObserver(this, NotificationCenter.starSubscriptionsLoaded);
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.needSetDayNightTheme);
 
         loadDialogs(getAccountInstance());
         getMessagesController().getStoriesController().loadAllStories();
@@ -3001,7 +2999,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
         getNotificationCenter().removeObserver(this, NotificationCenter.starBalanceUpdated);
         getNotificationCenter().removeObserver(this, NotificationCenter.starSubscriptionsLoaded);
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.needSetDayNightTheme);
 
         if (commentView != null) {
             commentView.onDestroy();
@@ -4707,7 +4704,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         .setJoint(1, -40)
                         .setBgColor(getThemedColor(Theme.key_undo_background))
                         .setOnHiddenListener(() -> MessagesController.getInstance(currentAccount).getMainSettings().edit().putBoolean("storyhint", false).commit());
-                contentView.addView(storyHint, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 160, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 0, 0, 80, 0));
+                int bottomMargin = filterTabsView != null && DahlSettings.isFoldersTabsAtBottom() ? 44 : 0;
+                contentView.addView(storyHint, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 160, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 0, 0, 80, bottomMargin));
             }
         }
 
@@ -5602,8 +5600,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (authHintCell != null && authHintCellVisible) {
             h += authHintCell.getMeasuredHeight();
         }
-        if(recentChatsPanel != null){
-            h += recentChatsPanel.getMeasuredHeight();
+        if(recentChatsPanel != null && recentChatsPanel.getVisibility() == View.VISIBLE){
+            h += dp(RecentChatsPanel.HEIGHT_IN_DP);
         }
         return h;
     }
@@ -8967,21 +8965,29 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void updateFloatingButtonOffset() {
+        float additionalTranslation = Math.max(additionalFloatingTranslation, additionalFloatingTranslation2);
+        float d = 0;
+        if (filterTabsView != null && DahlSettings.isFoldersTabsAtBottom()) {
+            filterTabsView.setElevation(additionalTranslation > 0 ? 0 : dp(20));
+            if(additionalTranslation > 0) {
+                d = dp(44);
+            }
+        }
         if (floatingButtonContainer != null) {
-            floatingButtonContainer.setTranslationY(floatingButtonTranslation - floatingButtonPanOffset - Math.max(additionalFloatingTranslation, additionalFloatingTranslation2) * (1f - floatingButtonHideProgress));
+            floatingButtonContainer.setTranslationY(floatingButtonTranslation - floatingButtonPanOffset - additionalTranslation * (1f - floatingButtonHideProgress) + d);
             if (storyHint != null) {
                 storyHint.setTranslationY(floatingButtonContainer.getTranslationY());
             }
         }
         if (floatingButton2Container != null) {
-            floatingButton2Container.setTranslationY(floatingButtonTranslation - floatingButtonPanOffset - Math.max(additionalFloatingTranslation, additionalFloatingTranslation2) * (1f - floatingButtonHideProgress) + dp(44) * floatingButtonHideProgress);
+            floatingButton2Container.setTranslationY(floatingButtonTranslation - floatingButtonPanOffset - additionalTranslation * (1f - floatingButtonHideProgress) + dp(44) * floatingButtonHideProgress + d);
         }
     }
 
     public boolean storiesEnabled = true;
 
     private void updateStoriesPosting() {
-        final boolean storiesEnabled = getMessagesController().storiesEnabled() && !DahlSettings.getHideStories() && !DahlSettings.getHideAddStory();
+        final boolean storiesEnabled = getMessagesController().storiesEnabled() && !DahlSettings.getHideAddStory();
         if (this.storiesEnabled != storiesEnabled) {
             if (floatingButton2Container != null) {
                 floatingButton2Container.setVisibility(onlySelect && initialDialogsType != 10 || folderId != 0 || !storiesEnabled || (searchItem != null && searchItem.isSearchFieldVisible()) || isInPreviewMode() ? View.GONE : View.VISIBLE);
@@ -11001,8 +11007,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             updateDialogsHint();
         } else if (id == NotificationCenter.starBalanceUpdated || id == NotificationCenter.starSubscriptionsLoaded) {
             updateDialogsHint();
-        } else if(id == NotificationCenter.needSetDayNightTheme){
-           updateFilterTabsColors();
         }
     }
 
@@ -12194,19 +12198,27 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         arrayList.add(new ThemeDescription(null, 0, null, null, null, cellDelegate, Theme.key_dialogButtonSelector));
 
         if (filterTabsView != null) {
-            if (actionBar.isActionModeShowed()) {
-                arrayList.add(new ThemeDescription(filterTabsView, 0, new Class[]{FilterTabsView.class}, new String[]{"selectorDrawable"}, null, null, null, Theme.key_profile_tabSelectedLine));
-                arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_TEXTCOLOR | ThemeDescription.FLAG_CHECKTAG, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_profile_tabSelectedText));
-                arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_TEXTCOLOR | ThemeDescription.FLAG_CHECKTAG, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_profile_tabText));
-                arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_BACKGROUNDFILTER | ThemeDescription.FLAG_DRAWABLESELECTEDSTATE, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_profile_tabSelector));
+            if(!DahlSettings.isFoldersTabsAtBottom()) {
+                if (actionBar.isActionModeShowed()) {
+                    arrayList.add(new ThemeDescription(filterTabsView, 0, new Class[]{FilterTabsView.class}, new String[]{"selectorDrawable"}, null, null, null, Theme.key_profile_tabSelectedLine));
+                    arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_TEXTCOLOR | ThemeDescription.FLAG_CHECKTAG, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_profile_tabSelectedText));
+                    arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_TEXTCOLOR | ThemeDescription.FLAG_CHECKTAG, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_profile_tabText));
+                    arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_BACKGROUNDFILTER | ThemeDescription.FLAG_DRAWABLESELECTEDSTATE, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_profile_tabSelector));
+                } else {
+                    arrayList.add(new ThemeDescription(filterTabsView, 0, new Class[]{FilterTabsView.class}, new String[]{"selectorDrawable"}, null, null, null, Theme.key_actionBarTabLine));
+                    arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_TEXTCOLOR | ThemeDescription.FLAG_CHECKTAG, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_actionBarTabActiveText));
+                    arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_TEXTCOLOR | ThemeDescription.FLAG_CHECKTAG, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_actionBarTabUnactiveText));
+                    arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_SELECTOR, null, null, null, null, Theme.key_actionBarTabSelector));
+                }
+                arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), 0, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_chats_tabUnreadActiveBackground));
+                arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), 0, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_chats_tabUnreadUnactiveBackground));
             } else {
-                arrayList.add(new ThemeDescription(filterTabsView, 0, new Class[]{FilterTabsView.class}, new String[]{"selectorDrawable"}, null, null, null, Theme.key_actionBarTabLine));
-                arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_TEXTCOLOR | ThemeDescription.FLAG_CHECKTAG, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_actionBarTabActiveText));
-                arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_TEXTCOLOR | ThemeDescription.FLAG_CHECKTAG, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_actionBarTabUnactiveText));
-                arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), ThemeDescription.FLAG_SELECTOR, null, null, null, null, Theme.key_actionBarTabSelector));
+                if (Theme.isCurrentThemeDay()) {
+                    SimpleThemeDescription.add(arrayList, this::updateFilterTabsColors, Theme.key_windowBackgroundGray, Theme.key_profile_tabSelectedLine, Theme.key_profile_tabSelectedText, Theme.key_profile_tabText, Theme.key_profile_tabSelector, Theme.key_actionBarActionModeDefault);
+                } else {
+                    SimpleThemeDescription.add(arrayList, this::updateFilterTabsColors, Theme.key_windowBackgroundGray, Theme.key_actionBarTabLine, Theme.key_actionBarTabActiveText, Theme.key_actionBarTabUnactiveText, Theme.key_actionBarTabSelector, Theme.key_actionBarDefault);
+                }
             }
-            arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), 0, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_chats_tabUnreadActiveBackground));
-            arrayList.add(new ThemeDescription(filterTabsView.getTabsContainer(), 0, new Class[]{FilterTabsView.TabView.class}, null, null, null, Theme.key_chats_tabUnreadUnactiveBackground));
         }
         arrayList.add(new ThemeDescription(floatingButton, ThemeDescription.FLAG_IMAGECOLOR, null, null, null, null, Theme.key_chats_actionIcon));
         arrayList.add(new ThemeDescription(floatingButton, ThemeDescription.FLAG_BACKGROUNDFILTER, null, null, null, null, Theme.key_chats_actionBackground));
@@ -12346,8 +12358,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveAvatarDrawable}, "Arrow1", Theme.key_avatar_backgroundArchived));
                     arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveAvatarDrawable}, "Arrow2", Theme.key_avatar_backgroundArchived));
                 }
-                arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveAvatarDrawable}, "Box2", Theme.key_avatar_text));
-                arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveAvatarDrawable}, "Box1", Theme.key_avatar_text));
+
 
                 arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_pinArchiveDrawable}, "Arrow", Theme.key_chats_archiveIcon));
                 arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_pinArchiveDrawable}, "Line", Theme.key_chats_archiveIcon));
@@ -12355,10 +12366,16 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_unpinArchiveDrawable}, "Arrow", Theme.key_chats_archiveIcon));
                 arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_unpinArchiveDrawable}, "Line", Theme.key_chats_archiveIcon));
 
-                arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveDrawable}, "Arrow", Theme.key_chats_archiveBackground));
-                arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveDrawable}, "Box2", Theme.key_chats_archiveIcon));
-                arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveDrawable}, "Box1", Theme.key_chats_archiveIcon));
-
+                if (DahlSettings.getIconReplacement() == DahlSettings.ICON_REPLACEMENT_VKUI) {
+                    arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveAvatarDrawable}, "archive_outline_24", Theme.key_avatar_text));
+                    arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveDrawable}, "archive_outline_24", Theme.key_chats_archiveIcon));
+                } else {
+                    arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveAvatarDrawable}, "Box2", Theme.key_avatar_text));
+                    arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveAvatarDrawable}, "Box1", Theme.key_avatar_text));
+                    arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveDrawable}, "Arrow", Theme.key_chats_archiveBackground));
+                    arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveDrawable}, "Box2", Theme.key_chats_archiveIcon));
+                    arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_archiveDrawable}, "Box1", Theme.key_chats_archiveIcon));
+                }
                 arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_hidePsaDrawable}, "Line 1", Theme.key_chats_archiveBackground));
                 arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_hidePsaDrawable}, "Line 2", Theme.key_chats_archiveBackground));
                 arrayList.add(new ThemeDescription(viewPages[a].listView, 0, new Class[]{DialogCell.class}, new RLottieDrawable[]{Theme.dialogs_hidePsaDrawable}, "Line 3", Theme.key_chats_archiveBackground));
@@ -12894,7 +12911,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         boolean onlySelfStories = !isArchive() && getStoriesController().hasOnlySelfStories();
         boolean newVisibility;
         if (isArchive()) {
-            newVisibility = !getStoriesController().getHiddenList().isEmpty();
+            newVisibility = getStoriesController().hasHiddenStories();
         } else {
             newVisibility = !onlySelfStories && getStoriesController().hasStories();
             onlySelfStories = getStoriesController().hasOnlySelfStories();

@@ -44,7 +44,6 @@
     <string name="ProxyDahl">Прокси Даль</string>
     <string name="ProxyDahlInfo">Включайте при сбоях в соединении.</string>
     <string name="Profile">Профиль</string>
-    <string name="HidePhoneNumber">Скрыть номер телефона</string>
     <string name="HidePhoneNumberInfo">Номер будет скрыт только из меню Настроек.</string>
     <string name="Privacy">Приватность</string>
     <string name="MessagesStatus">Статус прочтения сообщений</string>
@@ -79,17 +78,19 @@
     <string name="AnimatedPremiumStickers">Анимация премиум-стикеров</string>
     <string name="TouchPremiumStickers">Нажатие на премиум-стикеры</string>
     <string name="Stories">Истории</string>
-    <string name="HideStories">Не показывать</string>
+    <string name="HideStories">Не показывать в чатах</string>
+    <string name="HideArchiveStories">Не показывать в Архиве</string>
     <string name="HideAddStory">Скрыть кнопку создания</string>
     <string name="HideViewedStories">Скрывать просмотренные истории</string>
     <string name="RecentChats">Недавние чаты</string>
     <string name="EnablePanel">Включить панель</string>
     <string name="RecentChatsInfo">Над списком чатов появится панель быстрого перехода к недавно посещенным чатам. </string>
-    <string name="NeedConfirm">Подтверждать</string>
+    <string name="NeedConfirm">Подтверждение</string>
     <string name="ConfirmCalling">Звонок</string>
-    <string name="ConfirmAudioMessage">Отправку аудиосообщения</string>
+    <string name="ConfirmAudioMessage">Отправка аудиосообщения</string>
     <string name="ConfirmVideoMessageCamera">Камера видеосообщения</string>
-  
+    <string name="ShowNumber">Показывать номер телефона</string>
+
     <string name="DahlProxyEnable">Включить прокси Даль</string>
     <string name="DahlProxyDisable">Выключить прокси Даль</string>
     <string name="DahlUseYourProxySettings">Использовать свой прокси</string>
@@ -139,4 +140,7 @@
     <string name="HideOnScrollInfo">Во время скроллинга чата при активном поле ввода сообщения клавиатура будет скрываться.</string>
 
     <string name="CallConfirmationAlert">Вы точно хотите позвонить <![CDATA[<font color="%1$s"><b>%2$s</b></font>]]>?</string>
+    <string name="reloadToApply">Перезапустите приложение, чтобы изменения вступили в силу</string>
+    <string name="WallpaperAsBackground">Обои как фон меню</string>
+    <string name="AvatarAsBackground">Аватар как фон меню</string>
 </resources>

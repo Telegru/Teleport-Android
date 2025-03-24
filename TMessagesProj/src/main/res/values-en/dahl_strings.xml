@@ -79,14 +79,16 @@
     <string name="AnimatedPremiumStickers">Animated Premium stickers</string>
     <string name="TouchPremiumStickers">Tapping on premium stickers</string>
     <string name="Stories">Stories</string>
-    <string name="HideStories">Hide stories</string>
+    <string name="HideStories">Do not show in chats</string>
+    <string name="HideArchiveStories">Do not show in Archive</string>
     <string name="HideAddStory">Hide create button</string>
     <string name="HideViewedStories">Hide viewed stories</string>
     <string name="NeedConfirm">Confirm</string>
     <string name="ConfirmCalling">Calling</string>
     <string name="ConfirmAudioMessage">Audio message sending</string>
     <string name="ConfirmVideoMessageCamera">Camera in video messages</string>
-  
+    <string name="ShowNumber">Show phone number</string>
+
     <string name="DahlProxyEnable">Enable Dahl proxy</string>
     <string name="DahlProxyDisable">Disable Dahl proxy</string>
     <string name="DahlUseYourProxySettings">Use your proxy</string>
@@ -137,4 +139,7 @@
     <string name="HideOnScrollInfo">Keyboard will hide while scrolling chat up</string>
 
     <string name="CallConfirmationAlert">Are you sure you want to call <![CDATA[<font color="%1$s"><b>%2$s</b></font>]]>?</string>
+    <string name="reloadToApply">Reload to apply changes</string>
+    <string name="WallpaperAsBackground">Wallpaper as drawer background</string>
+    <string name="AvatarAsBackground">Avatar as drawer background</string>
 </resources>

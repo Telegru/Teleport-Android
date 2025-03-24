@@ -1139,6 +1139,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     boolean pulled = false;
     private static boolean replacingChatActivity = false;
 
+    private boolean isScrollUp = false;
+
     private PinchToZoomHelper pinchToZoomHelper;
     public EmojiAnimationsOverlay emojiAnimationsOverlay;
     public float drawingChatListViewYoffset;
@@ -3633,7 +3635,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } else if (id == call || id == video_call) {
                     if (currentUser != null && getParentActivity() != null) {
                         if(DahlSettings.isConfirmCall()){
-                            showCallConfirmationDialog(id);
+                            showCallConfirmationDialog(id, currentUser);
                         }else {
                             VoIPHelper.startCall(currentUser, id == video_call, userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
                         }
@@ -4524,6 +4526,17 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (e != null) {
                     wasManualScroll = true;
                 }
+                if (DahlSettings.isKeyboardHidingEnabled()) {
+                    if (e != null && e.getAction() == MotionEvent.ACTION_MOVE) {
+                        int currentTouchY = (int) (chatListView.getY() + e.getY(startedTrackingPointerId));
+                        if (isKeyboardVisible() && isScrollUp && currentTouchY >= chatActivityEnterView.getY() - fixedKeyboardHeight - AndroidUtilities.dp(52)) {
+                            AndroidUtilities.hideKeyboard(getParentActivity().getCurrentFocus());
+                        } else if (chatActivityEnterView != null && chatActivityEnterView.isPopupShowing()) {
+                            chatActivityEnterView.hidePopup(false);
+                        }
+                    }
+                }
+
                 if (e != null && e.getAction() == MotionEvent.ACTION_DOWN && !startedTrackingSlidingView && !maybeStartTrackingSlidingView && slidingView == null && !inPreviewMode) {
                     View view = getPressedChildView();
                     if (view instanceof ChatMessageCell) {
@@ -6182,7 +6195,6 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         chatListView.setOnScrollListener(new RecyclerView.OnScrollListener() {
 
             private float totalDy = 0;
-            private boolean scrollUp;
             private final int scrollValue = AndroidUtilities.dp(100);
 
             @Override
@@ -6244,12 +6256,12 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (chatListThanosEffect != null) {
                     chatListThanosEffect.scroll(dx, dy);
                 }
-                scrollUp = dy < 0;
+                isScrollUp = dy < 0;
 
                 int firstVisibleItem = chatLayoutManager.findFirstVisibleItemPosition();
                 if (dy != 0 && (scrollByTouch && recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_SETTLING) || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING) {
                     if (forceNextPinnedMessageId != 0) {
-                        if ((!scrollUp || forceScrollToFirst)) {
+                        if ((!isScrollUp || forceScrollToFirst)) {
                             forceNextPinnedMessageId = 0;
                         } else if (!chatListView.isFastScrollAnimationRunning() && firstVisibleItem != RecyclerView.NO_POSITION) {
                             int lastVisibleItem = chatLayoutManager.findLastVisibleItemPosition();
@@ -6277,13 +6289,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
                 if (recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING) {
                     forceScrollToFirst = false;
-                    if (DahlSettings.isKeyboardHidingEnabled()) {
-                        if (isKeyboardVisible() && scrollUp) {
-                            AndroidUtilities.hideKeyboard(getParentActivity().getCurrentFocus());
-                        } else if (chatActivityEnterView != null && chatActivityEnterView.isPopupShowing()) {
-                            chatActivityEnterView.hidePopup(false);
-                        }
-                    }
+//                    if (DahlSettings.isKeyboardHidingEnabled()) {
+//                        if (isKeyboardVisible() && scrollUp) {
+//                            AndroidUtilities.hideKeyboard(getParentActivity().getCurrentFocus());
+//                        } else if (chatActivityEnterView != null && chatActivityEnterView.isPopupShowing()) {
+//                            chatActivityEnterView.hidePopup(false);
+//                        }
+//                    }
                     if (!wasManualScroll && dy != 0) {
                         wasManualScroll = true;
                     }
@@ -17176,7 +17188,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             measureChildWithMargins(chatActivityEnterView, widthMeasureSpec, 0, heightMeasureSpec, 0);
 
             int listViewTopHeight;
-            if (inPreviewMode || isInsideContainer) {
+            if (inPreviewMode || isInsideContainer || !isShowBottomView()) {
                 inputFieldHeight = 0;
                 listViewTopHeight = 0;
             } else {
@@ -17428,7 +17440,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     childTop -= chatActivityEnterView.getMeasuredHeight() - AndroidUtilities.dp(2);
                     mentionContainer.setTranslationY(chatActivityEnterView.getAnimatedTop());
                 } else if (child == pagedownButton || child == searchUpButton || child == searchDownButton || child == mentiondownButton || child == reactionsMentiondownButton) {
-                    if (!inPreviewMode) {
+                    if (!inPreviewMode && isShowBottomView()) {
                         childTop -= chatActivityEnterView.getMeasuredHeight();
                     }
                 } else if (child == emptyViewContainer) {
@@ -17445,6 +17457,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     childTop -= blurredViewTopOffset;
                     if (!inPreviewMode && !isInsideContainer) {
                         childTop -= (inputFieldHeight - AndroidUtilities.dp(51));
+                        if(!isShowBottomView()){
+                            childTop -= AndroidUtilities.dp(51);
+                        }
                     }
                     childTop -= paddingBottom;
                     if (keyboardSize > AndroidUtilities.dp(20) && getLayoutParams().height < 0) {
@@ -26061,8 +26076,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     chatActivityEnterView.setFieldFocused();
                     AndroidUtilities.runOnUIThread(() -> chatActivityEnterView.openKeyboard(), 100);
                 } else {
-                    bottomOverlayChat.setVisibility(View.VISIBLE);
-                    AndroidUtilities.updateViewShow(bottomOverlayChat, true, false, true);
+                    bottomOverlayChat.setVisibility(isShowBottomOverlayChat() ? View.VISIBLE : View.INVISIBLE);
+                    AndroidUtilities.updateViewShow(bottomOverlayChat, isShowBottomOverlayChat(), false, true);
                     chatActivityEnterView.setFieldFocused(false);
                     chatActivityEnterView.setVisibility(View.INVISIBLE);
                     chatActivityEnterView.closeKeyboard();
@@ -36971,7 +36986,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             MessageObject messageObject = cell.getMessageObject();
             if (messageObject.type == MessageObject.TYPE_PHONE_CALL) {
                 if (currentUser != null) {
-                    VoIPHelper.startCall(currentUser, messageObject.isVideoCall(), userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
+                    if(DahlSettings.isConfirmCall()){
+                        showCallConfirmationDialog(messageObject.isVideoCall() ? video_call : call, currentUser);
+                    }else {
+                        VoIPHelper.startCall(currentUser, messageObject.isVideoCall(), userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
+                    }
                 }
             } else {
                 createMenu(cell, true, false, otherX, otherY, messageObject.isMusic(), false);
@@ -41377,10 +41396,18 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 options.add(R.drawable.msg_discussion, getString(R.string.SendMessage), () -> presentFragment(ChatActivity.of(user.id)));
                 if (!UserObject.isUserSelf(user)) {
                     options.add(R.drawable.msg_calls, getString(R.string.VoiceCallViaTelegram), () -> {
-                        VoIPHelper.startCall(user, false, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                        if(DahlSettings.isConfirmCall()){
+                            showCallConfirmationDialog(call, user);
+                        }else {
+                            VoIPHelper.startCall(user, false, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                        }
                     });
                     options.add(R.drawable.msg_videocall, getString(R.string.VideoCallViaTelegram), () -> {
-                        VoIPHelper.startCall(user, true, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                        if (DahlSettings.isConfirmCall()) {
+                            showCallConfirmationDialog(video_call, user);
+                        } else {
+                            VoIPHelper.startCall(user, true, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                        }
                     });
                 }
                 options.add(R.drawable.msg_calls_regular, getString(R.string.VoiceCallViaCarrier), () -> {
@@ -41989,20 +42016,35 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         return -1;
     }
 
-    private void showCallConfirmationDialog(int callId) {
+    private void showCallConfirmationDialog(int callId, TLRPC.User user) {
+        TLRPC.UserFull userFull = getMessagesController().getUserFull(user.id);
         String nameColor = String.format("#%06X", (0xFFFFFF & Theme.getColor(Theme.key_dialogTextBlack)));
-        String name = AndroidUtilities.escape(ContactsController.formatName(currentUser.first_name, currentUser.last_name).replace("\n", ""));
+        String name = AndroidUtilities.escape(ContactsController.formatName(user.first_name, user.last_name).replace("\n", ""));
         CharSequence message = Html.fromHtml(formatString(R.string.CallConfirmationAlert, nameColor, name));
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity())
                 .setTitle(LocaleController.getString(callId == video_call ? R.string.VideoCall : R.string.Call))
                 .setMessage(message)
                 .setPositiveButton(LocaleController.getString(R.string.Call), (dialog, which) -> {
-                    VoIPHelper.startCall(currentUser, callId == video_call, userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
+                    VoIPHelper.startCall(user, callId == video_call, userFull != null && userFull.video_calls_available, getParentActivity(), userFull, getAccountInstance());
                 })
                 .setNegativeButton(LocaleController.getString(R.string.Cancel), (dialog, which) -> {
                     dialog.dismiss();
                 });
 
         showDialog(builder.create());
+    }
+
+    private boolean isShowBottomOverlayChat(){
+        return !ChatObject.isChannel(currentChat) ||
+                ChatObject.isNotInChat(currentChat) ||
+                isThreadChat() ||
+                shouldDisplaySwipeToLeftToReplyInForum() ||
+                DahlSettings.isShowBottomPanelInChannels();
+    }
+
+    private boolean isShowBottomView(){
+        return (chatActivityEnterView != null && chatActivityEnterView.getVisibility() == View.VISIBLE) ||
+                (bottomOverlay != null && bottomOverlay.getVisibility() == View.VISIBLE) ||
+                isShowBottomOverlayChat();
     }
 }
