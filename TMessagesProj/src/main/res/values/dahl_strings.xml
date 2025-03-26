@@ -143,4 +143,5 @@
     <string name="reloadToApply">Перезапустите приложение, чтобы изменения вступили в силу</string>
     <string name="WallpaperAsBackground">Обои как фон меню</string>
     <string name="AvatarAsBackground">Аватар как фон меню</string>
+    <string name="FullscreenInput">Полноэкранный ввод</string>
 </resources>

@@ -10,7 +10,9 @@ package org.telegram.ui.Components;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.dpf2;
+import static org.telegram.messenger.AndroidUtilities.getActivity;
 import static org.telegram.messenger.AndroidUtilities.lerp;
+import static org.telegram.messenger.AndroidUtilities.navigationBarHeight;
 import static org.telegram.messenger.LocaleController.getString;
 import static org.telegram.ui.LaunchActivity.getLastFragment;
 
@@ -64,6 +66,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.util.Property;
 import android.util.TypedValue;
 import android.view.ActionMode;
@@ -196,8 +199,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
+import ru.tusco.messenger.settings.DahlChatsSettings;
 import ru.tusco.messenger.settings.DahlSettings;
 import ru.tusco.messenger.settings.model.CameraType;
+import ru.tusco.messenger.ui.components.InputExpandAnimatedIconView;
 
 public class ChatActivityEnterView extends BlurredFrameLayout implements NotificationCenter.NotificationCenterDelegate, SizeNotifierFrameLayout.SizeNotifierFrameLayoutDelegate, StickersAlert.StickersAlertDelegate, SuggestEmojiView.AnchorViewDelegate {
 
@@ -226,6 +231,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
     public boolean voiceOnce;
     public boolean onceVisible;
+
+    private boolean isLandscape = ApplicationLoader.applicationContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 
     public void drawRecordedPannel(Canvas canvas) {
         if (getAlpha() == 0 || recordedAudioPanel == null || recordedAudioPanel.getParent() == null || recordedAudioPanel.getVisibility() != View.VISIBLE) {
@@ -633,6 +640,12 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     private RecordDot recordDot;
     private SizeNotifierFrameLayout sizeNotifierLayout;
     private int originalViewHeight;
+    private int originalInputHeight;
+
+    private int originalInputHeightAfterDraft;
+    private int originalInputLinesAfterDraft;
+    private int maxInputHeight;
+    private int maxInputLines;
     private LinearLayout attachLayout;
     private ImageView attachButton;
     @Nullable
@@ -649,6 +662,9 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     protected View topLineView;
     private BotKeyboardView botKeyboardView;
     private ImageView notifyButton;
+
+    private InputExpandAnimatedIconView inputExpandArrow;
+    private boolean isInputExpanded = false;
     @Nullable
     private ImageView scheduledButton;
     @Nullable
@@ -2580,6 +2596,24 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         frameLayout.setClipChildren(false);
         textFieldContainer.addView(frameLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 0, 0, 48, 0));
 
+        if (DahlChatsSettings.getFullscreenInputEnabled()) {
+            inputExpandArrow = new InputExpandAnimatedIconView(context);
+            inputExpandArrow.setVisibility(INVISIBLE);
+            inputExpandArrow.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_messagePanelIcons), PorterDuff.Mode.SRC_IN));
+            inputExpandArrow.setState(isInputExpanded ? InputExpandAnimatedIconView.State.EXPANDED : InputExpandAnimatedIconView.State.COLLAPSED, true);
+            inputExpandArrow.setOnClickListener((view) -> {
+                isInputExpanded = !isInputExpanded;
+                int calculatedNewHeight = isInputExpanded ? maxInputHeight : originalInputHeightAfterDraft;
+                int calculatedLines = isInputExpanded ? maxInputLines : 6;
+                if (isInputExpanded) originalInputHeightAfterDraft = messageEditText.getHeight();
+                Log.d("WTF", "ChatActivityEnterView: " + isInputExpanded + " " + calculatedNewHeight + " " + calculatedLines + " " + messageEditText.getHeight());
+                ObjectAnimator.ofInt(messageEditText, "height", messageEditText.getHeight(), calculatedNewHeight).start();
+                messageEditText.setLines(calculatedLines);
+                inputExpandArrow.setState(isInputExpanded ? InputExpandAnimatedIconView.State.EXPANDED : InputExpandAnimatedIconView.State.COLLAPSED, true);
+            });
+            textFieldContainer.addView(inputExpandArrow, LayoutHelper.createFrame(48, 48, Gravity.TOP | Gravity.RIGHT, 3, 0, 0, 0));
+        }
+
         emojiButton = new ChatActivityEnterViewAnimatedIconView(context) {
             @Override
             protected void onDraw(Canvas canvas) {
@@ -4229,7 +4263,17 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     }
 
     protected void onLineCountChanged(int oldLineCount, int newLineCount) {
-
+        if (!DahlChatsSettings.getFullscreenInputEnabled() || messageEditText == null || isLandscape) return;
+        if (newLineCount == 1) {
+            ObjectAnimator.ofInt(messageEditText, "height", messageEditText.getHeight(), originalInputHeight).start();
+        }
+        if (oldLineCount < newLineCount && newLineCount < maxInputLines - 1) {
+            messageEditText.setMaxLines(newLineCount);
+        }
+        if (newLineCount >= maxInputLines - 1) {
+            ObjectAnimator.ofInt(messageEditText, "height", messageEditText.getHeight(), maxInputHeight).start();
+        }
+        updateExpandInputButton(newLineCount);
     }
 
     private void startLockTransition() {
@@ -5247,6 +5291,13 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         updateFieldHint(false);
         messageEditText.setSingleLine(false);
         messageEditText.setMaxLines(6);
+        maxInputHeight = AndroidUtilities.getRealScreenSize().y - navigationBarHeight - parentFragment.getPinnedMessageOrActionBarBottom();
+        maxInputLines =  maxInputHeight / AndroidUtilities.dp(18) + 1;
+
+        originalInputLinesAfterDraft = 1;
+        originalInputHeight = AndroidUtilities.dp(18) + dp(11) + dp(12);
+        originalInputHeightAfterDraft = AndroidUtilities.dp(18) + dp(11) + dp(12);
+
         messageEditText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
         messageEditText.setGravity(Gravity.BOTTOM);
         messageEditText.setPadding(0, dp(11), 0, dp(12));
@@ -5844,6 +5895,13 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 //        if (botWebViewMenuContainer != null) {
 //            botWebViewMenuContainer.setTranslationY(y);
 //        }
+        if (DahlChatsSettings.getFullscreenInputEnabled() && keyboardVisible && progress == 1.0f && messageEditText != null && originalInputHeightAfterDraft > 0 && !isLandscape) {
+            maxInputHeight = (AndroidUtilities.getRealScreenSize().y - keyboardHeight - navigationBarHeight - parentFragment.getPinnedMessageOrActionBarBottom());
+            int maxLines = maxInputHeight / messageEditText.getLineHeight();
+            messageEditText.setMaxLines(maxLines + 1);
+            maxInputLines = maxLines + 1;
+            ObjectAnimator.ofInt(messageEditText, "height", messageEditText.getHeight(), isInputExpanded ? maxInputHeight : originalInputHeightAfterDraft).start();
+        }
     }
 
     public void onAdjustPanTransitionEnd() {
@@ -6028,9 +6086,16 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE;
         if (senderSelectPopupWindow != null) {
             senderSelectPopupWindow.setPauseNotifications(false);
             senderSelectPopupWindow.dismiss();
+        }
+        if (!DahlChatsSettings.getFullscreenInputEnabled()) return;
+        if (isLandscape) {
+            inputExpandArrow.setVisibility(INVISIBLE);
+        } else {
+            inputExpandArrow.setVisibility(VISIBLE);
         }
     }
 
@@ -9245,6 +9310,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 messageEditText.setText(draftMessage);
                 messageEditText.setSelection(messageEditText.length());
             }
+
             draftMessage = null;
             messageWebPageSearch = draftSearchWebpage;
             if (getVisibility() == VISIBLE) {
@@ -9477,6 +9543,38 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         ignoreTextChange = false;
         if (ignoreChange && delegate != null) {
             delegate.onTextChanged(messageEditText.getText(), true, fromDraft);
+        }
+        messageEditText.postDelayed(() -> {
+            maxInputHeight = AndroidUtilities.getRealScreenSize().y - navigationBarHeight - parentFragment.getPinnedMessageOrActionBarBottom();
+            maxInputLines =  maxInputHeight / AndroidUtilities.dp(18) + 1;
+            originalInputHeightAfterDraft = messageEditText.getHeight();
+            originalInputLinesAfterDraft = messageEditText.getLineCount();
+
+            if (DahlChatsSettings.getFullscreenInputEnabled() && fromDraft) {
+                if (originalInputLinesAfterDraft >= 5) {
+                    inputExpandArrow.setVisibility(VISIBLE);
+                    isInputExpanded = false;
+                    inputExpandArrow.setState(InputExpandAnimatedIconView.State.COLLAPSED, false);
+                } else {
+                    inputExpandArrow.setVisibility(INVISIBLE);
+                }
+            }
+        }, 100);
+    }
+
+    private void updateExpandInputButton(int lineCount) {
+        if (lineCount >= 5) {
+            inputExpandArrow.setVisibility(VISIBLE);
+            if (lineCount > 6 && !isInputExpanded) {
+                isInputExpanded = true;
+                inputExpandArrow.setState(InputExpandAnimatedIconView.State.EXPANDED, true);
+            }
+            if (lineCount <= 6 && isInputExpanded) {
+                isInputExpanded = false;
+                inputExpandArrow.setState(InputExpandAnimatedIconView.State.COLLAPSED, true);
+            }
+        } else {
+            inputExpandArrow.setVisibility(INVISIBLE);
         }
     }
 

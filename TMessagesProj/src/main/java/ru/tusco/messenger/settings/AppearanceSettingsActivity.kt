@@ -89,25 +89,17 @@ class AppearanceSettingsActivity : UniversalFragment() {
         items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.NavigationDrawer)))
-        items?.add(UItem.asCheck(WALLPAPER_AS_DRAWER_BACKGROUND, getString(R.string.WallpaperAsBackground)).apply {
-            setChecked(DahlAppearanceSettings.wallpaperAsBackground)
-        })
-        items?.add(UItem.asCheck(AVATAR_AS_DRAWER_BACKGROUND, getString(R.string.AvatarAsBackground)).apply {
-            setChecked(DahlAppearanceSettings.avatarAsBackground)
-        })
+        items?.add(UItem.asCheck(WALLPAPER_AS_DRAWER_BACKGROUND, getString(R.string.WallpaperAsBackground)).setChecked(DahlAppearanceSettings.wallpaperAsBackground))
+        items?.add(UItem.asCheck(AVATAR_AS_DRAWER_BACKGROUND, getString(R.string.AvatarAsBackground)).setChecked(DahlAppearanceSettings.avatarAsBackground))
         items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.ElementsRounding)))
-        items?.add(UItem.asCheck(SQUARE_AVATARS, getString(R.string.Squared)).apply {
-            setChecked(DahlSettings.rectangularAvatars)
-        })
+        items?.add(UItem.asCheck(SQUARE_AVATARS, getString(R.string.Squared)).setChecked(DahlSettings.rectangularAvatars))
 
         items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.AvatarsFont)))
-        items?.add(UItem.asCheck(AVATARS_FONT, getString(R.string.Nizhegorodski)).apply {
-            setChecked(DahlSettings.ngAvatarFont)
-        })
+        items?.add(UItem.asCheck(AVATARS_FONT, getString(R.string.Nizhegorodski)).setChecked(DahlSettings.ngAvatarFont))
 
         val hexAuthorColor = String.format("#%06X", (0xFFFFFF and Theme.getColor(Theme.key_windowBackgroundWhiteBlackText)))
         items?.add(UItem.asShadow(Html.fromHtml(formatString(R.string.FontAuthor, hexAuthorColor))))
