@@ -126,4 +126,5 @@
     <string name="reloadToApply">Reload to apply changes</string>
     <string name="WallpaperAsBackground">Wallpaper as drawer background</string>
     <string name="AvatarAsBackground">Avatar as drawer background</string>
+    <string name="FullscreenInput">Fullscreen input</string>
 </resources>

@@ -369,13 +369,6 @@ object DahlSettings {
         }
 
     @JvmStatic
-    var isKeyboardHidingEnabled: Boolean
-        get() = sharedPreferences.getBoolean("keyboard_hiding_enabled", true)
-        set(value) {
-            putBoolean("keyboard_hiding_enabled", value)
-        }
-
-    @JvmStatic
     var isRecentChatsEnabled: Boolean
         get() = sharedPreferences.getInt(DahlSettingsKeys.RECENT_CHATS_ENABLED, 1) > 0
         set(value) {

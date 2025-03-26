@@ -27,6 +27,7 @@ class ChatsSettingsActivity : UniversalFragment() {
 
         const val SWITCH_RECENT_CHATS = 8
         const val SWITCH_KEYBOARD_HIDING = 9
+        const val SWITCH_FULLSCREEN_INPUT = 10
     }
 
     override fun getTitle(): CharSequence {
@@ -61,7 +62,8 @@ class ChatsSettingsActivity : UniversalFragment() {
         items?.add(UItem.asShadow(-3, null))
 
         items?.add(UItem.asHeader(getString(R.string.Keyboard)))
-        items?.add(UItem.asCheck(SWITCH_KEYBOARD_HIDING, getString(R.string.HideOnScroll)).setChecked(DahlSettings.isKeyboardHidingEnabled))
+        items?.add(UItem.asCheck(SWITCH_FULLSCREEN_INPUT, getString(R.string.FullscreenInput)).setChecked(DahlChatsSettings.fullscreenInputEnabled))
+        items?.add(UItem.asCheck(SWITCH_KEYBOARD_HIDING, getString(R.string.HideOnScroll)).setChecked(DahlChatsSettings.isKeyboardHidingEnabled))
         items?.add(UItem.asShadow(getString(R.string.HideOnScrollInfo)))
     }
 
@@ -77,7 +79,8 @@ class ChatsSettingsActivity : UniversalFragment() {
             SWITCH_HIDE_ALL_CHATS_FOLDER -> DahlSettings.isHiddenAllChatsFolder = !DahlSettings.isHiddenAllChatsFolder
             SWITCH_FOLDERS_INFINITE_SCROLL -> DahlSettings.isFoldersTabInfiniteScroll = !DahlSettings.isFoldersTabInfiniteScroll
             SWITCH_SHOW_FOLDERS_TABS -> DahlSettings.isHiddenFoldersTabs = !DahlSettings.isHiddenFoldersTabs
-            SWITCH_KEYBOARD_HIDING -> DahlSettings.isKeyboardHidingEnabled = !DahlSettings.isKeyboardHidingEnabled
+            SWITCH_FULLSCREEN_INPUT -> DahlChatsSettings.fullscreenInputEnabled = !DahlChatsSettings.fullscreenInputEnabled
+            SWITCH_KEYBOARD_HIDING -> DahlChatsSettings.isKeyboardHidingEnabled = !DahlChatsSettings.isKeyboardHidingEnabled
             else -> {}
         }
         listView.adapter.update(true)
