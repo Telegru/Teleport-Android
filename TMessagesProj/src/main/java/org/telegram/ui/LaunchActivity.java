@@ -8,6 +8,8 @@
 
 package org.telegram.ui;
 
+import static org.telegram.messenger.LocaleController.formatPluralString;
+import static org.telegram.messenger.LocaleController.getString;
 import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_ACCOUNTS;
 import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_BOOSTS_FOR_USERS;
 
@@ -23,9 +25,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -36,6 +36,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.os.StatFs;
 import android.os.StrictMode;
@@ -48,6 +49,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.util.Base64;
+import android.util.Pair;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.ActionMode;
@@ -668,6 +670,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     presentFragment(new ChatActivity(args));
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (id == DrawerLayoutAdapter.ID_TELEGRAM_FEATURES) {
+                    if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                        AccountFrozenAlert.show(currentAccount);
+                        return;
+                    }
                     Browser.openUrl(LaunchActivity.this, LocaleController.getString(R.string.TelegramFeaturesUrl));
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (id == DrawerLayoutAdapter.ID_CHANGE_STATUS) {
@@ -5829,6 +5835,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         return foundContacts;
     }
 
+    private boolean firstAppUpdateCheck = true;
     public void checkAppUpdate(boolean force, Browser.Progress progress) {
         if (!ApplicationLoader.isStandaloneBuild() && !ApplicationLoader.isBetaBuild()) {
             return;
@@ -5837,6 +5844,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             return;
         }
         if (ApplicationLoader.applicationLoaderInstance.isCustomUpdate()) {
+            final BetaUpdate prevUpdate = ApplicationLoader.applicationLoaderInstance.getUpdate();
+            final boolean first = firstAppUpdateCheck;
+            firstAppUpdateCheck = false;
             ApplicationLoader.applicationLoaderInstance.checkUpdate(force, () -> {
                 final BetaUpdate pendingUpdate = ApplicationLoader.applicationLoaderInstance.getUpdate();
                 if (progress != null) {
@@ -5848,7 +5858,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         }
                     }
                 }
-                if (pendingUpdate != null) {
+                if (pendingUpdate != null && !ApplicationLoader.applicationLoaderInstance.isDownloadingUpdate() && (first || prevUpdate == null || pendingUpdate.higherThan(prevUpdate))) {
                     ApplicationLoader.applicationLoaderInstance.showCustomUpdateAppPopup(LaunchActivity.this, pendingUpdate, currentAccount);
                 }
             });
@@ -8358,6 +8368,20 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         }
         if (instance != null && instance.getActionBarLayout() != null) {
             return instance.getActionBarLayout().getLastFragment();
+        }
+        return null;
+    }
+
+    // last fragment that is not finishing itself
+    public static <T extends BaseFragment> T findFragment(Class<T> clazz) {
+        if (BubbleActivity.instance != null && BubbleActivity.instance.actionBarLayout != null) {
+            return BubbleActivity.instance.actionBarLayout.findFragment(clazz);
+        }
+        if (instance != null && !instance.sheetFragmentsStack.isEmpty()) {
+            return instance.sheetFragmentsStack.get(instance.sheetFragmentsStack.size() - 1).findFragment(clazz);
+        }
+        if (instance != null && instance.getActionBarLayout() != null) {
+            return instance.getActionBarLayout().findFragment(clazz);
         }
         return null;
     }

@@ -2834,6 +2834,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
         getNotificationCenter().addObserver(this, NotificationCenter.starBalanceUpdated);
         getNotificationCenter().addObserver(this, NotificationCenter.starSubscriptionsLoaded);
+        getNotificationCenter().addObserver(this, NotificationCenter.appConfigUpdated);
 
         loadDialogs(getAccountInstance());
         getMessagesController().getStoriesController().loadAllStories();
@@ -3002,6 +3003,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
         getNotificationCenter().removeObserver(this, NotificationCenter.starBalanceUpdated);
         getNotificationCenter().removeObserver(this, NotificationCenter.starSubscriptionsLoaded);
+        getNotificationCenter().removeObserver(this, NotificationCenter.appConfigUpdated);
 
         if (commentView != null) {
             commentView.onDestroy();
@@ -4582,6 +4584,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     finishPreviewFragment();
                     return;
                 }
+                if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                    AccountFrozenAlert.show(currentAccount);
+                    return;
+                }
 
                 Bundle args = new Bundle();
                 args.putBoolean("destroyAfterSelect", true);
@@ -4655,6 +4661,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 final StoriesController.StoryLimit storyLimit = MessagesController.getInstance(currentAccount).getStoriesController().checkStoryLimit();
                 if (storyLimit != null) {
                     showDialog(new LimitReachedBottomSheet(this, getContext(), storyLimit.getLimitReachedType(), currentAccount, null));
+                    return;
+                }
+                if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                    AccountFrozenAlert.show(currentAccount);
                     return;
                 }
 
@@ -5944,7 +5954,21 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             }
             authHintCell.set(DialogsActivity.this, currentAccount);
             updateAuthHintCellVisibility(true);
-        } else if (folderId == 0 && MessagesController.getInstance(currentAccount).pendingSuggestions.contains("PREMIUM_GRACE")) {
+        } else if (getMessagesController().isFrozen()) {
+            dialogsHintCellVisible = true;
+            dialogsHintCell.setVisibility(View.VISIBLE);
+            dialogsHintCell.setCompact(true);
+            dialogsHintCell.setOnClickListener(v -> {
+                AccountFrozenAlert.show(getContext(), currentAccount, getResourceProvider());
+            });
+            dialogsHintCell.setText(
+                getString(R.string.AccountFrozenAlertTitle),
+                getString(R.string.AccountFrozenAlertSubtitle),
+                false,
+                true
+            );
+            updateAuthHintCellVisibility(false);
+        } else if (folderId == 0 && getMessagesController().pendingSuggestions.contains("PREMIUM_GRACE")) {
             dialogsHintCellVisible = true;
             dialogsHintCell.setVisibility(View.VISIBLE);
             dialogsHintCell.setCompact(true);
@@ -11008,6 +11032,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             updateDialogsHint();
         } else if (id == NotificationCenter.starBalanceUpdated || id == NotificationCenter.starSubscriptionsLoaded) {
             updateDialogsHint();
+        } else if (id == NotificationCenter.appConfigUpdated) {
+            updateDialogsHint();
         }
     }
 
@@ -13345,6 +13371,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             return false;
         });
         searchViewPager.searchListView.setOnItemClickListener((view, position, x, y) -> {
+            Object item = searchViewPager.dialogsSearchAdapter.getItem(position);
+            if (item instanceof TLRPC.TL_sponsoredPeer) {
+                final TLRPC.TL_sponsoredPeer peer = (TLRPC.TL_sponsoredPeer) item;
+                final long did = DialogObject.getPeerDialogId(peer.peer);
+                presentFragment(ChatActivity.of(did));
+                searchViewPager.dialogsSearchAdapter.clickedSponsoredPeer(peer);
+                return;
+            }
             if (view instanceof ProfileSearchCell && ((ProfileSearchCell) view).isBlocked()) {
                 showPremiumBlockedToast(view, ((ProfileSearchCell) view).getDialogId());
                 return;
