@@ -5291,8 +5291,8 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         updateFieldHint(false);
         messageEditText.setSingleLine(false);
         messageEditText.setMaxLines(6);
-        maxInputHeight = AndroidUtilities.getRealScreenSize().y - navigationBarHeight - parentFragment.getPinnedMessageOrActionBarBottom();
-        maxInputLines =  maxInputHeight / AndroidUtilities.dp(18) + 1;
+        maxInputHeight = parentFragment != null ? AndroidUtilities.getRealScreenSize().y - navigationBarHeight - parentFragment.getPinnedMessageOrActionBarBottom() : AndroidUtilities.dp(18) * 6 + dp(11) + dp(12);
+        maxInputLines = maxInputHeight / AndroidUtilities.dp(18) + 1;
 
         originalInputLinesAfterDraft = 1;
         originalInputHeight = AndroidUtilities.dp(18) + dp(11) + dp(12);
@@ -5895,7 +5895,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 //        if (botWebViewMenuContainer != null) {
 //            botWebViewMenuContainer.setTranslationY(y);
 //        }
-        if (DahlChatsSettings.getFullscreenInputEnabled() && keyboardVisible && progress == 1.0f && messageEditText != null && originalInputHeightAfterDraft > 0 && !isLandscape) {
+        if (DahlChatsSettings.getFullscreenInputEnabled() && keyboardVisible && progress == 1.0f && messageEditText != null && originalInputHeightAfterDraft > 0 && !isLandscape && parentFragment != null) {
             maxInputHeight = (AndroidUtilities.getRealScreenSize().y - keyboardHeight - navigationBarHeight - parentFragment.getPinnedMessageOrActionBarBottom());
             int maxLines = maxInputHeight / messageEditText.getLineHeight();
             messageEditText.setMaxLines(maxLines + 1);
@@ -9545,6 +9545,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             delegate.onTextChanged(messageEditText.getText(), true, fromDraft);
         }
         messageEditText.postDelayed(() -> {
+            if (parentFragment == null) return;
             maxInputHeight = AndroidUtilities.getRealScreenSize().y - navigationBarHeight - parentFragment.getPinnedMessageOrActionBarBottom();
             maxInputLines =  maxInputHeight / AndroidUtilities.dp(18) + 1;
             originalInputHeightAfterDraft = messageEditText.getHeight();

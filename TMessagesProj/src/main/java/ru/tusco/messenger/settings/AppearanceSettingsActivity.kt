@@ -47,6 +47,15 @@ class AppearanceSettingsActivity : UniversalFragment() {
         const val AVATAR_AS_DRAWER_BACKGROUND = 10
     }
 
+    private val chatLinesView: View by lazy {
+        return@lazy object : DahlChatListCell(context){
+            override fun didSelectChatType(lines: Int) {
+                super.didSelectChatType(lines)
+                DahlSettings.chatListLines = lines
+            }
+        }
+    }
+
     private val icons: Set<Int> by lazy {
         val icons = mutableSetOf<Int>()
         val seenValues = mutableSetOf<Int>()
@@ -75,11 +84,7 @@ class AppearanceSettingsActivity : UniversalFragment() {
         items?.add(UItem.asHeader(getString(R.string.ChatList)))
         items?.add(UItem.asCustom(
             CHAT_LIST_LINES,
-            object : DahlChatListCell(context){
-                override fun didSelectChatType(lines: Int) {
-                    DahlSettings.chatListLines = lines
-                }
-            }
+            chatLinesView
         ))
         items?.add(UItem.asShadow(-3, null))
 
@@ -131,22 +136,38 @@ class AppearanceSettingsActivity : UniversalFragment() {
             }
             SQUARE_AVATARS -> {
                 DahlSettings.rectangularAvatars = !DahlSettings.rectangularAvatars
+                (context as LaunchActivity).rebuildAllFragments(false)
             }
             AVATARS_FONT -> {
                 DahlSettings.ngAvatarFont = !DahlSettings.ngAvatarFont
             }
             CUSTOM_WALLPAPERS -> DahlSettings.isCustomWallpapersEnabled = !DahlSettings.isCustomWallpapersEnabled
             AVATAR_AS_DRAWER_BACKGROUND -> {
-                DahlAppearanceSettings.avatarAsBackground = !DahlAppearanceSettings.avatarAsBackground
-                DahlAppearanceSettings.wallpaperAsBackground = !DahlAppearanceSettings.wallpaperAsBackground
+                when {
+                    !DahlAppearanceSettings.avatarAsBackground && DahlAppearanceSettings.wallpaperAsBackground ->  {
+                        DahlAppearanceSettings.avatarAsBackground = !DahlAppearanceSettings.avatarAsBackground
+                        DahlAppearanceSettings.wallpaperAsBackground = !DahlAppearanceSettings.wallpaperAsBackground
+                    }
+                    else -> {
+                        DahlAppearanceSettings.avatarAsBackground = !DahlAppearanceSettings.avatarAsBackground
+                    }
+                }
+                (context as LaunchActivity).rebuildAllFragments(false)
             }
             WALLPAPER_AS_DRAWER_BACKGROUND -> {
-                DahlAppearanceSettings.wallpaperAsBackground = !DahlAppearanceSettings.wallpaperAsBackground
-                DahlAppearanceSettings.avatarAsBackground = !DahlAppearanceSettings.avatarAsBackground
+                when {
+                    !DahlAppearanceSettings.wallpaperAsBackground && DahlAppearanceSettings.avatarAsBackground -> {
+                        DahlAppearanceSettings.wallpaperAsBackground = !DahlAppearanceSettings.wallpaperAsBackground
+                        DahlAppearanceSettings.avatarAsBackground = !DahlAppearanceSettings.avatarAsBackground
+                    }
+                    else -> {
+                        DahlAppearanceSettings.wallpaperAsBackground = !DahlAppearanceSettings.wallpaperAsBackground
+                    }
+                }
             }
             else -> {}
         }
-        if(item?.id != CHAT_LIST_LINES) {
+        if (item?.id != CHAT_LIST_LINES) {
             listView.adapter.update(true)
         }
     }
@@ -170,7 +191,6 @@ class AppearanceSettingsActivity : UniversalFragment() {
         container.addView(listView, LayoutHelper.createFrame(LayoutParams.MATCH_PARENT, 40f, Gravity.CENTER, margin, 8f, margin, 16f))
         return container
     }
-
 }
 
 private class IconsAdapter : RecyclerView.Adapter<IconViewHolder>() {
