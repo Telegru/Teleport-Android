@@ -250,7 +250,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import ru.tusco.messenger.settings.DahlSettings;
 import ru.tusco.messenger.ui.components.RecentChatCell;
 import ru.tusco.messenger.ui.components.RecentChatsPanel;
-import ru.tusco.messenger.ui.wall.WallFragment;
 import ru.tusco.messenger.utils.DahlUtils;
 
 public class DialogsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, FloatingDebugProvider {
@@ -3147,8 +3146,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
             updatePasscodeButton();
             updateProxyButton(false, false);
-
-            menu.addItem(4, R.drawable.warning_sign);
         }
         searchItem = menu.addItem(0, R.drawable.ic_ab_search).setIsSearchField(true, false).setActionBarMenuItemSearchListener(new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
             boolean isSpeedItemCreated = false;
@@ -3904,8 +3901,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     hideActionMode(false);
                 } else if (id == pin || id == read || id == delete || id == clear || id == mute || id == archive || id == block || id == archive2 || id == pin2) {
                     performSelectedDialogsAction(selectedDialogs, id, true, false);
-                }else if(id == 4){
-                    presentFragment(new WallFragment());
                 }
             }
         });

@@ -11,6 +11,9 @@ class ViewState<T>(initial: T) {
     private val observers = mutableListOf<(T) -> Unit>()
 
     fun setValue(newValue: T) {
+        if(value == newValue) {
+            return
+        }
         value = newValue
         notifyObservers()
     }

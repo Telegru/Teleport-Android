@@ -54,6 +54,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
     public static final int ID_TELEGRAM_FEATURES = 13;
     public static final int ID_SETTINGS = 8;
     public static final int ID_DAHL_SETTINGS= 99;
+    public static final int ID_DAHL_WALL= 97;
 
     private Context mContext;
     private DrawerLayoutContainer mDrawerLayoutContainer;
@@ -367,6 +368,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         if(navDrawerItems.getContacts()) items.add(new Item(ID_CONTACTS, LocaleController.getString(R.string.Contacts), contactsIcon));
         if(navDrawerItems.getCalls()) items.add(new Item(ID_CALLS, LocaleController.getString(R.string.Calls), callsIcon));
         if(navDrawerItems.getSavedMessages()) items.add(new Item(ID_SAVED_MESSAGES, LocaleController.getString(R.string.SavedMessages), savedIcon));
+        items.add(new Item(ID_DAHL_WALL, LocaleController.getString(R.string.Wall), R.drawable.msg_home));
         items.add(new Item(ID_DAHL_SETTINGS, LocaleController.getString(R.string.SettingsDahl), dahlSettingsIcon));
         items.add(new Item(ID_SETTINGS, LocaleController.getString(R.string.Settings), settingsIcon));
         items.add(null); // divider

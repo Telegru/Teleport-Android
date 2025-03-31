@@ -44,7 +44,8 @@ class GeneralSettingsActivity : UniversalFragment(), NotificationCenter.Notifica
         const val MESSAGE_READ_STATUS = 5
         const val OFFLINE_MODE = 6
         const val PREMIUM = 7
-        const val DAHL_PROXY = 8
+        const val WALL_SETTINGS = 8
+        const val DAHL_PROXY = 9
         const val CUSTOM_PROXY = 99
     }
 
@@ -161,6 +162,9 @@ class GeneralSettingsActivity : UniversalFragment(), NotificationCenter.Notifica
 //
 //        items?.add(UItem.asShadow(-3, null))
 
+        items?.add(UItem.asButton(WALL_SETTINGS, getString(R.string.WallSettings)))
+        items?.add(UItem.asShadow(-3, null))
+
         items?.add(UItem.asButton(PREMIUM, getString(R.string.PremiumFeatures)))
         items?.add(UItem.asShadow(getString(R.string.PremiumFeaturesInfo)))
     }
@@ -188,7 +192,7 @@ class GeneralSettingsActivity : UniversalFragment(), NotificationCenter.Notifica
             }
             HIDE_HELP -> DahlSettings.isHiddenHelpBlock = !DahlSettings.isHiddenHelpBlock
             NAVIGATION_DRAWER -> presentFragment(NavigationDrawerSettingsActivity())
-
+            WALL_SETTINGS -> presentFragment(WallSettingsActivity())
             else -> {}
         }
         if (item.id >= CUSTOM_PROXY) {

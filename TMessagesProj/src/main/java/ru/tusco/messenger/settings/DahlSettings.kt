@@ -21,6 +21,7 @@ import ru.tusco.messenger.icons.IconReplacementNone
 import ru.tusco.messenger.icons.VKUiIconReplacement
 import ru.tusco.messenger.settings.model.CameraType
 import ru.tusco.messenger.settings.model.NavDrawerSettings
+import ru.tusco.messenger.settings.model.WallSettings
 
 object DahlSettings {
 
@@ -429,4 +430,10 @@ object DahlSettings {
         }
         return set
     }
+
+    var wallSettings: WallSettings
+        get() = WallSettings(sharedPreferences)
+        set(value) = value.save(sharedPreferences)
+
+
 }

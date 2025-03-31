@@ -142,4 +142,18 @@
     <string name="reloadToApply">Reload to apply changes</string>
     <string name="WallpaperAsBackground">Wallpaper as drawer background</string>
     <string name="AvatarAsBackground">Avatar as drawer background</string>
+
+    <string name="Wall">Wall</string>
+    <string name="WallSettings">Wall settings</string>
+    <string name="ArchiveChannels">Channels from Archive</string>
+    <string name="ArchiveChannelsInfo">Posts from your Archive will appear on the Wall along with other posts.</string>
+    <string name="ExcludedChannels">Excluded channels</string>
+    <string name="ExcludedChannelsInfo">By default, posts from all channels you are subscribed to are displayed.</string>
+    <string name="AddExclusion">Add exclusion</string>
+    <string name="DeleteExclusion">Remove exclusion</string>
+    <string name="DeleteExclusionAlert">Remove "%1$s" from the list of channels whose posts should not be shown on the Wall?</string>
+    <string name="DeleteAllExclusions">Remove all exclusions</string>
+    <string name="DeleteAllExclusionsAlert">Are you sure you want to remove all exclusions?</string>
+    <string name="NoUnreadChannels">There are no unread channels</string>
+    <string name="NeedShow">Show</string>
 </resources>

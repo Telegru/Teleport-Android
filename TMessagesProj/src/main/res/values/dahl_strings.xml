@@ -143,4 +143,18 @@
     <string name="reloadToApply">Перезапустите приложение, чтобы изменения вступили в силу</string>
     <string name="WallpaperAsBackground">Обои как фон меню</string>
     <string name="AvatarAsBackground">Аватар как фон меню</string>
+
+    <string name="Wall">Стена</string>
+    <string name="WallSettings">Настройки Стены</string>
+    <string name="ArchiveChannels">Каналы из Архива</string>
+    <string name="ArchiveChannelsInfo">Записи каналов из вашего Архива будут появляться на Стене вместе с остальными записями.</string>
+    <string name="ExcludedChannels">Исключенные каналы</string>
+    <string name="ExcludedChannelsInfo">По умолчанию показываются записи из всех каналов, на которые вы подписаны.</string>
+    <string name="AddExclusion">Добавить исключение</string>
+    <string name="DeleteExclusion">Удалить исключение</string>
+    <string name="DeleteExclusionAlert">Удалить \"%1$s\" из списка каналов, записи которых не должны показываться на Стене?</string>
+    <string name="DeleteAllExclusions">Удалить все исключения</string>
+    <string name="DeleteAllExclusionsAlert">Вы точно хотите удалить все исключения?</string>
+    <string name="NoUnreadChannels">У вас нет непрочитанных каналов</string>
+    <string name="NeedShow">Показывать</string>
 </resources>

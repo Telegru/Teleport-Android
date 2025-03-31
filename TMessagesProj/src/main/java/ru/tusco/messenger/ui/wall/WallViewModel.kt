@@ -1,57 +1,285 @@
 package ru.tusco.messenger.ui.wall
 
+import android.content.SharedPreferences
 import androidx.annotation.UiThread
 import androidx.collection.LongSparseArray
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.DispatchQueue
+import org.telegram.messenger.FileLog
 import org.telegram.messenger.MessageObject
 import org.telegram.messenger.MessagesController
+import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.UserConfig
-import org.telegram.tgnet.TLRPC
+import org.telegram.tgnet.ConnectionsManager
+import org.telegram.tgnet.TLRPC.Dialog
+import org.telegram.ui.ChatActivity
+import ru.tusco.messenger.settings.DahlSettings
+import ru.tusco.messenger.settings.model.WallSettings
 import ru.tusco.messenger.ui.mvvm.BaseViewModel
+import java.util.TreeSet
+import kotlin.math.max
+import kotlin.math.min
 
 @UiThread
-class WallViewModel : BaseViewModel<WallState>(WallState()){
+class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationCenter.NotificationCenterDelegate, SharedPreferences.OnSharedPreferenceChangeListener {
+
+    companion object {
+        const val MESSAGES_SIZE = 50
+    }
 
     private val queue = DispatchQueue("WallViewModel", true, Thread.MAX_PRIORITY)
 
+    private val messagesController = MessagesController.getInstance(UserConfig.selectedAccount)
+    private val notificationCenter = NotificationCenter.getInstance(UserConfig.selectedAccount)
+
+    private val classGuid = ConnectionsManager.generateClassGuid()
+    private var loadIndex = 0
+
+    private val messages =  LongSparseArray<List<MessageObject>>()
+    private var channelsCount = 0
+    private var channelsMessages = LongSparseArray<MutableList<MessageObject>>()
+    private var cacheEndReached = LongSparseArray<Boolean>()
+    private var messagesIds = LongSparseArray<TreeSet<Int>>()
+
+    private val filteredChannels: List<Dialog>
+        get() {
+            val wallSettings = DahlSettings.wallSettings
+            return messagesController
+                .dialogsChannelsOnly
+                .filter { ch ->
+                    FileLog.d("WallViewModel, count =" + ch.unread_count + " " + ch.folder_id + " " + wallSettings.archivedChannels + " " + wallSettings.excludedChannels.contains(ch.id))
+                    ch.unread_count > 0 && (ch.folder_id == 0 || wallSettings.archivedChannels) && !wallSettings.excludedChannels.contains(ch.id)
+                }
+        }
+
     init {
-        loadData()
+        notificationCenter.addObserver(this, NotificationCenter.messagesDidLoad)
+        DahlSettings.addListener(this)
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        DahlSettings.removeListener(this)
+        notificationCenter.removeObserver(this, NotificationCenter.messagesDidLoad)
         queue.cleanupQueue()
         queue.recycle()
+        super.onDestroy()
     }
 
-    private fun loadData() {
-        val messagesController = MessagesController.getInstance(UserConfig.selectedAccount)
-        val channels = ArrayList(messagesController.dialogsChannelsOnly)
-        val messages = LongSparseArray<ArrayList<MessageObject>>()
-        messages.putAll(messagesController.dialogMessage)
-        state.setValue(state.value.copy(loading = true))
-        queue.postRunnable { processMessages(channels, messages) }
+    fun reload() {
+        if(state.value is WallState.Loading) return
+        FileLog.d("WallViewModel, reload")
+        queue.cleanupQueue()
+        channelsCount = 0
+        messages.clear()
+        channelsMessages.clear()
+        cacheEndReached.clear()
+
+        messagesIds.clear()
+        loadIndex++
+        var unreadCount = 0
+        val channels = filteredChannels
+        channelsCount = channels.size
+        for (ch in channels) {
+            unreadCount += ch.unread_count
+            messagesController.loadMessages(
+                ch.id,
+                0,
+                false,
+                min(MESSAGES_SIZE, ch.unread_count),
+                0,
+                0,
+                true,
+                0,
+                classGuid,
+                MessagesController.LOAD_FROM_UNREAD,
+                0,
+                ChatActivity.MODE_DEFAULT,
+                0,
+                0,
+                loadIndex,
+                false
+            )
+        }
+        if(channels.isNotEmpty()){
+            state.setValue(WallState.Loading(unreadCount = unreadCount))
+        }else{
+            state.setValue(WallState.Empty)
+        }
+
     }
 
-    private fun processMessages(channels: List<TLRPC.Dialog>, messages: LongSparseArray<ArrayList<MessageObject>>) {
-        val result = mutableListOf<MessageObject>()
-        for (channel in channels) {
-            if(channel.unread_count == 0){
+    fun loadNextPage() {
+        val listState = state.value
+        val canLoadMore = listState is WallState.NewData
+        if (!canLoadMore) {
+            return
+        }
+        messages.clear()
+        loadIndex++
+        val channels = filteredChannels
+        channelsCount = 0
+        for (ch in channels) {
+            if(true == messagesIds.get(ch.id)?.contains(ch.top_message)){
                 continue
             }
-            val messagesList = messages[channel.id] ?: continue
-            for (message in messagesList) {
-                if (message.isUnread) {
-                    result.add(message)
-                }
+            channelsCount++
+            val messages = channelsMessages.get(ch.id)
+            val maxId = messages?.lastOrNull()?.id ?: ch.read_inbox_max_id
+            val maxDate = messages?.lastOrNull()?.messageOwner?.date ?: 0
+            val fromCache = !(cacheEndReached.get(ch.id) ?: false)
+
+            messagesController.loadMessages(
+                ch.id,
+                0,
+                false,
+                min(MESSAGES_SIZE, ch.unread_count),
+                maxId,
+                0,
+                fromCache,
+                maxDate,
+                classGuid,
+                MessagesController.LOAD_FORWARD,
+                0,
+                ChatActivity.MODE_DEFAULT,
+                0,
+                0,
+                loadIndex,
+                false
+            )
+        }
+        if(channelsCount > 0){
+            state.setValue(WallState.LoadingNextPage(listState.unreadCount))
+        }else{
+            state.setValue(WallState.NewData(unreadCount = listState.unreadCount))
+        }
+    }
+
+    override fun onSharedPreferenceChanged(p0: SharedPreferences, key: String?) {
+        FileLog.d("WallViewModel, onSharedPreferenceChanged, key: $key")
+        if(key.isNullOrBlank()) return
+        if(WallSettings.keys.contains(key)){
+            reload()
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun didReceivedNotification(id: Int, account: Int, vararg args: Any) {
+        if (id == NotificationCenter.messagesDidLoad) {
+            val guid = args[10] as Int
+            if (guid != classGuid) {
+                return
+            }
+            val channelId = args[0] as Long
+            val count = args[1] as Int
+
+            val objects = args[2] as List<MessageObject>
+            val isCache = args[3] as Boolean
+            val loadType = args[8] as Int
+            var queryLoadIndex = args[11] as Int
+            if (queryLoadIndex < 0) {
+                queryLoadIndex = -queryLoadIndex
+            }
+
+            FileLog.d("WallViewModel, loadIndex: $loadIndex, queryLoadIndex: $queryLoadIndex, index: $loadIndex, isCache: $isCache, channelId: $channelId, count: $count, objects: ${objects.size}")
+            if (queryLoadIndex != loadIndex) {
+                return
+            }
+            if(loadType != MessagesController.LOAD_FROM_UNREAD){
+                cacheEndReached.put(channelId, objects.size < count)
+            }
+
+            messages.append(channelId, objects)
+            if (channelsCount == messages.size()) {
+                processMessages(messages)
             }
         }
-        result.sortBy { it.messageOwner.date }
-        AndroidUtilities.runOnUIThread {
-            if (!isDestroyed) {
-                state.setValue(state.value.copy(data = result))
+    }
+
+    private fun processMessages(messages: LongSparseArray<List<MessageObject>>) {
+        val channels = ArrayList(messagesController.dialogsChannelsOnly)
+        queue.postRunnable {
+            val result = mutableListOf<MessageObject>()
+            for (ch in channels) {
+                val list = messages[ch.id] ?: continue
+                for(message in list){
+                    if(message.id <= 0){
+                        continue
+                    }
+
+                    if(true == messagesIds[ch.id]?.contains(message.id)){
+                        continue
+                    }
+                     if(message.id > ch.read_inbox_max_id){
+                        result.add(message)
+                    }
+                }
             }
+            result.sortBy{ it.messageOwner.date}
+            FileLog.d("processMessages, result size: ${result.size}")
+            val msgs = mutableListOf<MessageObject>()
+            var oldGroupId = 0L
+            for(msg in result){
+                if(msgs.size >= MESSAGES_SIZE - 10 && (!msg.hasValidGroupIdFast() || msg.groupId != oldGroupId)){
+                   break
+                }
+                msgs.add(msg)
+                oldGroupId = msg.groupId
+            }
+
+            AndroidUtilities.runOnUIThread {
+                msgs.forEach {
+                    if(!it.hasValidGroupIdFast()){
+                        it.forceAvatar = true
+                        it.resetLayout()
+                    }
+                    val list = channelsMessages.get(it.dialogId) ?: mutableListOf()
+                    list.add(it)
+                    channelsMessages.put(it.dialogId, list)
+                    val ids = messagesIds[it.dialogId] ?: TreeSet()
+                    ids.add(it.id)
+                    messagesIds.put(it.dialogId, ids)
+                }
+                val unreadCount = state.value.unreadCount
+
+                state.setValue(WallState.NewData(data = msgs, unreadCount = unreadCount))
+            }
+        }
+    }
+
+    fun markRead(date: Int) {
+        FileLog.d("WallViewModel, markRead, date: $date")
+        if(date <= 0) return
+
+        var totalCount = 0
+        for (i in 0 until channelsMessages.size()) {
+            val dialogId = channelsMessages.keyAt(i)
+            val messages = channelsMessages.valueAt(i)
+            var message: MessageObject? = null
+            var count = 0
+            for (msg in messages){
+                if(msg.messageOwner.date > date){
+                    break
+                }
+                if(msg.isUnread){
+                    msg.setIsRead()
+                    count++
+                }
+                message = msg
+            }
+            message?.let{ m ->
+                messagesController.markDialogAsRead(dialogId, m.id, 0, m.messageOwner.date, false, 0, count, true, 0)
+            }
+
+            totalCount += count
+        }
+
+        val newUnreadCount = max(0, state.value.unreadCount - totalCount)
+
+        when(state.value){
+            is WallState.Loading -> state.setValue(WallState.Loading(unreadCount = newUnreadCount))
+            is WallState.NewData -> state.setValue(WallState.NewData(unreadCount = newUnreadCount))
+            is WallState.LoadingNextPage -> state.setValue(WallState.LoadingNextPage(unreadCount = newUnreadCount))
+            else -> {}
         }
     }
 }

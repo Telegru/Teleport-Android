@@ -229,6 +229,7 @@ import ru.tusco.messenger.DefaultWallpapersHelper;
 import ru.tusco.messenger.icons.DrawableResourceManager;
 import ru.tusco.messenger.settings.DahlSettings;
 import ru.tusco.messenger.settings.DahlSettingsActivity;
+import ru.tusco.messenger.ui.wall.WallFragment;
 
 public class LaunchActivity extends BasePermissionsActivity implements INavigationLayout.INavigationLayoutDelegate, NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate {
     public final static String EXTRA_FORCE_NOT_INTERNAL_APPS = "force_not_internal_apps";
@@ -692,6 +693,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 } else if(id == DrawerLayoutAdapter.ID_PROXY){
                     drawerLayoutContainer.closeDrawer(false);
                     DahlSettings.setProxyEnabled(!DahlSettings.isProxyEnabled());
+                } else if(id == DrawerLayoutAdapter.ID_DAHL_WALL){
+                    drawerLayoutContainer.closeDrawer(true);
+                    presentFragment(new WallFragment());
                 }
             }
         });
