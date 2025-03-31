@@ -117,6 +117,7 @@ class WallFragment : ChatActivity(Bundle().also { it.putInt("chatMode", MODE_DAH
                 scrollToTop = true
                 clearChatData(false)
                 showPageDownButton(false)
+                emptyViewContainer?.visibility = View.GONE
                 chatListView?.emptyView = null
             }
             is WallState.Empty -> {
@@ -124,6 +125,7 @@ class WallFragment : ChatActivity(Bundle().also { it.putInt("chatMode", MODE_DAH
                 clearChatData(false)
                 showPageDownButton(false)
                 chatListView?.emptyView = emptyViewContainer
+                emptyViewContainer?.visibility = View.VISIBLE
             }
             is WallState.NewData -> {
                 processNewMessages(ArrayList(state.data), false)
@@ -136,11 +138,13 @@ class WallFragment : ChatActivity(Bundle().also { it.putInt("chatMode", MODE_DAH
                     }
                 }else{
                     chatAdapter?.updateRowsSafe()
-                    chatListView?.emptyView = null
                 }
+                emptyViewContainer?.visibility = View.GONE
+                chatListView?.emptyView = null
             }
             is WallState.LoadingNextPage -> {
-
+                emptyViewContainer?.visibility = View.GONE
+                chatListView?.emptyView = null
             }
 
             else -> {}
