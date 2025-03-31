@@ -290,6 +290,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import ru.tusco.messenger.settings.DahlChatsSettings;
 import ru.tusco.messenger.settings.DahlSettings;
 
 @SuppressWarnings("unchecked")
@@ -4530,7 +4531,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (e != null) {
                     wasManualScroll = true;
                 }
-                if (DahlSettings.isKeyboardHidingEnabled()) {
+                if (DahlChatsSettings.isKeyboardHidingEnabled()) {
                     if (e != null && e.getAction() == MotionEvent.ACTION_MOVE) {
                         int currentTouchY = (int) (chatListView.getY() + e.getY(startedTrackingPointerId));
                         if (isKeyboardVisible() && isScrollUp && currentTouchY >= chatActivityEnterView.getY() - fixedKeyboardHeight - AndroidUtilities.dp(52)) {
@@ -7635,6 +7636,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
             @Override
             protected void onLineCountChanged(int oldLineCount, int newLineCount) {
+                super.onLineCountChanged(oldLineCount, newLineCount);
                 if (chatActivityEnterView != null) {
                     if (chatListView != null && (searchExpandProgress > 0 || actionBar != null && actionBar.isActionModeShowed())) {
                         return;
@@ -41581,6 +41583,12 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         ChatActivity chatActivity = parentChatActivity != null ? parentChatActivity : this;
         if (chatActivity.hashtagSearchTabs == null) return 0;
         return chatActivity.hashtagSearchTabs.getCurrentHeight();
+    }
+
+    public int getPinnedMessageOrActionBarBottom() {
+        return pinnedMessageView != null ?
+            (int) pinnedMessageView.getY() + pinnedMessageView.getHeight() :
+            (int) actionBar.getY() + actionBar.getHeight();
     }
 
     public void didPressReaction(View cell, TLRPC.ReactionCount reaction, boolean longpress, float x, float y) {
