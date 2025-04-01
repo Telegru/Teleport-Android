@@ -424,6 +424,7 @@ object DahlSettings {
         return set
     }
 
+    @JvmStatic
     var wallSettings: WallSettings
         get() = WallSettings(sharedPreferences)
         set(value) = value.save(sharedPreferences)

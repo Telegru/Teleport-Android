@@ -47,8 +47,7 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
             return messagesController
                 .dialogsChannelsOnly
                 .filter { ch ->
-                    FileLog.d("WallViewModel, count =" + ch.unread_count + " " + ch.folder_id + " " + wallSettings.archivedChannels + " " + wallSettings.excludedChannels.contains(ch.id))
-                    ch.unread_count > 0 && (ch.folder_id == 0 || wallSettings.archivedChannels) && !wallSettings.excludedChannels.contains(ch.id)
+                    ch.unread_count > 0 && (ch.folder_id != 1 || wallSettings.archivedChannels) && !wallSettings.excludedChannels.contains(ch.id)
                 }
         }
 
@@ -184,8 +183,8 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
             if (queryLoadIndex != loadIndex) {
                 return
             }
-            if(loadType != MessagesController.LOAD_FROM_UNREAD){
-                cacheEndReached.put(channelId, objects.size < count)
+            if(loadType != MessagesController.LOAD_FROM_UNREAD && isCache && objects.size < count){
+                cacheEndReached.put(channelId, true)
             }
 
             messages.append(channelId, objects)

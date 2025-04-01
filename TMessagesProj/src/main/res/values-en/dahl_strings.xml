@@ -152,7 +152,7 @@
     <string name="ExcludedChannelsInfo">By default, posts from all channels you are subscribed to are displayed.</string>
     <string name="AddExclusion">Add exclusion</string>
     <string name="DeleteExclusion">Remove exclusion</string>
-    <string name="DeleteExclusionAlert">Remove "%1$s" from the list of channels whose posts should not be shown on the Wall?</string>
+    <string name="DeleteExclusionAlert">Remove <![CDATA[<font color="%1$s"><b>%2$s</b></font>]]> from the list of channels whose posts should not be shown on the Wall?</string>
     <string name="DeleteAllExclusions">Remove all exclusions</string>
     <string name="DeleteAllExclusionsAlert">Are you sure you want to remove all exclusions?</string>
     <string name="NoUnreadChannels">There are no unread channels</string>

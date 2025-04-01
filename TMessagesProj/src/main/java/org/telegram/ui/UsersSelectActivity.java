@@ -88,12 +88,18 @@ import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.StickerEmptyView;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import ru.tusco.messenger.settings.DahlSettings;
+import ru.tusco.messenger.settings.model.WallSettings;
 
 public class UsersSelectActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, View.OnClickListener {
 
     public final static int TYPE_FILTER = 0;
     public final static int TYPE_AUTO_DELETE_EXISTING_CHATS = 1;
     public final static int TYPE_PRIVATE = 2;
+
+    public final static int TYPE_DAHL_WALL_EXCLUDED_CHANNELS = 99;
 
     private ScrollView scrollView;
     private SpansContainer spansContainer;
@@ -383,7 +389,27 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
     public UsersSelectActivity(int type) {
         super();
         this.type = type;
-        allowSelf = type != TYPE_AUTO_DELETE_EXISTING_CHATS;
+        allowSelf = type != TYPE_AUTO_DELETE_EXISTING_CHATS && type != TYPE_DAHL_WALL_EXCLUDED_CHANNELS;
+
+        if(type == TYPE_DAHL_WALL_EXCLUDED_CHANNELS){
+            initialIds = new ArrayList<>();
+            WallSettings settings = DahlSettings.getWallSettings();
+            boolean isArchiveIncluded = settings.getArchivedChannels();
+            if(isArchiveIncluded){
+                initialIds.addAll(settings.getExcludedChannels());
+            }else {
+                for (long id : settings.getExcludedChannels()) {
+                    TLRPC.Dialog d = getMessagesController().getDialog(id);
+                    if(d.folder_id != 1){
+                        initialIds.add(id);
+                    }
+                }
+            }
+            setDelegate((ids, flags) -> {
+                WallSettings settings1 = DahlSettings.getWallSettings();
+                DahlSettings.setWallSettings(settings1.copy(settings1.getArchivedChannels(), settings1.getShowInChats(), ids));
+            });
+        }
     }
 
     @Override
@@ -471,6 +497,8 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
             }
         } else if (type == TYPE_AUTO_DELETE_EXISTING_CHATS){
             updateHint();
+        }else if(type == TYPE_DAHL_WALL_EXCLUDED_CHANNELS){
+            actionBar.setTitle(getString(R.string.ExcludedChannels));
         }
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -1099,6 +1127,19 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
                     animatedAvatarContainer.getSubtitleTextView().setText(getString(R.string.SelectChatsForDisableAutoDelete2));
                 }
             }
+        } else if(type == TYPE_DAHL_WALL_EXCLUDED_CHANNELS){
+            int totalCount = 0;
+            boolean isArchiveIncluded = DahlSettings.getWallSettings().getArchivedChannels();
+            for (TLRPC.Dialog dialog : getMessagesController().dialogsChannelsOnly) {
+                if(dialog.folder_id != 1 || isArchiveIncluded){
+                    totalCount++;
+                }
+            }
+            if (selectedCount == 0) {
+                actionBar.setSubtitle(formatString("MembersCountZero", R.string.MembersCountZero, LocaleController.formatPluralString("Chats", totalCount)));
+            } else {
+                actionBar.setSubtitle(String.format(LocaleController.getPluralString("MembersCountSelected", selectedCount), selectedCount, totalCount));
+            }
         }
     }
 
@@ -1130,45 +1171,61 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
                 } else {
                     usersStartRow = 5;
                 }
+            }else if(type == TYPE_DAHL_WALL_EXCLUDED_CHANNELS){
+                usersStartRow = 1;
             } else {
                 usersStartRow = 0;
             }
 
-            final boolean allowBots = type != TYPE_PRIVATE;
-            final boolean allowChats = type != TYPE_PRIVATE;
+            if(type != TYPE_DAHL_WALL_EXCLUDED_CHANNELS) {
+                final boolean allowBots = type != TYPE_PRIVATE;
+                final boolean allowChats = type != TYPE_PRIVATE;
 
-            boolean hasSelf = false;
-            ArrayList<TLRPC.Dialog> dialogs = getMessagesController().getAllDialogs();
-            for (int a = 0, N = dialogs.size(); a < N; a++) {
-                TLRPC.Dialog dialog = dialogs.get(a);
-                if (DialogObject.isEncryptedDialog(dialog.id)) {
-                    continue;
-                }
-                if (DialogObject.isUserDialog(dialog.id)) {
-                    TLRPC.User user = getMessagesController().getUser(dialog.id);
-                    if (user != null) {
-                        if (!allowSelf && UserObject.isUserSelf(user)) {
-                            continue;
+                boolean hasSelf = false;
+                ArrayList<TLRPC.Dialog> dialogs = getMessagesController().getAllDialogs();
+                for (int a = 0, N = dialogs.size(); a < N; a++) {
+                    TLRPC.Dialog dialog = dialogs.get(a);
+                    if (DialogObject.isEncryptedDialog(dialog.id)) {
+                        continue;
+                    }
+                    if (DialogObject.isUserDialog(dialog.id)) {
+                        TLRPC.User user = getMessagesController().getUser(dialog.id);
+                        if (user != null) {
+                            if (!allowSelf && UserObject.isUserSelf(user)) {
+                                continue;
+                            }
+                            if (user.bot && !allowBots) {
+                                continue;
+                            }
+                            contacts.add(user);
+                            if (UserObject.isUserSelf(user)) {
+                                hasSelf = true;
+                            }
                         }
-                        if (user.bot && !allowBots) {
-                            continue;
-                        }
-                        contacts.add(user);
-                        if (UserObject.isUserSelf(user)) {
-                            hasSelf = true;
+                    } else {
+                        TLRPC.Chat chat = getMessagesController().getChat(-dialog.id);
+                        if (!allowChats) continue;
+                        if (chat != null) {
+                            contacts.add(chat);
                         }
                     }
-                } else {
-                    TLRPC.Chat chat = getMessagesController().getChat(-dialog.id);
-                    if (!allowChats) continue;
+                }
+                if (!hasSelf && allowSelf) {
+                    TLRPC.User user = getMessagesController().getUser(getUserConfig().clientUserId);
+                    contacts.add(0, user);
+                }
+            }else{
+                ArrayList<TLRPC.Dialog> channels = getMessagesController().dialogsChannelsOnly;
+                boolean isArchiveIncluded = DahlSettings.getWallSettings().getArchivedChannels();
+                for(TLRPC.Dialog ch : channels){
+                    if(ch.folder_id == 1 && !isArchiveIncluded){
+                        continue;
+                    }
+                    TLRPC.Chat chat = getMessagesController().getChat(-ch.id);
                     if (chat != null) {
                         contacts.add(chat);
                     }
                 }
-            }
-            if (!hasSelf && allowSelf) {
-                TLRPC.User user = getMessagesController().getUser(getUserConfig().clientUserId);
-                contacts.add(0, user);
             }
 
             searchAdapterHelper = new SearchAdapterHelper(false);
@@ -1214,6 +1271,8 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
                     } else {
                         count = 5;
                     }
+                } else if(type == TYPE_DAHL_WALL_EXCLUDED_CHANNELS){
+                    count = 1;
                 } else {
                     count = 0;
                 }
@@ -1374,7 +1433,7 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
                     }
                     boolean blueText = false;
                     boolean enabled = true;
-                    if (type == TYPE_PRIVATE) {
+                    if (type == TYPE_PRIVATE || type == TYPE_DAHL_WALL_EXCLUDED_CHANNELS) {
 
                     } else if (type == TYPE_FILTER) {
                         if (!searching) {
@@ -1434,7 +1493,7 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
                 }
                 case 2: {
                     GraySectionCell cell = (GraySectionCell) holder.itemView;
-                    if (position == 0 && !noChatTypes) {
+                    if (position == 0 && !noChatTypes && type != TYPE_DAHL_WALL_EXCLUDED_CHANNELS) {
                         cell.setText(getString(R.string.FilterChatTypes));
                     } else {
                         cell.setText(getString(R.string.FilterChats));
@@ -1466,6 +1525,10 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
                         if (position == 0 || position == 4) {
                             return 2;
                         }
+                    }
+                } else if(type == TYPE_DAHL_WALL_EXCLUDED_CHANNELS){
+                    if (position == 0) {
+                        return 2;
                     }
                 }
                 return 1;
