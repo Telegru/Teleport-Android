@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.ContactsController
 import org.telegram.messenger.LocaleController.formatString
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
@@ -49,7 +48,10 @@ class WallSettingsActivity : UniversalFragment() {
                 UItem.asCheck(ARCHIVE, getString(R.string.ArchiveChannels), getString(R.string.ArchiveChannelsInfo))
                     .setChecked(archivedChannels)
             )
-
+            items?.add(
+                UItem.asCheck(CHAT_LIST, getString(R.string.InChatsList), getString(R.string.WallInChatListInfo))
+                    .setChecked(showInChats)
+            )
             items?.add(UItem.asShadow(-3, null))
 
             items?.add(UItem.asHeader(getString(R.string.ExcludedChannels)))
@@ -100,7 +102,10 @@ class WallSettingsActivity : UniversalFragment() {
                 listView.adapter.update(true)
             }
 
-            CHAT_LIST -> DahlSettings.wallSettings = DahlSettings.wallSettings.let { it.copy(showInChats = !it.showInChats) }
+            CHAT_LIST -> {
+                DahlSettings.wallSettings = DahlSettings.wallSettings.let { it.copy(showInChats = !it.showInChats) }
+                listView.adapter.update(true)
+            }
             ADD_EXCLUSION -> presentFragment(UsersSelectActivity(UsersSelectActivity.TYPE_DAHL_WALL_EXCLUDED_CHANNELS))
             CLEAR_EXCLUSIONS -> showRemoveAllChannelAlert()
         }

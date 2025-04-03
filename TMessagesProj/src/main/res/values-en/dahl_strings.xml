@@ -157,4 +157,6 @@
     <string name="DeleteAllExclusionsAlert">Are you sure you want to remove all exclusions?</string>
     <string name="NoUnreadChannels">There are no unread channels</string>
     <string name="NeedShow">Show</string>
+    <string name="InChatsList">In the chats list</string>
+    <string name="WallInChatListInfo">Wall will be displayed in the list along with other chats.</string>
 </resources>

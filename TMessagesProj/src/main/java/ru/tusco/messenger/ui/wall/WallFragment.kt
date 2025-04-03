@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController
-import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.ActionBar.ActionBarMenuOnItemClick
 import org.telegram.ui.ActionBar.BackDrawable
@@ -19,7 +18,6 @@ import org.telegram.ui.Cells.ChatMessageCell
 import org.telegram.ui.ChatActivity
 import ru.tusco.messenger.settings.WallSettingsActivity
 import ru.tusco.messenger.ui.mvvm.ViewModelFactory
-import kotlin.math.abs
 import kotlin.math.max
 
 class WallFragment : ChatActivity(Bundle().also { it.putInt("chatMode", MODE_DAHL_WALL) }) {
@@ -180,8 +178,6 @@ class WallFragment : ChatActivity(Bundle().also { it.putInt("chatMode", MODE_DAH
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val vh = super.onCreateViewHolder(parent, viewType)
             (vh.itemView as? ChatMessageCell)?.apply {
-                setWallMessageCell(true)
-
                 delegate = object : ChatActivity.ChatMessageCellDelegate() {
                     override fun didPressCommentButton(cell: ChatMessageCell) {
                         val group = cell.currentMessagesGroup
@@ -205,16 +201,6 @@ class WallFragment : ChatActivity(Bundle().also { it.putInt("chatMode", MODE_DAH
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             super.onBindViewHolder(holder, position)
-            (holder.itemView as? ChatMessageCell)?.let { cell ->
-                val message = cell.messageObject
-                val chatId = abs(message.dialogId)
-                val chat = messagesController.getChat(chatId)
-                val chatInfo = messagesController.getChatFull(chatId)
-                cell.isForum = true
-                cell.isChat = true
-                cell.hasDiscussion = chat?.has_link ?: false
-                cell.linkedChatId = chatInfo?.linked_chat_id ?: 0
-            }
             (holder.itemView as? ChatLoadingCell)?.setProgressVisible(true)
             if (position <= 10) {
                 viewModel.loadNextPage()

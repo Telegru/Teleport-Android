@@ -588,6 +588,9 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
                 imageReceiver.draw(canvas);
             } else if (backgroundDrawable instanceof ColorDrawable || backgroundDrawable instanceof GradientDrawable || backgroundDrawable instanceof MotionBackgroundDrawable) {
                 backgroundDrawable.setBounds(0, 0, getMeasuredWidth(), getMeasuredHeight());
+                if (backgroundDrawable instanceof MotionBackgroundDrawable) {
+                    backgroundDrawable.setBounds(0, 0, backgroundDrawable.getIntrinsicWidth(), backgroundDrawable.getIntrinsicHeight());
+                }
                 backgroundDrawable.draw(canvas);
             } else if (backgroundDrawable instanceof BitmapDrawable) {
                 Bitmap bitmap = ((BitmapDrawable) backgroundDrawable).getBitmap();

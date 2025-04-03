@@ -268,6 +268,8 @@ public class MessageObject {
 
     public boolean notime;
 
+    public boolean isDahlWallMessage;
+
     public int getChatMode() {
         if (scheduled) {
             return ChatActivity.MODE_SCHEDULED;
@@ -1205,6 +1207,8 @@ public class MessageObject {
             hasCaption = false;
             boolean checkCaption = true;
 
+            boolean isDahlWall = false;
+
             captionAbove = false;
             for (int a = (reversed ? count - 1 : 0); (reversed ? a >= 0 : a < count);) {
                 MessageObject messageObject = messages.get(a);
@@ -1219,6 +1223,7 @@ public class MessageObject {
                     if (messageObject.isMusic() || messageObject.isDocument()) {
                         isDocuments = true;
                     }
+                    isDahlWall = messageObject.isDahlWallMessage;
                 }
                 if (messageObject.messageOwner != null && messageObject.messageOwner.invert_media) {
                     captionAbove = true;
@@ -1288,7 +1293,10 @@ public class MessageObject {
                 return;
             }
 
-            if (needShare) {
+            if(isDahlWall) {
+                maxSizeWidth -= 30;
+                firstSpanAdditionalSize += 30;
+            }else if (needShare) {
                 maxSizeWidth -= 50;
                 firstSpanAdditionalSize += 50;
             }
@@ -1572,17 +1580,17 @@ public class MessageObject {
                     }
                 }
                 MessageObject messageObject = messages.get(a);
-                if (!isOut && messageObject.needDrawAvatarInternal()) {
+                if (!isOut && messageObject.needDrawAvatarInternal() || messageObject.isDahlWallMessage) {
                     if (pos.edge) {
                         if (pos.spanSize != 1000) {
-                            pos.spanSize += avatarOffset;
+                            pos.spanSize += messageObject.isDahlWallMessage ? 96 : avatarOffset;
                         }
-                        pos.pw += avatarOffset;
+                        pos.pw += messageObject.isDahlWallMessage ? 96 : avatarOffset;
                     } else if ((pos.flags & POSITION_FLAG_RIGHT) != 0) {
                         if (pos.spanSize != 1000) {
-                            pos.spanSize -= avatarOffset;
+                            pos.spanSize -= messageObject.isDahlWallMessage ? 96 : avatarOffset;
                         } else if (pos.leftSpanOffset != 0) {
-                            pos.leftSpanOffset += avatarOffset;
+                            pos.leftSpanOffset += messageObject.isDahlWallMessage ? 96 : avatarOffset;
                         }
                     }
                 }
@@ -7090,6 +7098,9 @@ public class MessageObject {
             generatedWithMinSize = AndroidUtilities.isTablet() ? AndroidUtilities.getMinTabletSide() : getParentWidth();
         }
         generatedWithDensity = AndroidUtilities.density;
+        if(isDahlWallMessage){
+            return generatedWithMinSize - dp(132);
+        }
         if (hasCode && !isSaved) {
             maxWidth = generatedWithMinSize - dp(45 + 15);
             if (needDrawAvatarInternal() && !isOutOwner() && !messageOwner.isThreadMessage) {

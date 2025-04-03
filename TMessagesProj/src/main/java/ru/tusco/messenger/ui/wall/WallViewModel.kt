@@ -16,6 +16,7 @@ import org.telegram.ui.ChatActivity
 import ru.tusco.messenger.settings.DahlSettings
 import ru.tusco.messenger.settings.model.WallSettings
 import ru.tusco.messenger.ui.mvvm.BaseViewModel
+import ru.tusco.messenger.utils.DahlUtils
 import java.util.TreeSet
 import kotlin.math.max
 import kotlin.math.min
@@ -42,14 +43,7 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
     private var messagesIds = LongSparseArray<TreeSet<Int>>()
 
     private val filteredChannels: List<Dialog>
-        get() {
-            val wallSettings = DahlSettings.wallSettings
-            return messagesController
-                .dialogsChannelsOnly
-                .filter { ch ->
-                    ch.unread_count > 0 && (ch.folder_id != 1 || wallSettings.archivedChannels) && !wallSettings.excludedChannels.contains(ch.id)
-                }
-        }
+        get() = DahlUtils.unreadWallChannels
 
     init {
         notificationCenter.addObserver(this, NotificationCenter.messagesDidLoad)
@@ -213,7 +207,19 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
                     }
                 }
             }
-            result.sortBy{ it.messageOwner.date}
+            result.sortWith(object : Comparator<MessageObject> {
+                override fun compare(o1: MessageObject, o2: MessageObject): Int {
+                    var d = o1.messageOwner.date.compareTo(o2.messageOwner.date)
+                    if(d != 0){
+                        return d
+                    }
+                    d = o1.groupId.compareTo(o2.groupId)
+                    if(d != 0){
+                        return d
+                    }
+                    return o1.id.compareTo(o2.id)
+                }
+            })
             FileLog.d("processMessages, result size: ${result.size}")
             val msgs = mutableListOf<MessageObject>()
             var oldGroupId = 0L
@@ -227,6 +233,7 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
 
             AndroidUtilities.runOnUIThread {
                 msgs.forEach {
+                    it.isDahlWallMessage = true
                     if(!it.hasValidGroupIdFast()){
                         it.forceAvatar = true
                         it.resetLayout()
@@ -266,7 +273,7 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
                 message = msg
             }
             message?.let{ m ->
-                messagesController.markDialogAsRead(dialogId, m.id, 0, m.messageOwner.date, false, 0, count, true, 0)
+//                messagesController.markDialogAsRead(dialogId, m.id, 0, m.messageOwner.date, false, 0, count, true, 0)
             }
 
             totalCount += count

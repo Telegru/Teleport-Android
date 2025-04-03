@@ -33020,7 +33020,12 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
                 if (messageObject != null && (!messageObject.deleted || cell.linkedChatId != linkedChatId) && !suppressUpdateMessageObject) {
                     cell.setIsUpdating(true);
-                    cell.linkedChatId = chatInfo != null ? chatInfo.linked_chat_id : 0;
+                    if(chatMode != MODE_DAHL_WALL) {
+                        cell.linkedChatId = chatInfo != null ? chatInfo.linked_chat_id : 0;
+                    } else{
+                        TLRPC.ChatFull info = getMessagesController().getChatFull(-messageObject.getDialogId());
+                        cell.linkedChatId = info != null ? info.linked_chat_id : 0;
+                    }
                     cell.setMessageObject(messageObject, cell.getCurrentMessagesGroup(), cell.isPinnedBottom(), cell.isPinnedTop());
                     cell.setIsUpdating(false);
                 }
@@ -34645,6 +34650,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             }
             PhotoViewer.getInstance().openPhoto(arrayList, arrayList.indexOf(message), dialog_id, 0, getTopicId(),photoViewerProvider);
+        } else if(chatMode == MODE_DAHL_WALL){
+            PhotoViewer.getInstance().openPhoto(message, ChatActivity.this, message.type != 0 ? message.getDialogId() : 0, 0, 0, photoViewerProvider);
         } else {
             PhotoViewer.getInstance().openPhoto(message, ChatActivity.this, message.type != 0 ? dialog_id : 0, message.type != 0 ? mergeDialogId : 0, message.type != 0 ? getTopicId() : 0, photoViewerProvider);
         }
@@ -35288,7 +35295,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (view instanceof ChatMessageCell) {
                     final ChatMessageCell messageCell = (ChatMessageCell) view;
                     MessageObject.GroupedMessages groupedMessages = getValidGroupedMessage(message);
-                    messageCell.isChat = currentChat != null || UserObject.isUserSelf(currentUser) || UserObject.isReplyUser(currentUser) || (chatMode == MODE_SEARCH);
+                    messageCell.isChat = currentChat != null || UserObject.isUserSelf(currentUser) || UserObject.isReplyUser(currentUser) || (chatMode == MODE_SEARCH) || chatMode == MODE_DAHL_WALL;
                     messageCell.isReportChat = isReport();
                     messageCell.isSavedChat = chatMode == MODE_SAVED;
                     messageCell.isSavedPreviewChat = chatMode == MODE_SAVED && isInsideContainer;
@@ -35299,7 +35306,15 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     messageCell.isThreadChat = threadMessageId != 0 || messageCell.isForum && isTopic;
                     messageCell.hasDiscussion = chatMode != MODE_SCHEDULED && ChatObject.isChannel(currentChat) && currentChat.has_link && !currentChat.megagroup;
                     messageCell.isPinned = chatMode == 0 && (pinnedMessageObjects.containsKey(message.getId()) || groupedMessages != null && !groupedMessages.messages.isEmpty() && pinnedMessageObjects.containsKey(groupedMessages.messages.get(0).getId()));
-                    messageCell.linkedChatId = chatMode != MODE_SCHEDULED && chatInfo != null ? chatInfo.linked_chat_id : 0;
+                    if(chatMode != MODE_DAHL_WALL) {
+                        messageCell.linkedChatId = chatMode != MODE_SCHEDULED && chatInfo != null ? chatInfo.linked_chat_id : 0;
+                    }else{
+                        long chatId = -message.getDialogId();
+                        TLRPC.ChatFull info = getMessagesController().getChatFull(chatId);
+                        TLRPC.Chat chat = getMessagesController().getChat(chatId);
+                        messageCell.hasDiscussion = chat != null && chat.has_link;
+                        messageCell.linkedChatId = info != null ? info.linked_chat_id : 0;
+                    }
                     if (chatMode == MODE_SEARCH && searchType == SEARCH_MY_MESSAGES) {
                         messageCell.isRepliesChat = UserObject.isReplyUser(message.getDialogId());
                     } else {
