@@ -125,7 +125,7 @@ class WallFragment : ChatActivity(Bundle().also { it.putInt("chatMode", MODE_DAH
                 chatListView?.emptyView = emptyViewContainer
                 emptyViewContainer?.visibility = View.VISIBLE
             }
-            is WallState.NewData -> {
+            is WallState.Data -> {
                 processNewMessages(ArrayList(state.data), false)
                 if(state.data.isNotEmpty()){
                     if(scrollToTop){

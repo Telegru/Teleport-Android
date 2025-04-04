@@ -7,5 +7,8 @@ sealed class WallState(open val unreadCount: Int = 0){
     data class Loading(override val unreadCount: Int): WallState(unreadCount)
     data class LoadingNextPage(override val unreadCount: Int): WallState(unreadCount)
     data object Empty: WallState()
-    data class NewData(val data: List<MessageObject> = emptyList(), override val unreadCount: Int): WallState(unreadCount)
+    data class Data(val data: List<MessageObject> = emptyList(), override val unreadCount: Int): WallState(unreadCount)
+
+    val canLoadMore: Boolean
+        get() = this is Data && unreadCount > 0
 }

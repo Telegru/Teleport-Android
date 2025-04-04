@@ -6154,7 +6154,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 int maxWidth;
                 boolean measuredReactions = false;
 
-                if (drawAvatar) {
+                if(messageObject.isDahlWallMessage) {
+                    maxWidth = messageObject.getMaxMessageTextWidth();
+                    drawName = true;
+                }else if (drawAvatar) {
                     if (AndroidUtilities.isTablet()) {
                         maxWidth = AndroidUtilities.getMinTabletSide() - dp(122);
                     } else {
@@ -8899,6 +8902,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                         } else {
                             w = h = AndroidUtilities.roundMessageSize;
                         }
+                    }else if(messageObject.isDahlWallMessage && photoWidth != 0 && photoHeight != 0){
+                        w = photoWidth;
+                        h = photoHeight;
                     } else {
                         TLRPC.PhotoSize size = currentPhotoObject != null ? currentPhotoObject : currentPhotoObjectThumb;
                         int imageW = 0;

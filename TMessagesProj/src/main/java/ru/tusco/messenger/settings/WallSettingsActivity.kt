@@ -50,7 +50,9 @@ class WallSettingsActivity : UniversalFragment() {
             )
             items?.add(
                 UItem.asCheck(CHAT_LIST, getString(R.string.InChatsList), getString(R.string.WallInChatListInfo))
-                    .setChecked(showInChats)
+//                    .setChecked(showInChats)
+                    .setChecked(false)
+                    .setEnabled(false)
             )
             items?.add(UItem.asShadow(-3, null))
 

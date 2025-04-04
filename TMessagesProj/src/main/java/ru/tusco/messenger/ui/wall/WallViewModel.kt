@@ -19,7 +19,6 @@ import ru.tusco.messenger.ui.mvvm.BaseViewModel
 import ru.tusco.messenger.utils.DahlUtils
 import java.util.TreeSet
 import kotlin.math.max
-import kotlin.math.min
 
 @UiThread
 class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationCenter.NotificationCenterDelegate, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -41,18 +40,21 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
     private var channelsMessages = LongSparseArray<MutableList<MessageObject>>()
     private var cacheEndReached = LongSparseArray<Boolean>()
     private var messagesIds = LongSparseArray<TreeSet<Int>>()
+    private var maxReadIndices = LongSparseArray<Int>()
 
     private val filteredChannels: List<Dialog>
         get() = DahlUtils.unreadWallChannels
 
     init {
         notificationCenter.addObserver(this, NotificationCenter.messagesDidLoad)
+        notificationCenter.addObserver(this, NotificationCenter.updateInterfaces)
         DahlSettings.addListener(this)
     }
 
     override fun onDestroy() {
         DahlSettings.removeListener(this)
         notificationCenter.removeObserver(this, NotificationCenter.messagesDidLoad)
+        notificationCenter.removeObserver(this, NotificationCenter.updateInterfaces)
         queue.cleanupQueue()
         queue.recycle()
         super.onDestroy()
@@ -66,8 +68,8 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
         messages.clear()
         channelsMessages.clear()
         cacheEndReached.clear()
-
         messagesIds.clear()
+        maxReadIndices.clear()
         loadIndex++
         var unreadCount = 0
         val channels = filteredChannels
@@ -78,7 +80,7 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
                 ch.id,
                 0,
                 false,
-                min(MESSAGES_SIZE, ch.unread_count),
+                MESSAGES_SIZE,
                 0,
                 0,
                 true,
@@ -98,13 +100,11 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
         }else{
             state.setValue(WallState.Empty)
         }
-
     }
 
     fun loadNextPage() {
         val listState = state.value
-        val canLoadMore = listState is WallState.NewData
-        if (!canLoadMore) {
+        if (!listState.canLoadMore) {
             return
         }
         messages.clear()
@@ -117,7 +117,7 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
             }
             channelsCount++
             val messages = channelsMessages.get(ch.id)
-            val maxId = messages?.lastOrNull()?.id ?: ch.read_inbox_max_id
+            val maxId = messages?.lastOrNull()?.id ?: 0
             val maxDate = messages?.lastOrNull()?.messageOwner?.date ?: 0
             val fromCache = !(cacheEndReached.get(ch.id) ?: false)
 
@@ -125,7 +125,7 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
                 ch.id,
                 0,
                 false,
-                min(MESSAGES_SIZE, ch.unread_count),
+                MESSAGES_SIZE,
                 maxId,
                 0,
                 fromCache,
@@ -143,7 +143,7 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
         if(channelsCount > 0){
             state.setValue(WallState.LoadingNextPage(listState.unreadCount))
         }else{
-            state.setValue(WallState.NewData(unreadCount = listState.unreadCount))
+            state.setValue(WallState.Data(unreadCount = listState.unreadCount))
         }
     }
 
@@ -151,40 +151,61 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
         FileLog.d("WallViewModel, onSharedPreferenceChanged, key: $key")
         if(key.isNullOrBlank()) return
         if(WallSettings.keys.contains(key)){
+            FileLog.d("WallViewModel, onSharedPreferenceChanged, reload: $key")
             reload()
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun didReceivedNotification(id: Int, account: Int, vararg args: Any) {
-        if (id == NotificationCenter.messagesDidLoad) {
-            val guid = args[10] as Int
-            if (guid != classGuid) {
-                return
-            }
-            val channelId = args[0] as Long
-            val count = args[1] as Int
+        when(id){
+            NotificationCenter.messagesDidLoad -> onMessagesLoaded(args)
 
-            val objects = args[2] as List<MessageObject>
-            val isCache = args[3] as Boolean
-            val loadType = args[8] as Int
-            var queryLoadIndex = args[11] as Int
-            if (queryLoadIndex < 0) {
-                queryLoadIndex = -queryLoadIndex
-            }
+            NotificationCenter.updateInterfaces-> onUnreadCounterChanged(args)
+        }
+    }
 
-            FileLog.d("WallViewModel, loadIndex: $loadIndex, queryLoadIndex: $queryLoadIndex, index: $loadIndex, isCache: $isCache, channelId: $channelId, count: $count, objects: ${objects.size}")
-            if (queryLoadIndex != loadIndex) {
-                return
-            }
-            if(loadType != MessagesController.LOAD_FROM_UNREAD && isCache && objects.size < count){
-                cacheEndReached.put(channelId, true)
-            }
+    private fun onUnreadCounterChanged(args: Array<out Any>){
+        val mask = args[0] as Int
+        if(mask != MessagesController.UPDATE_MASK_READ_DIALOG_MESSAGE){
+            return
+        }
+        val unreadCount = DahlUtils.unreadWallChannels.fold(0) { acc, dialog -> acc + dialog.unread_count }
 
-            messages.append(channelId, objects)
-            if (channelsCount == messages.size()) {
-                processMessages(messages)
-            }
+        when(state.value){
+            is WallState.Loading -> state.setValue(WallState.Loading(unreadCount = unreadCount))
+            is WallState.Data -> state.setValue(WallState.Data(unreadCount = unreadCount))
+            is WallState.LoadingNextPage -> state.setValue(WallState.LoadingNextPage(unreadCount = unreadCount))
+            else -> {}
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun onMessagesLoaded(args: Array<out Any>){
+        val guid = args[10] as Int
+        if (guid != classGuid) {
+            return
+        }
+        val channelId = args[0] as Long
+        val count = args[1] as Int
+
+        val objects = args[2] as List<MessageObject>
+        val isCache = args[3] as Boolean
+        val loadType = args[8] as Int
+        var queryLoadIndex = args[11] as Int
+        if (queryLoadIndex < 0) {
+            queryLoadIndex = -queryLoadIndex
+        }
+
+        if (queryLoadIndex != loadIndex) {
+            return
+        }
+        if(loadType != MessagesController.LOAD_FROM_UNREAD && isCache && objects.size < count){
+            cacheEndReached.put(channelId, true)
+        }
+
+        messages.append(channelId, objects)
+        if (channelsCount == messages.size()) {
+            processMessages(messages)
         }
     }
 
@@ -194,17 +215,15 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
             val result = mutableListOf<MessageObject>()
             for (ch in channels) {
                 val list = messages[ch.id] ?: continue
+                val ids = messagesIds[ch.id]
                 for(message in list){
-                    if(message.id <= 0){
+                    if(message.id <= 0 || !message.isUnread){
                         continue
                     }
-
-                    if(true == messagesIds[ch.id]?.contains(message.id)){
+                    if(!ids.isNullOrEmpty() && ids.last() > message.id){
                         continue
                     }
-                     if(message.id > ch.read_inbox_max_id){
-                        result.add(message)
-                    }
+                    result.add(message)
                 }
             }
             result.sortWith(object : Comparator<MessageObject> {
@@ -220,7 +239,6 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
                     return o1.id.compareTo(o2.id)
                 }
             })
-            FileLog.d("processMessages, result size: ${result.size}")
             val msgs = mutableListOf<MessageObject>()
             var oldGroupId = 0L
             for(msg in result){
@@ -247,13 +265,12 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
                 }
                 val unreadCount = state.value.unreadCount
 
-                state.setValue(WallState.NewData(data = msgs, unreadCount = unreadCount))
+                state.setValue(WallState.Data(data = msgs, unreadCount = unreadCount))
             }
         }
     }
 
     fun markRead(date: Int) {
-        FileLog.d("WallViewModel, markRead, date: $date")
         if(date <= 0) return
 
         var totalCount = 0
@@ -262,7 +279,9 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
             val messages = channelsMessages.valueAt(i)
             var message: MessageObject? = null
             var count = 0
-            for (msg in messages){
+            val index = maxReadIndices.get(dialogId) ?: 0
+            for (j in index until messages.size){
+                val msg = messages[j]
                 if(msg.messageOwner.date > date){
                     break
                 }
@@ -271,20 +290,21 @@ class WallViewModel : BaseViewModel<WallState>(WallState.Initial), NotificationC
                     count++
                 }
                 message = msg
+                maxReadIndices.put(dialogId, j)
             }
-            message?.let{ m ->
-//                messagesController.markDialogAsRead(dialogId, m.id, 0, m.messageOwner.date, false, 0, count, true, 0)
+            if(count > 0) {
+                message?.let { m ->
+                    messagesController.markDialogAsRead(dialogId, m.id, 0, m.messageOwner.date, false, 0, count, true, 0)
+                }
+                totalCount += count
             }
-
-            totalCount += count
         }
-
-        val newUnreadCount = max(0, state.value.unreadCount - totalCount)
+        val unreadCount = max(0, state.value.unreadCount - totalCount)
 
         when(state.value){
-            is WallState.Loading -> state.setValue(WallState.Loading(unreadCount = newUnreadCount))
-            is WallState.NewData -> state.setValue(WallState.NewData(unreadCount = newUnreadCount))
-            is WallState.LoadingNextPage -> state.setValue(WallState.LoadingNextPage(unreadCount = newUnreadCount))
+            is WallState.Loading -> state.setValue(WallState.Loading(unreadCount = unreadCount))
+            is WallState.Data -> state.setValue(WallState.Data(unreadCount = unreadCount))
+            is WallState.LoadingNextPage -> state.setValue(WallState.LoadingNextPage(unreadCount = unreadCount))
             else -> {}
         }
     }
